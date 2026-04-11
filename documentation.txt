@@ -74,7 +74,6 @@ Section 03: Claude code setup & Context/token explanation
 
 
 
-
 Section 04: Planning & Context Files
 
 
@@ -88,3 +87,6 @@ Section 04: Planning & Context Files
 
 
 24. Coding standards & interaction rules
+
+
+25. AI workflow & current feature file
