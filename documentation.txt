@@ -1,0 +1,84 @@
+Full-stack AI App DevStash
+
+
+
+Section 01: Introduction & What is AI ?
+
+
+01. Welcome to the course
+
+
+02. How to take this course
+
+
+03. Main project overview
+
+
+04. Course resource files
+
+
+05. What is AI ?
+
+
+06. Different levels of AI assistance
+
+
+07. Quick note about the videos
+
+
+
+Section 02: Vibe coding for prototyping
+
+
+08. Intro to prototyping
+
+
+09. Writing good prompts
+
+
+10. Prompt assignment
+
+
+11. Prototyping in action
+
+
+12. Prototype code review
+
+
+13. Iterating on the prompt
+
+
+14. Reality check: Prototype vs Production
+
+
+
+Section 03: Claude code setup & Context/token explanation
+
+
+15. Claude code install & basic usage (Python example)
+
+
+16. Plan mode
+
+
+17. Slash commands & settings file
+
+
+18. Intro to context & tokens
+
+
+19. Context-related slash commands
+
+
+20. Update: Memory file
+
+
+
+
+Section 04: Planning & Context Files
+
+
+21. Planning a project
+
+
+22. Bootstrap your files manually
