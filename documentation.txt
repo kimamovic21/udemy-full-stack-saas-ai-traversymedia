@@ -82,3 +82,6 @@ Section 04: Planning & Context Files
 
 
 22. Bootstrap your files manually
+
+
+23. Project context & Claude.md
