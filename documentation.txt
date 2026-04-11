@@ -85,3 +85,6 @@ Section 04: Planning & Context Files
 
 
 23. Project context & Claude.md
+
+
+24. Coding standards & interaction rules
