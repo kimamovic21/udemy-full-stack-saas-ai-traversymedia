@@ -122,3 +122,13 @@ Section 05: Start building DevStash
 -in component page.tsx import component TopBar
 -in jsx create HTML elements with Tailwind CSS classes
 -open route: http://localhost:3000/dashboard
+
+
+31. Dashboard UI phase 2 - Sidebar
+
+-update current md files
+-install new Shadcn components
+-in folder layout create components mobile-sidebar.tsx and sidebar.tsx
+-in component dashboard/page.tsx import components Sidebar and MobileSidebar
+-open route: http://localhost:3000
+-open route: http://localhost:3000/dashboard
