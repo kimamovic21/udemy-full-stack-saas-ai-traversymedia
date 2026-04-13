@@ -90,3 +90,13 @@ Section 04: Planning & Context Files
 
 
 25. AI workflow & current feature file
+
+
+
+Section 05: Start building DevStash
+
+
+26. Using Git with AI
+
+
+27. Dashboard UI prototype
