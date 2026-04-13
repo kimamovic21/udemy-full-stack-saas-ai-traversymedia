@@ -100,3 +100,25 @@ Section 05: Start building DevStash
 
 
 27. Dashboard UI prototype
+
+
+28. Claude VS Code extension
+
+
+29. Generating mock data
+
+-create folder lib and mock-data.ts file
+
+
+30. Dashboard UI phase 1 & spec files
+
+-current folder features and create md files with instructions
+-install shadcn library
+-check folder components and ui
+-update components layout.tsx and page.tsx
+-in folder components create folder layout and component top-bar.tsx
+-open route: http://localhost:3000
+-create folder dashboard and component page.tsx
+-in component page.tsx import component TopBar
+-in jsx create HTML elements with Tailwind CSS classes
+-open route: http://localhost:3000/dashboard

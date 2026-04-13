@@ -1,16 +1,14 @@
 # Current Feature
 
-<!-- Feature Name -->
+<!-- Feature name and short description -->
 
 ## Status
 
-<!-- Not Started|In Progress|Completed -->
-
-Not Started
+<!-- Not Started | In Progress | Completed -->
 
 ## Goals
 
-<!-- Goals & requirements -->
+<!-- Goals and requirements -->
 
 ## Notes
 
@@ -18,6 +16,5 @@ Not Started
 
 ## History
 
-<!-- Keep this updated. Earliest to latest -->
-
-- Project setup and boilerplate cleanup
+- **Initial Setup** - Next.js 16, Tailwind CSS v4, TypeScript configured (Completed)
+- **Dashboard UI Phase 1** - ShadCN UI initialization, dashboard route at /dashboard, main layout with dark mode, top bar with search and buttons, sidebar and main placeholders (Completed)
