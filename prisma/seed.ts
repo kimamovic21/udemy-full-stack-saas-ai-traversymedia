@@ -27,7 +27,6 @@ async function main() {
   console.log("Seeding system item types...");
 
   for (const type of systemItemTypes) {
-    // Check if system type already exists (userId is null for system types)
     const existing = await prisma.itemType.findFirst({
       where: {
         name: type.name,

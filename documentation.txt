@@ -168,3 +168,19 @@ Section 05: Database integration & initial deployment (CI/CD setup)
 -type command: npx prisma migrate dev --name init
 -type command: npx prisma migrate dev
 -type command: npx prisma db push
+-open Neon db to see tables
+
+
+35. Initial database migration
+
+-type command: npm i bcryptjs && npm i @types/bcryptjs --save-dev
+-in folder features create seed-spec.md file with instructions
+-type command: npx prisma migrate status
+-type command: npm run db:studio
+-open route: http://localhost:51212
+
+
+36. Seed sample data
+
+-type command: npx prisma db seed
+-open route: http://localhost:51212

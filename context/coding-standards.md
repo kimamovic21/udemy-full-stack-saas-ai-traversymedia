@@ -26,6 +26,7 @@
   - Specific HTTP status codes or headers
   - Endpoints for future mobile/CLI clients
   - Third-party integrations
+- Otherwise, fetch data directly in server components
 - Dynamic routes for item/collection pages
 
 ## Tailwind CSS v4
