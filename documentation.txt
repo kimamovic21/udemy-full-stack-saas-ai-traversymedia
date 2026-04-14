@@ -192,4 +192,17 @@ Section 05: Database integration & initial deployment (CI/CD setup)
 -create file dashboard-collections-spec.md
 -create collections.ts file
 -update component page.tsx to fetch data from db
+-type command: npx prisma db seed
+-type command: npx prisma db push
+-open route: http://localhost:3000/dashboard
+
+
+38. Populate dashboard items
+
+-update file current-feature.md
+-create file dashboard-items-spec.md
+-create items.ts file
+-update component page.tsx to fetch data from db
+-type command: npx prisma db seed
+-type command: npx prisma db push
 -open route: http://localhost:3000/dashboard
