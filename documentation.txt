@@ -184,3 +184,12 @@ Section 05: Database integration & initial deployment (CI/CD setup)
 
 -type command: npx prisma db seed
 -open route: http://localhost:51212
+
+
+37. Populate dashboard collections
+
+-update file current-feature.md
+-create file dashboard-collections-spec.md
+-create collections.ts file
+-update component page.tsx to fetch data from db
+-open route: http://localhost:3000/dashboard
