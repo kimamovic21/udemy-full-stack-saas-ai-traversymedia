@@ -218,3 +218,15 @@ Section 05: Database integration & initial deployment (CI/CD setup)
 -in folder db update files collections.ts and items.ts
 -update seed.ts file
 -open route: http://localhost:3000/dashboard
+
+
+40. Migration workflow & production prep
+
+
+42. Initial deployment (CI/CD) & production migration
+
+-type command: npm run build
+-open Vercel service
+-add command: prisma generate && prisma migrate deploy && next build
+-add variable DATABASE_URL from .env file
+-click button Deploy
