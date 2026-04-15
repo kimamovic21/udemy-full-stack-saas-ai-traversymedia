@@ -96,3 +96,90 @@ export async function getRecentCollections(
     };
   });
 }
+
+export interface SidebarCollection {
+  id: string;
+  name: string;
+  itemCount: number;
+  isFavorite: boolean;
+  dominantColor: string | null;
+}
+
+export interface SidebarCollections {
+  favorites: SidebarCollection[];
+  recents: SidebarCollection[];
+}
+
+/**
+ * Get collections for sidebar (favorites and recents)
+ */
+export async function getSidebarCollections(
+  userId: string,
+): Promise<SidebarCollections> {
+  const collections = await prisma.collection.findMany({
+    where: { userId },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      items: {
+        include: {
+          item: {
+            include: {
+              itemType: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const processCollection = (
+    collection: (typeof collections)[0],
+  ): SidebarCollection => {
+    // Count items by type to find dominant color
+    const typeCounts = new Map<string, { color: string; count: number }>();
+
+    for (const itemCollection of collection.items) {
+      const itemType = itemCollection.item.itemType;
+      const existing = typeCounts.get(itemType.id);
+
+      if (existing) {
+        existing.count++;
+      } else {
+        typeCounts.set(itemType.id, {
+          color: itemType.color,
+          count: 1,
+        });
+      }
+    }
+
+    // Get dominant color from most-used type
+    let dominantColor: string | null = null;
+    let maxCount = 0;
+    for (const { color, count } of typeCounts.values()) {
+      if (count > maxCount) {
+        maxCount = count;
+        dominantColor = color;
+      }
+    }
+
+    return {
+      id: collection.id,
+      name: collection.name,
+      itemCount: collection.items.length,
+      isFavorite: collection.isFavorite,
+      dominantColor,
+    };
+  };
+
+  const favorites = collections
+    .filter((c) => c.isFavorite)
+    .slice(0, 5)
+    .map(processCollection);
+
+  const recents = collections
+    .filter((c) => !c.isFavorite)
+    .slice(0, 3)
+    .map(processCollection);
+
+  return { favorites, recents };
+}

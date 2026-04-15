@@ -1,8 +1,6 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Code, FolderOpen, Star, Heart } from "lucide-react";
-import { mockItems, mockCollections } from "@/lib/mock-data";
+import type { DashboardStats } from "@/lib/db/items";
 
 interface StatCardProps {
   title: string;
@@ -30,36 +28,33 @@ function StatCard({ title, value, icon, color }: StatCardProps) {
   );
 }
 
-export default function StatsCards() {
-  const totalItems = mockItems.length;
-  const totalCollections = mockCollections.length;
-  const favoriteItems = mockItems.filter((item) => item.isFavorite).length;
-  const favoriteCollections = mockCollections.filter(
-    (coll) => coll.isFavorite,
-  ).length;
+interface StatsCardsProps {
+  stats: DashboardStats;
+}
 
-  const stats = [
+export default function StatsCards({ stats }: StatsCardsProps) {
+  const statItems = [
     {
       title: "Total Items",
-      value: totalItems,
+      value: stats.totalItems,
       icon: <Code className="h-5 w-5" />,
       color: "#3b82f6",
     },
     {
       title: "Collections",
-      value: totalCollections,
+      value: stats.totalCollections,
       icon: <FolderOpen className="h-5 w-5" />,
       color: "#8b5cf6",
     },
     {
       title: "Favorite Items",
-      value: favoriteItems,
+      value: stats.favoriteItems,
       icon: <Star className="h-5 w-5" />,
       color: "#f97316",
     },
     {
       title: "Favorite Collections",
-      value: favoriteCollections,
+      value: stats.favoriteCollections,
       icon: <Heart className="h-5 w-5" />,
       color: "#ec4899",
     },
@@ -67,7 +62,7 @@ export default function StatsCards() {
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {stats.map((stat) => (
+      {statItems.map((stat) => (
         <StatCard key={stat.title} {...stat} />
       ))}
     </div>

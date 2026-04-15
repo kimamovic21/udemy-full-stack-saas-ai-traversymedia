@@ -4,12 +4,28 @@ import { useState } from "react";
 import TopBar from "@/components/layout/top-bar";
 import Sidebar from "@/components/layout/sidebar";
 import MobileSidebar from "@/components/layout/mobile-sidebar";
+import type { ItemTypeWithCount } from "@/lib/db/items";
+import type { SidebarCollections } from "@/lib/db/collections";
+
+interface User {
+  id: string;
+  name: string | null;
+  email: string;
+}
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
+  itemTypes: ItemTypeWithCount[];
+  sidebarCollections: SidebarCollections;
+  user: User | null;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function DashboardLayout({
+  children,
+  itemTypes,
+  sidebarCollections,
+  user,
+}: DashboardLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -22,6 +38,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <Sidebar
             isCollapsed={isSidebarCollapsed}
             onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            itemTypes={itemTypes}
+            sidebarCollections={sidebarCollections}
+            user={user}
           />
         </div>
 
@@ -29,6 +48,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <MobileSidebar
           isOpen={isMobileSidebarOpen}
           onClose={() => setIsMobileSidebarOpen(false)}
+          itemTypes={itemTypes}
+          sidebarCollections={sidebarCollections}
+          user={user}
         />
 
         {/* Main Content */}

@@ -21,12 +21,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import {
-  mockItemTypes,
-  mockCollections,
-  mockItemTypeCounts,
-  mockUser,
-} from "@/lib/mock-data";
+import type { ItemTypeWithCount } from "@/lib/db/items";
+import type { SidebarCollections } from "@/lib/db/collections";
 
 const ICON_MAP = {
   Code,
@@ -38,18 +34,34 @@ const ICON_MAP = {
   Link: LinkIcon,
 };
 
+interface User {
+  id: string;
+  name: string | null;
+  email: string;
+}
+
 interface SidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
+  itemTypes: ItemTypeWithCount[];
+  sidebarCollections: SidebarCollections;
+  user: User | null;
 }
 
-export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
+export default function Sidebar({
+  isCollapsed,
+  onToggle,
+  itemTypes,
+  sidebarCollections,
+  user,
+}: SidebarProps) {
   const [collectionsExpanded, setCollectionsExpanded] = useState(true);
 
-  const favoriteCollections = mockCollections.filter((c) => c.isFavorite);
-  const recentCollections = mockCollections
-    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-    .slice(0, 3);
+  const userInitials =
+    user?.name
+      ?.split(" ")
+      .map((n: string) => n[0])
+      .join("") || "?";
 
   return (
     <aside
@@ -88,16 +100,12 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               Types
             </h3>
           )}
-          {mockItemTypes.map((type) => {
+          {itemTypes.map((type) => {
             const Icon = ICON_MAP[type.icon as keyof typeof ICON_MAP];
-            const count =
-              mockItemTypeCounts[
-                type.name as keyof typeof mockItemTypeCounts
-              ] || 0;
 
             return (
               <Link
-                key={type.id}
+                key={type.name}
                 href={`/items/${type.name}s`}
                 className={cn(
                   "flex items-center gap-3 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent",
@@ -110,7 +118,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                   <>
                     <span className="flex-1 capitalize">{type.name}s</span>
                     <span className="text-xs text-muted-foreground">
-                      {count}
+                      {type.count}
                     </span>
                   </>
                 )}
@@ -139,12 +147,12 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               {collectionsExpanded && (
                 <div className="mt-2 space-y-1">
                   {/* Favorites */}
-                  {favoriteCollections.length > 0 && (
+                  {sidebarCollections.favorites.length > 0 && (
                     <>
                       <div className="px-2 py-1 text-xs font-medium text-muted-foreground">
                         Favorites
                       </div>
-                      {favoriteCollections.map((collection) => (
+                      {sidebarCollections.favorites.map((collection) => (
                         <Link
                           key={collection.id}
                           href={`/collections/${collection.id}`}
@@ -163,22 +171,42 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                   )}
 
                   {/* Recent */}
-                  <div className="mt-3 px-2 py-1 text-xs font-medium text-muted-foreground">
-                    Recent
-                  </div>
-                  {recentCollections.map((collection) => (
-                    <Link
-                      key={collection.id}
-                      href={`/collections/${collection.id}`}
-                      className="flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent"
-                    >
-                      <div className="h-4 w-4" />
-                      <span className="flex-1 truncate">{collection.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {collection.itemCount}
-                      </span>
-                    </Link>
-                  ))}
+                  {sidebarCollections.recents.length > 0 && (
+                    <>
+                      <div className="mt-3 px-2 py-1 text-xs font-medium text-muted-foreground">
+                        Recent
+                      </div>
+                      {sidebarCollections.recents.map((collection) => (
+                        <Link
+                          key={collection.id}
+                          href={`/collections/${collection.id}`}
+                          className="flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent"
+                        >
+                          <div
+                            className="h-3 w-3 rounded-full"
+                            style={{
+                              backgroundColor:
+                                collection.dominantColor || "#6b7280",
+                            }}
+                          />
+                          <span className="flex-1 truncate">
+                            {collection.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {collection.itemCount}
+                          </span>
+                        </Link>
+                      ))}
+                    </>
+                  )}
+
+                  {/* View all collections link */}
+                  <Link
+                    href="/collections"
+                    className="mt-2 flex items-center gap-2 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  >
+                    View all collections
+                  </Link>
                 </div>
               )}
             </div>
@@ -192,10 +220,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           <div className="flex justify-center">
             <Avatar className="h-8 w-8">
               <AvatarFallback className="bg-primary text-xs text-primary-foreground">
-                {mockUser.name
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {userInitials}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -203,16 +228,15 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
               <AvatarFallback className="bg-primary text-xs text-primary-foreground">
-                {mockUser.name
-                  ?.split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {userInitials}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 overflow-hidden">
-              <p className="truncate text-sm font-medium">{mockUser.name}</p>
+              <p className="truncate text-sm font-medium">
+                {user?.name || "Guest"}
+              </p>
               <p className="truncate text-xs text-muted-foreground">
-                {mockUser.email}
+                {user?.email || ""}
               </p>
             </div>
             <Button variant="ghost" size="icon" className="h-8 w-8">

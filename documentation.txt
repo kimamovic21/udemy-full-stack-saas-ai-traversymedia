@@ -206,3 +206,15 @@ Section 05: Database integration & initial deployment (CI/CD setup)
 -type command: npx prisma db seed
 -type command: npx prisma db push
 -open route: http://localhost:3000/dashboard
+
+
+39. Populate stats & sidebar
+
+-update file current-feature.md
+-create file stats-sidebar-spec.md with instructions
+-update component page.tsx to fetch data from db
+-type command: npx prisma db seed
+-in folder components update logic in tsx components
+-in folder db update files collections.ts and items.ts
+-update seed.ts file
+-open route: http://localhost:3000/dashboard
