@@ -254,3 +254,6 @@ Section 07: Custom commands, skills & subagents
 47. What are subagents
 
 -create folder .claude and md files with instructions
+
+
+48. Create code scanner agent
