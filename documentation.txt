@@ -257,3 +257,8 @@ Section 07: Custom commands, skills & subagents
 
 
 48. Create code scanner agent
+
+
+49. Using the code scanner
+
+-open route: http://localhost:3000/dashboard
