@@ -246,3 +246,11 @@ Section 07: Custom commands, skills & subagents
 
 
 45. Use the feature command
+
+
+46. Cleanup command
+
+
+47. What are subagents
+
+-create folder .claude and md files with instructions
