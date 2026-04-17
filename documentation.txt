@@ -147,7 +147,7 @@ Section 05: Start building DevStash
 
 
 
-Section 05: Database integration & initial deployment (CI/CD setup)
+Section 06: Database integration & initial deployment (CI/CD setup)
 
 
 33. Neon PostgreSQL database setup
@@ -223,10 +223,26 @@ Section 05: Database integration & initial deployment (CI/CD setup)
 40. Migration workflow & production prep
 
 
-42. Initial deployment (CI/CD) & production migration
+41. Initial deployment (CI/CD) & production migration
 
 -type command: npm run build
 -open Vercel service
 -add command: prisma generate && prisma migrate deploy && next build
 -add variable DATABASE_URL from .env file
 -click button Deploy
+
+
+
+Section 07: Custom commands, skills & subagents
+
+
+42. Skills & custom commands explained
+
+
+43. Feature command/skill actions
+
+
+44. Create the feature command
+
+
+45. Use the feature command
