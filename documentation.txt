@@ -262,3 +262,29 @@ Section 07: Custom commands, skills & subagents
 49. Using the code scanner
 
 -open route: http://localhost:3000/dashboard
+
+
+
+Section 8: MCP (Model context protocol)
+
+
+50. What is MCP ?
+
+
+51. Neon MCP setup
+
+-open link: https://neon.com/docs/ai/neon-mcp-server
+-create .mcp.json file
+
+
+52. Context7 MCP setup
+
+-open link: https://context7.com
+-create API key
+-update .mcp.json file
+
+
+53. Playwright MCP setup
+
+-open link: https://playwright.dev/docs/getting-started-mcp
+-update .mcp.json file
