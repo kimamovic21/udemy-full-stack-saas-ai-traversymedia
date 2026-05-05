@@ -288,3 +288,22 @@ Section 8: MCP (Model context protocol)
 
 -open link: https://playwright.dev/docs/getting-started-mcp
 -update .mcp.json file
+
+
+
+Section 09: Authentication & Authorization
+
+
+54. Next auth - phase 1
+
+-update current-feature.md file
+-create new md files in folder features
+-create new env variables
+-type command: npx auth secret
+-open Github and register a new OAuth app
+-type command: npm i next-auth @auth/prisma-adapter
+-create new .ts file files for auth
+-create folder types and next-auth.d.ts file
+-open route: http://localhost:3000/dashboard
+-click button Sign in with Github
+-open route: http://localhost:3000/api/auth/signin
