@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Pin } from "lucide-react";
 import { formatRelativeDate } from "@/lib/utils/date";
 import type { ItemWithType } from "@/lib/db/items";
-import { getItemTypeIcon } from '@/lib/constants/item-type';
+import { getItemTypeIcon } from '@/lib/constants/item-types';
 
 interface ItemCardProps {
   item: ItemWithType;

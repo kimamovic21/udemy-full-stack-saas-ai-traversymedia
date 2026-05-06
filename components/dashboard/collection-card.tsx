@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Star, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CollectionItemType } from "@/lib/db/collections";
-import { getItemTypeIcon } from '@/lib/constants/item-type';
+import { getItemTypeIcon } from '@/lib/constants/item-types';
 
 interface CollectionCardProps {
   collection: {

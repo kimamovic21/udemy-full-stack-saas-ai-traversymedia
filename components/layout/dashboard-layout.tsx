@@ -1,16 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import type { ItemTypeWithCount } from "@/lib/db/items";
+import type { SidebarCollections } from "@/lib/db/collections";
 import TopBar from "@/components/layout/top-bar";
 import Sidebar from "@/components/layout/sidebar";
 import MobileSidebar from "@/components/layout/mobile-sidebar";
-import type { ItemTypeWithCount } from "@/lib/db/items";
-import type { SidebarCollections } from "@/lib/db/collections";
 
 interface User {
   id: string;
   name: string | null;
   email: string;
+  image?: string | null;
 }
 
 interface DashboardLayoutProps {

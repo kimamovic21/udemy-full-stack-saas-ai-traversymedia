@@ -1,10 +1,7 @@
-import DashboardLayout from "@/components/layout/dashboard-layout";
-import StatsCards from "@/components/dashboard/stats-cards";
-import CollectionsSection from "@/components/dashboard/collections-section";
-import PinnedItems from "@/components/dashboard/pinned-items";
-import RecentItems from "@/components/dashboard/recent-items";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 import {
-  getDemoUser,
   getRecentCollections,
   getSidebarCollections,
 } from "@/lib/db/collections";
@@ -14,9 +11,23 @@ import {
   getDashboardStats,
   getItemTypesWithCounts,
 } from "@/lib/db/items";
+import DashboardLayout from "@/components/layout/dashboard-layout";
+import StatsCards from "@/components/dashboard/stats-cards";
+import CollectionsSection from "@/components/dashboard/collections-section";
+import PinnedItems from "@/components/dashboard/pinned-items";
+import RecentItems from "@/components/dashboard/recent-items";
 
 export default async function DashboardPage() {
-  const user = await getDemoUser();
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    redirect("/sign-in");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true, name: true, email: true, image: true },
+  });
 
   const [
     collections,

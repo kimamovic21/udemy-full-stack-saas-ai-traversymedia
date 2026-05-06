@@ -12,6 +12,9 @@ import Credentials from "next-auth/providers/credentials";
  */
 
 export default {
+  pages: {
+    signIn: "/sign-in",
+  },
   providers: [
     GitHub,
     Credentials({

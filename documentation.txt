@@ -314,3 +314,16 @@ Section 09: Authentication & Authorization
 -update md files complete.md, CLAUDE.md and current-feature.md
 -create folder register and route.ts file
 -update ts files for auth
+-open route: http://localhost:3000/register
+
+
+56. Next auth - phase 3
+
+-create folder auth and form tsx components
+-in folder layout update tsx components
+-create folder shared and component user-avatar.tsx
+-update files auth.config.tsx and auth.ts
+-update md files for documentation
+-install new shadcn components
+-open route: http://localhost:3000/register
+-open route: http://localhost:3000/sign-in

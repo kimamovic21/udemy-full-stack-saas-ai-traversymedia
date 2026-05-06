@@ -1,25 +1,33 @@
 "use client";
 
-import Link from "next/link";
-import { Star, Settings } from "lucide-react";
+import { signOut } from "next-auth/react";
+import { Star, LogOut, User } from "lucide-react";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { getItemTypeIcon } from "@/lib/constants/item-types";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollections } from "@/lib/db/collections";
-import { getItemTypeIcon } from "@/lib/constants/item-type";
+import Link from "next/link";
 
 interface User {
   id: string;
   name: string | null;
   email: string;
+  image?: string | null;
 }
 
 interface MobileSidebarProps {
@@ -37,12 +45,6 @@ export default function MobileSidebar({
   sidebarCollections,
   user,
 }: MobileSidebarProps) {
-  const userInitials =
-    user?.name
-      ?.split(" ")
-      .map((n: string) => n[0])
-      .join("") || "?";
-
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="left" className="w-64 p-0">
@@ -161,24 +163,41 @@ export default function MobileSidebar({
 
           {/* User section at bottom */}
           <div className="border-t border-border p-4">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary text-xs text-primary-foreground">
-                  {userInitials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-medium">
-                  {user?.name || "Guest"}
-                </p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {user?.email || ""}
-                </p>
-              </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex w-full items-center gap-3 rounded-md p-1 hover:bg-accent">
+                  <UserAvatar name={user?.name} image={user?.image} />
+                  <div className="flex-1 overflow-hidden text-left">
+                    <p className="truncate text-sm font-medium">
+                      {user?.name || "Guest"}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {user?.email || ""}
+                    </p>
+                  </div>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/profile"
+                    onClick={onClose}
+                    className="flex items-center"
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => signOut({ callbackUrl: "/sign-in" })}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </SheetContent>
