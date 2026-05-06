@@ -307,3 +307,10 @@ Section 09: Authentication & Authorization
 -open route: http://localhost:3000/dashboard
 -click button Sign in with Github
 -open route: http://localhost:3000/api/auth/signin
+
+
+55. Next auth - phase 2
+
+-update md files complete.md, CLAUDE.md and current-feature.md
+-create folder register and route.ts file
+-update ts files for auth
