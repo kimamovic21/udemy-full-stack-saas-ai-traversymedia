@@ -13,7 +13,8 @@
     "db:push": "echo 'Use db:migrate instead - never push directly' && exit 1",
     "db:seed": "npx tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "db:test": "npx tsx scripts/test-db.ts"
+    "db:test": "npx tsx scripts/test-db.ts",
+    "db:cleanup": "npx tsx scripts/cleanup-users.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -38,6 +39,7 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.12.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0"
   },

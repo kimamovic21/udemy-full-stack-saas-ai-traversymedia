@@ -48,6 +48,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
+        // Check if email is verified
+        if (!user.emailVerified) {
+          throw new Error("EmailNotVerified");
+        }
+
         return {
           id: user.id,
           email: user.email,
@@ -58,6 +63,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      // For OAuth providers (like GitHub), check if email is already registered with password
+      if (account?.provider !== "credentials" && user.email) {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
+
+        // Block OAuth sign-in if user already has a password-based account
+        if (existingUser?.password) {
+          return "/sign-in?error=OAuthAccountNotLinked";
+        }
+      }
+      return true;
+    },
     jwt({ token, user }) {
       // Add user.id to the JWT token on sign in
       if (user?.id) {

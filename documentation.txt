@@ -327,3 +327,20 @@ Section 09: Authentication & Authorization
 -install new shadcn components
 -open route: http://localhost:3000/register
 -open route: http://localhost:3000/sign-in
+
+
+57. Production GitHub keys
+
+-update env variables in production
+
+
+58. Email verification with Resend
+
+-open link: https://resend.com
+-create new API key
+-type command: npm i resend
+-in env file create variable RESEND_API_KEY
+-update package.json file with command: db:cleanup
+-add verify email logic
+-create env variable NEXT_PUBLIC_APP_URL
+-open route: http://localhost:3000/register

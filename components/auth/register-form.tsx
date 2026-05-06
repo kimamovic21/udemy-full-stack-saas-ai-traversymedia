@@ -58,7 +58,7 @@ export function RegisterForm() {
         return;
       }
 
-      router.push("/sign-in?registered=true");
+      router.push("/verify-email");
     } catch {
       setError("An unexpected error occurred");
       setIsLoading(false);

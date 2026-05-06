@@ -38,7 +38,9 @@ export function SignInForm() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGitHubLoading, setIsGitHubLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [needsVerification, setNeedsVerification] = useState(false);
 
   async function handleCredentialsSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -52,7 +54,16 @@ export function SignInForm() {
     });
 
     if (result?.error) {
-      setFormError("Invalid email or password");
+      if (
+        result.code === "credentials" &&
+        result.error.includes("EmailNotVerified")
+      ) {
+        setFormError("Please verify your email before signing in.");
+        setNeedsVerification(true);
+      } else {
+        setFormError("Invalid email or password");
+        setNeedsVerification(false);
+      }
       setIsLoading(false);
     } else {
       router.push(callbackUrl);
@@ -62,6 +73,31 @@ export function SignInForm() {
   async function handleGitHubSignIn() {
     setIsGitHubLoading(true);
     await signIn("github", { callbackUrl });
+  }
+
+  async function handleResendVerification() {
+    if (!email) {
+      toast.error("Please enter your email address first");
+      return;
+    }
+    setIsResending(true);
+    try {
+      const response = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.error || "Failed to resend verification email");
+      }
+    } catch {
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsResending(false);
+    }
   }
 
   return (
@@ -75,7 +111,22 @@ export function SignInForm() {
       <CardContent className="space-y-4">
         {(error || formError) && (
           <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            {formError || "An error occurred. Please try again."}
+            <p>
+              {formError ||
+                (error === "OAuthAccountNotLinked"
+                  ? "This email is already registered with a password. Please sign in with your email and password instead."
+                  : "An error occurred. Please try again.")}
+            </p>
+            {needsVerification && (
+              <button
+                type="button"
+                onClick={handleResendVerification}
+                disabled={isResending}
+                className="mt-2 text-primary hover:underline disabled:opacity-50"
+              >
+                {isResending ? "Sending..." : "Resend verification email"}
+              </button>
+            )}
           </div>
         )}
 
