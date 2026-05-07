@@ -361,3 +361,10 @@ Section 09: Authentication & Authorization
 -open route: http://localhost:3000/forgot-password
 -open your email account
 -open route: http://localhost:3000/reset-password
+
+
+61. User profile page
+
+-add a logic for changing password, user profile and deleting account
+-open route: http://localhost:3000/change-password
+-open route: http://localhost:3000/profile
