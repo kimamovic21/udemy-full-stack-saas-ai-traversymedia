@@ -368,3 +368,9 @@ Section 09: Authentication & Authorization
 -add a logic for changing password, user profile and deleting account
 -open route: http://localhost:3000/change-password
 -open route: http://localhost:3000/profile
+
+
+62. Auth code audit agent
+
+-create .md files for documentation
+-update register/route.ts file

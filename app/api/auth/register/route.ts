@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Check if email verification should be skipped
     const skipVerification = process.env.SKIP_EMAIL_VERIFICATION === "true";
