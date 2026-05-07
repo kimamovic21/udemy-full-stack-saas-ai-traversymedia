@@ -48,8 +48,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        // Check if email is verified
-        if (!user.emailVerified) {
+        // Check if email is verified (unless verification is skipped)
+        const skipVerification = process.env.SKIP_EMAIL_VERIFICATION === "true";
+        if (!skipVerification && !user.emailVerified) {
           throw new Error("EmailNotVerified");
         }
 

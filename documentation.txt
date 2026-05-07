@@ -344,3 +344,12 @@ Section 09: Authentication & Authorization
 -add verify email logic
 -create env variable NEXT_PUBLIC_APP_URL
 -open route: http://localhost:3000/register
+-open email account to see check verification link
+
+
+59. Email verification flag
+
+-update current-feature.md file with instructions
+-in .env file create variable SKIP_EMAIL_VERIFICATION
+-update files register/route.ts and auth
+-open route: http://localhost:3000/register

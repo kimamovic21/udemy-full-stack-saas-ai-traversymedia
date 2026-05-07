@@ -48,23 +48,31 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user (emailVerified is null until they verify)
+    // Check if email verification should be skipped
+    const skipVerification = process.env.SKIP_EMAIL_VERIFICATION === "true";
+
+    // Create user (emailVerified is set if skipping verification)
     const user = await prisma.user.create({
       data: {
         name: name || null,
         email,
         password: hashedPassword,
+        emailVerified: skipVerification ? new Date() : null,
       },
     });
 
-    // Generate verification token and send email
-    const token = await generateVerificationToken(email);
-    await sendVerificationEmail(email, token);
+    // Generate verification token and send email (unless skipped)
+    if (!skipVerification) {
+      const token = await generateVerificationToken(email);
+      await sendVerificationEmail(email, token);
+    }
 
     return NextResponse.json(
       {
         success: true,
-        message: "Please check your email to verify your account",
+        message: skipVerification
+          ? "Account created successfully"
+          : "Please check your email to verify your account",
         user: {
           id: user.id,
           name: user.name,

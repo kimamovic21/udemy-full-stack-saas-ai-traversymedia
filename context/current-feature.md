@@ -1,6 +1,4 @@
-# Current Feature: Auth UI - Sign In, Register & Sign Out
-
-Replace NextAuth default pages with custom UI. Update user icon, email and username in bottom of sidebar.
+# Current Feature: Email Verification Toggle
 
 ## Status
 
@@ -8,21 +6,19 @@ In Progress
 
 ## Goals
 
-- Create custom Sign In page (`/sign-in`) with email/password fields and GitHub OAuth button
-- Create custom Register page (`/register`) with name, email, password, confirm password fields
-- Form validation and error display on both pages
-- Link register page to sign-in page
-- Submit register form to `/api/auth/register` endpoint
-- Display user avatar in sidebar (GitHub image or initials fallback)
-- Display user name in sidebar
-- Dropdown menu on avatar click with "Sign out" link
-- Avatar click navigates to "/profile"
-- Create reusable avatar component handling both image and initials
+- Add environment variable `SKIP_EMAIL_VERIFICATION` to control email verification behavior
+- When `SKIP_EMAIL_VERIFICATION=true`, skip sending verification emails and auto-verify users on registration
+- When disabled or not set, email verification works as currently implemented
+- Update registration flow to check the toggle
+- Update sign-in flow to skip verification check when toggle is enabled
+- Document the environment variable in `.env.example`
 
 ## Notes
 
-- Avatar logic: If user has `image` (from GitHub), use that. Otherwise, generate initials from name (e.g., "Brad Traversy" → "BT")
-- Need to create a reusable UserAvatar component that handles both cases
+- Currently no domain is linked to Resend, so only the Resend test email can receive verification emails
+- This toggle allows local development and testing without a verified domain
+- Environment variable approach keeps the feature simple and follows existing patterns in the codebase
+- Default behavior (no env var set) should require verification to maintain security in production
 
 ## History
 
@@ -39,3 +35,5 @@ In Progress
 - **Code Quality Quick Wins** - N+1 query fix using Prisma _count and take, database indexes for common queries, shared ICON_MAP with fallback, shared date utility, dashboard loading/error states, query limit validation (Completed)
 - **Auth Setup Phase 1** - NextAuth v5 with GitHub OAuth, split auth config for edge compatibility, Prisma adapter with JWT strategy, /dashboard route protection via proxy, Session type with user.id (Completed)
 - **Auth Setup Phase 2** - Credentials provider with email/password, bcrypt validation, /api/auth/register endpoint with validation (Completed)
+- **Auth Setup Phase 3** - Custom sign-in and register pages, reusable UserAvatar component with image/initials fallback, sidebar user dropdown with profile link and sign out, Sonner toast notifications, dashboard uses authenticated session (Completed)
+- **Email Verification** - Resend SDK integration, verification tokens on registration, verification emails, /api/auth/verify endpoint, /verify-email page, sign-in blocking for unverified users, resend functionality, edge case handling (Completed)
