@@ -1,4 +1,4 @@
-# Current Feature: Email Verification Toggle
+# Current Feature: Forgot Password
 
 ## Status
 
@@ -6,19 +6,23 @@ In Progress
 
 ## Goals
 
-- Add environment variable `SKIP_EMAIL_VERIFICATION` to control email verification behavior
-- When `SKIP_EMAIL_VERIFICATION=true`, skip sending verification emails and auto-verify users on registration
-- When disabled or not set, email verification works as currently implemented
-- Update registration flow to check the toggle
-- Update sign-in flow to skip verification check when toggle is enabled
-- Document the environment variable in `.env.example`
+- Add "Forgot password?" link to the sign-in form
+- Create `/forgot-password` page with email input form
+- Create `/api/auth/forgot-password` endpoint to generate reset token and send email
+- Add `sendPasswordResetEmail` function to `lib/email.ts`
+- Add password reset token helpers to `lib/tokens.ts` (reusing VerificationToken model with "password-reset:" prefix)
+- Create `/reset-password` page to enter new password
+- Create `/api/auth/reset-password` endpoint to validate token and update password
+- Handle edge cases: expired tokens, invalid tokens, user not found
 
 ## Notes
 
-- Currently no domain is linked to Resend, so only the Resend test email can receive verification emails
-- This toggle allows local development and testing without a verified domain
-- Environment variable approach keeps the feature simple and follows existing patterns in the codebase
-- Default behavior (no env var set) should require verification to maintain security in production
+- Reuse existing `VerificationToken` model (no schema changes needed)
+- Differentiate password reset tokens from email verification tokens by using a prefix (e.g., "password-reset:email@example.com" as identifier)
+- Follow existing patterns from email verification implementation
+- Use Resend for sending password reset emails
+- Token expiry: 1 hour (shorter than verification tokens for security)
+- Hash passwords with bcrypt before storing (same as registration)
 
 ## History
 
@@ -37,3 +41,4 @@ In Progress
 - **Auth Setup Phase 2** - Credentials provider with email/password, bcrypt validation, /api/auth/register endpoint with validation (Completed)
 - **Auth Setup Phase 3** - Custom sign-in and register pages, reusable UserAvatar component with image/initials fallback, sidebar user dropdown with profile link and sign out, Sonner toast notifications, dashboard uses authenticated session (Completed)
 - **Email Verification** - Resend SDK integration, verification tokens on registration, verification emails, /api/auth/verify endpoint, /verify-email page, sign-in blocking for unverified users, resend functionality, edge case handling (Completed)
+- **Email Verification Toggle** - SKIP_EMAIL_VERIFICATION env variable to bypass email verification during development, auto-verify on registration, skip sign-in check when enabled (Completed)

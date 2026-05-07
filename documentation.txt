@@ -353,3 +353,11 @@ Section 09: Authentication & Authorization
 -in .env file create variable SKIP_EMAIL_VERIFICATION
 -update files register/route.ts and auth
 -open route: http://localhost:3000/register
+
+
+60. Forgot password link
+
+-add logic for forgot password link
+-open route: http://localhost:3000/forgot-password
+-open your email account
+-open route: http://localhost:3000/reset-password
