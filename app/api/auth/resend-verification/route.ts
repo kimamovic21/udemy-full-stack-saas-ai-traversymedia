@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
   try {
@@ -10,6 +11,12 @@ export async function POST(request: Request) {
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    }
+
+    // Check rate limit (3 attempts per 15 min by IP + email)
+    const rateLimit = await checkRateLimit("resendVerification", email);
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit.retryAfter);
     }
 
     // Find user by email

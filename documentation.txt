@@ -374,3 +374,24 @@ Section 09: Authentication & Authorization
 
 -create .md files for documentation
 -update register/route.ts file
+
+
+63. Upstash Redis setup
+
+-open link: https://upstash.com
+-create account and database
+-in .env file create variables UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN
+
+
+64. Rate limiting
+
+-create rate-limiting-spec.md file
+-open link: https://www.npmjs.com/package/@upstash/ratelimit
+-open link: https://www.npmjs.com/package/@upstash/redis
+-type command: npm i @upstash/redis @upstash/ratelimit
+-in folder lib create rate-limit.ts file
+-in folder auth create folder check-login-limit and route.ts file
+-update existing route.ts files
+-update item-cart.tsx component
+-open route: http://localhost:3000/register
+-open route: http://localhost:3000/sign-in

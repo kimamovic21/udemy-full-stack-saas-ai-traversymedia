@@ -2,10 +2,17 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateVerificationToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
   try {
+    // Check rate limit (3 attempts per hour by IP)
+    const rateLimit = await checkRateLimit("register");
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit.retryAfter);
+    }
+
     const body = await request.json();
     const { name, email, password, confirmPassword } = body;
 

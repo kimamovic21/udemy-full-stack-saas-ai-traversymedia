@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPasswordResetToken, deletePasswordResetToken } from "@/lib/tokens";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
   try {
+    // Check rate limit (5 attempts per 15 min by IP)
+    const rateLimit = await checkRateLimit("resetPassword");
+    if (!rateLimit.success) {
+      return rateLimitResponse(rateLimit.retryAfter);
+    }
+
     const body = await request.json();
     const { token, password, confirmPassword } = body;
 

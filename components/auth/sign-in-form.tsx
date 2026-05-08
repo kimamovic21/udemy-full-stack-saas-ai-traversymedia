@@ -47,6 +47,27 @@ export function SignInForm() {
     setIsLoading(true);
     setFormError(null);
 
+    // Check rate limit before attempting login
+    try {
+      const rateLimitResponse = await fetch("/api/auth/check-login-limit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (rateLimitResponse.status === 429) {
+        const data = await rateLimitResponse.json();
+        setFormError(
+          data.error || "Too many login attempts. Please try again later.",
+        );
+        setNeedsVerification(false);
+        setIsLoading(false);
+        return;
+      }
+    } catch {
+      // Continue with login if rate limit check fails (fail open)
+    }
+
     const result = await signIn("credentials", {
       email,
       password,
