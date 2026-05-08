@@ -407,3 +407,10 @@ Section 10: Item CRUD, research & Unit tests
 66. Research skill for documentation
 
 -create md files for documentation
+
+
+67. Item listing view
+
+-create item-list-view-spec.md file with instructions
+-create folders items, [type] and component page.tsx
+-update items.ts file

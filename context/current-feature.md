@@ -1,28 +1,16 @@
-# Current Feature: Forgot Password
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Add "Forgot password?" link to the sign-in form
-- Create `/forgot-password` page with email input form
-- Create `/api/auth/forgot-password` endpoint to generate reset token and send email
-- Add `sendPasswordResetEmail` function to `lib/email.ts`
-- Add password reset token helpers to `lib/tokens.ts` (reusing VerificationToken model with "password-reset:" prefix)
-- Create `/reset-password` page to enter new password
-- Create `/api/auth/reset-password` endpoint to validate token and update password
-- Handle edge cases: expired tokens, invalid tokens, user not found
+<!-- Add feature goals here -->
 
 ## Notes
 
-- Reuse existing `VerificationToken` model (no schema changes needed)
-- Differentiate password reset tokens from email verification tokens by using a prefix (e.g., "password-reset:email@example.com" as identifier)
-- Follow existing patterns from email verification implementation
-- Use Resend for sending password reset emails
-- Token expiry: 1 hour (shorter than verification tokens for security)
-- Hash passwords with bcrypt before storing (same as registration)
+<!-- Add notes and constraints here -->
 
 ## History
 
@@ -42,3 +30,7 @@ In Progress
 - **Auth Setup Phase 3** - Custom sign-in and register pages, reusable UserAvatar component with image/initials fallback, sidebar user dropdown with profile link and sign out, Sonner toast notifications, dashboard uses authenticated session (Completed)
 - **Email Verification** - Resend SDK integration, verification tokens on registration, verification emails, /api/auth/verify endpoint, /verify-email page, sign-in blocking for unverified users, resend functionality, edge case handling (Completed)
 - **Email Verification Toggle** - SKIP_EMAIL_VERIFICATION env variable to bypass email verification during development, auto-verify on registration, skip sign-in check when enabled (Completed)
+- **Forgot Password** - Forgot password link on sign-in, /forgot-password and /reset-password pages, API endpoints for token generation and password reset, password reset emails via Resend, reuses VerificationToken model with prefix, 1-hour token expiry, edge case handling (Completed)
+- **Profile Page** - Profile page at /profile with user info, usage stats with item type breakdown, change password for email users, delete account with confirmation dialog, API endpoints for password change and account deletion (Completed)
+- **Rate Limiting for Auth** - Upstash Redis rate limiting on auth endpoints, reusable rate-limit utility with sliding window algorithm, protects login/register/forgot-password/reset-password/resend-verification with configurable limits, 429 responses with Retry-After header, fail-open design (Completed)
+- **Items List View** - Dynamic route /items/[type] for type-filtered item lists, getItemsByType query with pinned-first sorting, responsive two-column grid using existing ItemCard, type validation with 404, empty state (Completed)
