@@ -395,3 +395,15 @@ Section 09: Authentication & Authorization
 -update item-cart.tsx component
 -open route: http://localhost:3000/register
 -open route: http://localhost:3000/sign-in
+
+
+65. Bug fix - GitHub login redirection
+
+
+
+Section 10: Item CRUD, research & Unit tests
+
+
+66. Research skill for documentation
+
+-create md files for documentation
