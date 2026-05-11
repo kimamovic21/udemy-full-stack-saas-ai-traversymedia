@@ -1,14 +1,14 @@
 import { redirect, notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import DashboardLayout from "@/components/layout/dashboard-layout";
-import ItemCard from "@/components/dashboard/item-card";
 import { getSidebarCollections } from "@/lib/db/collections";
 import {
   getItemsByType,
   getItemTypesWithCounts,
   VALID_ITEM_TYPES,
 } from "@/lib/db/items";
+import DashboardLayout from "@/components/layout/dashboard-layout";
+import ItemCard from "@/components/dashboard/item-card";
 
 interface ItemsPageProps {
   params: Promise<{ type: string }>;
@@ -68,7 +68,7 @@ export default async function ItemsPage({ params }: ItemsPageProps) {
 
         {/* Items Grid */}
         {items.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
               <ItemCard key={item.id} item={item} />
             ))}

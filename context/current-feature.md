@@ -1,16 +1,21 @@
-# Current Feature
+# Current Feature: Items List Three-Column Layout
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
-<!-- Add feature goals here -->
+- Change the items list grid from 2 columns to 3 columns on large screens (lg breakpoint)
+- Keep single column on mobile, 2 columns on medium screens
+- Maintain responsive behavior across all breakpoints
 
 ## Notes
 
-<!-- Add notes and constraints here -->
+- Grid is in `src/app/items/[type]/page.tsx`
+- Current grid: `grid gap-4 md:grid-cols-2`
+- Target grid: `grid gap-4 md:grid-cols-2 lg:grid-cols-3`
+- Single file change
 
 ## History
 
@@ -34,3 +39,4 @@ Not Started
 - **Profile Page** - Profile page at /profile with user info, usage stats with item type breakdown, change password for email users, delete account with confirmation dialog, API endpoints for password change and account deletion (Completed)
 - **Rate Limiting for Auth** - Upstash Redis rate limiting on auth endpoints, reusable rate-limit utility with sliding window algorithm, protects login/register/forgot-password/reset-password/resend-verification with configurable limits, 429 responses with Retry-After header, fail-open design (Completed)
 - **Items List View** - Dynamic route /items/[type] for type-filtered item lists, getItemsByType query with pinned-first sorting, responsive two-column grid using existing ItemCard, type validation with 404, empty state (Completed)
+- **Vitest Setup** - Vitest for unit testing server actions and utilities (not components), co-located test files, sample date utility tests, updated workflow and coding standards docs (Completed)
