@@ -297,3 +297,85 @@ export async function getItemById(
     updatedAt: item.updatedAt,
   };
 }
+
+export interface UpdateItemData {
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  tags: string[];
+}
+
+/**
+ * Update an item and return the updated ItemDetail
+ */
+export async function updateItem(
+  userId: string,
+  itemId: string,
+  data: UpdateItemData,
+): Promise<ItemDetail | null> {
+  // Verify ownership first
+  const existing = await prisma.item.findUnique({
+    where: { id: itemId },
+    select: { userId: true },
+  });
+
+  if (!existing || existing.userId !== userId) {
+    return null;
+  }
+
+  // Update item with tag disconnect/connect-or-create
+  const updated = await prisma.item.update({
+    where: { id: itemId },
+    data: {
+      title: data.title,
+      description: data.description,
+      content: data.content,
+      url: data.url,
+      language: data.language,
+      tags: {
+        set: [], // Disconnect all existing tags
+        connectOrCreate: data.tags.map((tagName) => ({
+          where: { name: tagName },
+          create: { name: tagName },
+        })),
+      },
+    },
+    include: {
+      itemType: true,
+      tags: true,
+      collections: {
+        include: {
+          collection: {
+            select: { id: true, name: true },
+          },
+        },
+      },
+    },
+  });
+
+  return {
+    id: updated.id,
+    title: updated.title,
+    description: updated.description,
+    content: updated.content,
+    url: updated.url,
+    language: updated.language,
+    contentType: updated.contentType,
+    isFavorite: updated.isFavorite,
+    isPinned: updated.isPinned,
+    itemType: {
+      name: updated.itemType.name,
+      icon: updated.itemType.icon,
+      color: updated.itemType.color,
+    },
+    tags: updated.tags.map((tag) => tag.name),
+    collections: updated.collections.map((ic) => ({
+      id: ic.collection.id,
+      name: ic.collection.name,
+    })),
+    createdAt: updated.createdAt,
+    updatedAt: updated.updatedAt,
+  };
+}

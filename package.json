@@ -47,7 +47,8 @@
     "resend": "^6.12.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.5",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
