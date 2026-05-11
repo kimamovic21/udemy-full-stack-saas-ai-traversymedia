@@ -3,6 +3,7 @@
 import { Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface TopBarProps {
   onMenuClick?: () => void;
@@ -22,12 +23,12 @@ export default function TopBar({ onMenuClick }: TopBarProps) {
       </Button>
 
       {/* Logo */}
-      <div className="flex items-center gap-2">
+      <Link href="/dashboard" className="flex items-center gap-2">
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <span className="text-sm font-bold">DS</span>
         </div>
         <span className="text-lg font-semibold">DevStash</span>
-      </div>
+      </Link>
 
       {/* Search - centered and flexible */}
       <div className="relative mx-auto flex max-w-md flex-1 items-center">

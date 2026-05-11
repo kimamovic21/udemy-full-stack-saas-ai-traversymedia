@@ -79,6 +79,21 @@ async function main() {
   console.log(`   ✓ Demo user: ${demoUser.email}`);
 
   // ============================================
+  // 2b. CLEAN UP EXISTING DEMO USER DATA
+  // ============================================
+  console.log("\n🧹 Cleaning up existing demo user data...");
+
+  const deletedItems = await prisma.item.deleteMany({
+    where: { userId: demoUser.id },
+  });
+  console.log(`   ✓ Deleted ${deletedItems.count} existing items`);
+
+  const deletedCollections = await prisma.collection.deleteMany({
+    where: { userId: demoUser.id },
+  });
+  console.log(`   ✓ Deleted ${deletedCollections.count} existing collections`);
+
+  // ============================================
   // 3. CREATE COLLECTIONS
   // ============================================
   console.log("\n📁 Creating collections...");
@@ -216,8 +231,6 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T)
       title: "Compound Component Pattern",
       contentType: ContentType.TEXT,
       content: `import { createContext, useContext, useState, ReactNode } from 'react';
-import { PrismaClient } from '../generated/prisma/internal/class';
-import { ContentType } from '../generated/prisma/enums';
 
 interface AccordionContextType {
   openItems: string[];
