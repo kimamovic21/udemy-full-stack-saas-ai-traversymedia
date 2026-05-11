@@ -1,23 +1,28 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Pin } from "lucide-react";
-import { formatRelativeDate } from "@/lib/utils/date";
-import type { ItemWithType } from "@/lib/db/items";
 import { getItemTypeIcon } from "@/lib/constants/item-types";
+import { formatRelativeDate } from "@/lib/utils/date";
+import { useItemDrawer } from "@/components/items/item-drawer-provider";
+import type { ItemWithType } from "@/lib/db/items";
 
 interface ItemCardProps {
   item: ItemWithType;
 }
 
 export default function ItemCard({ item }: ItemCardProps) {
+  const { openDrawer } = useItemDrawer();
   const IconComponent = getItemTypeIcon(item.itemType.icon);
   const iconColor = item.itemType.color;
   const borderStyle = { borderLeftColor: iconColor, borderLeftWidth: "3px" };
 
   return (
     <Card
-      className="bg-card border-border hover:border-muted-foreground/50 transition-colors"
+      className="bg-card border-border hover:border-muted-foreground/50 transition-colors cursor-pointer"
       style={borderStyle}
+      onClick={() => openDrawer(item.id)}
     >
       <CardContent className="flex items-start gap-4 p-4">
         <div

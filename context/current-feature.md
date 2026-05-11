@@ -1,4 +1,4 @@
-# Current Feature: Items List Three-Column Layout
+# Current Feature: Item Drawer
 
 ## Status
 
@@ -6,16 +6,24 @@ In Progress
 
 ## Goals
 
-- Change the items list grid from 2 columns to 3 columns on large screens (lg breakpoint)
-- Keep single column on mobile, 2 columns on medium screens
-- Maintain responsive behavior across all breakpoints
+- Right-side slide-in drawer using shadcn Sheet component that opens when clicking an ItemCard
+- Works on both dashboard and items list pages
+- Action bar with Favorite (star, yellow when active), Pin, Copy, Edit (pencil), and Delete (trash, right-aligned)
+- Client wrapper component to manage drawer state (pages are server components)
+- Full item detail fetched on click via API route (`/api/items/[id]`), no page navigation
+- Query function in `lib/db/items.ts`, API route with auth check
+- Skeleton/loading state while fetching
+- Display: item type icon + title, type badge, language badge, description, content (with code block for snippets), tags, collections, created/updated dates
+- Focus on detail display only — code editor and item-specific features come later
 
 ## Notes
 
-- Grid is in `src/app/items/[type]/page.tsx`
-- Current grid: `grid gap-4 md:grid-cols-2`
-- Target grid: `grid gap-4 md:grid-cols-2 lg:grid-cols-3`
-- Single file change
+- Card data (title, description, tags) already fetched by server components
+- Full item detail (content, collections, language, etc.) fetched on click via API
+- Reference screenshot: `context/screenshots/dashboard-ui-drawer.png`
+- Drawer header: type icon + title, type badge, language badge
+- Action bar: Favorite | Pin | Copy | Edit ... Delete (right-aligned with gap)
+- Content sections: Description, Content (code block with line numbers for text types), Tags, Collections, Details (created/updated dates)
 
 ## History
 
@@ -40,3 +48,4 @@ In Progress
 - **Rate Limiting for Auth** - Upstash Redis rate limiting on auth endpoints, reusable rate-limit utility with sliding window algorithm, protects login/register/forgot-password/reset-password/resend-verification with configurable limits, 429 responses with Retry-After header, fail-open design (Completed)
 - **Items List View** - Dynamic route /items/[type] for type-filtered item lists, getItemsByType query with pinned-first sorting, responsive two-column grid using existing ItemCard, type validation with 404, empty state (Completed)
 - **Vitest Setup** - Vitest for unit testing server actions and utilities (not components), co-located test files, sample date utility tests, updated workflow and coding standards docs (Completed)
+- **Items List Three-Column Layout** - Changed items grid from 2 to 3 columns on lg breakpoint, responsive 1/2/3 column layout (Completed)

@@ -6,6 +6,8 @@ import type { SidebarCollections } from "@/lib/db/collections";
 import TopBar from "@/components/layout/top-bar";
 import Sidebar from "@/components/layout/sidebar";
 import MobileSidebar from "@/components/layout/mobile-sidebar";
+import ItemDrawerProvider from "@/components/items/item-drawer-provider";
+import ItemDrawer from "@/components/items/item-drawer";
 
 interface User {
   id: string;
@@ -55,7 +57,10 @@ export default function DashboardLayout({
         />
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <ItemDrawerProvider>
+          <main className="flex-1 overflow-auto p-6">{children}</main>
+          <ItemDrawer />
+        </ItemDrawerProvider>
       </div>
     </div>
   );

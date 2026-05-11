@@ -32,6 +32,23 @@ export interface ItemWithType {
   updatedAt: Date;
 }
 
+export interface ItemDetail {
+  id: string;
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  contentType: string;
+  isFavorite: boolean;
+  isPinned: boolean;
+  itemType: ItemType;
+  tags: string[];
+  collections: { id: string; name: string }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface DashboardStats {
   totalItems: number;
   totalCollections: number;
@@ -228,4 +245,55 @@ export async function getItemsByType(
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
   }));
+}
+
+/**
+ * Get full item detail by ID for a user
+ */
+export async function getItemById(
+  userId: string,
+  itemId: string,
+): Promise<ItemDetail | null> {
+  const item = await prisma.item.findUnique({
+    where: { id: itemId },
+    include: {
+      itemType: true,
+      tags: true,
+      collections: {
+        include: {
+          collection: {
+            select: { id: true, name: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!item || item.userId !== userId) {
+    return null;
+  }
+
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    content: item.content,
+    url: item.url,
+    language: item.language,
+    contentType: item.contentType,
+    isFavorite: item.isFavorite,
+    isPinned: item.isPinned,
+    itemType: {
+      name: item.itemType.name,
+      icon: item.itemType.icon,
+      color: item.itemType.color,
+    },
+    tags: item.tags.map((tag) => tag.name),
+    collections: item.collections.map((ic) => ({
+      id: ic.collection.id,
+      name: ic.collection.name,
+    })),
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+  };
 }
