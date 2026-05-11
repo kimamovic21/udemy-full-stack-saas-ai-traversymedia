@@ -414,3 +414,13 @@ Section 10: Item CRUD, research & Unit tests
 -create item-list-view-spec.md file with instructions
 -create folders items, [type] and component page.tsx
 -update items.ts file
+
+
+68. Integrate unit testing
+
+-open link: https://vitest.dev
+-open link: https://www.npmjs.com/package/vitest
+-open link: https://www.npmjs.com/package/@vitejs/plugin-react
+-type command: npm i vitest @vitejs/plugin-react
+-create files vitest.config.ts and date.test.ts
+-in package.json file add commands test and test:watch
