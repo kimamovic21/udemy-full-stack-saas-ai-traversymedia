@@ -448,3 +448,15 @@ Section 10: Item CRUD, research & Unit tests
 -in folder actions create files items.test.ts and items.ts 
 -in folder items update tsx components
 -in folder db update items.ts file
+-open route: http://localhost:3000/items
+-open route: http://localhost:3000/dashboard
+
+
+71. Delete item
+
+-add logic for deleting an item
+-create component delete-item-dialog.tsx
+-update tests files
+-update component item-drawer.tsx
+-open route: http://localhost:3000/items
+-open route: http://localhost:3000/dashboard

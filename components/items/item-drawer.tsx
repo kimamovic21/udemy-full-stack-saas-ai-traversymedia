@@ -31,7 +31,8 @@ import {
 import { getItemTypeIcon } from "@/lib/constants/item-types";
 import { useItemDrawer } from "./item-drawer-provider";
 import { toast } from "sonner";
-import { updateItem } from "@/actions/items";
+import { updateItem, deleteItem } from "@/actions/items";
+import DeleteItemDialog from "./delete-item-dialog";
 
 function DrawerSkeleton() {
   return (
@@ -70,11 +71,12 @@ const LANGUAGE_TYPES = ["snippet", "command"];
 
 export default function ItemDrawer() {
   const router = useRouter();
-  const { isOpen, itemId, item, isLoading, closeDrawer, setItem, setIsLoading } = useItemDrawer();
+  const { isOpen, item, isLoading, closeDrawer, setItem } = useItemDrawer();
 
   // Edit mode state
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -83,30 +85,6 @@ export default function ItemDrawer() {
   const [url, setUrl] = useState("");
   const [language, setLanguage] = useState("");
   const [tags, setTags] = useState("");
-
-  // Fetch item details when itemId changes
-  useEffect(() => {
-    if (!itemId || !isOpen) return;
-
-    const fetchItem = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`/api/items/${itemId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch item");
-        }
-        const data = await response.json();
-        setItem(data.data);
-      } catch (error) {
-        console.error("Error fetching item:", error);
-        toast.error("Failed to load item");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchItem();
-  }, [itemId, isOpen, setItem, setIsLoading]);
 
   // Reset form when item changes or edit mode is entered
   useEffect(() => {
@@ -187,6 +165,20 @@ export default function ItemDrawer() {
       toast.error("Failed to update item");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!item) return;
+
+    const result = await deleteItem(item.id);
+
+    if (result.success) {
+      toast.success("Item deleted");
+      closeDrawer();
+      router.refresh();
+    } else {
+      toast.error(result.error || "Failed to delete item");
     }
   };
 
@@ -323,7 +315,10 @@ export default function ItemDrawer() {
                   Edit
                 </button>
                 <div className="flex-1" />
-                <button className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-red-500">
+                <button
+                  onClick={() => setShowDeleteDialog(true)}
+                  className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-red-500"
+                >
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -614,6 +609,15 @@ export default function ItemDrawer() {
           </>
         )}
       </SheetContent>
+
+      {item && (
+        <DeleteItemDialog
+          open={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
+          itemTitle={item.title}
+          onConfirm={handleDelete}
+        />
+      )}
     </Sheet>
   );
 }
