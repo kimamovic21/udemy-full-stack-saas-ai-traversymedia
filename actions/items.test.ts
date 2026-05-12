@@ -9,18 +9,30 @@ vi.mock("@/auth", () => ({
 vi.mock("@/lib/db/items", () => ({
   updateItem: vi.fn(),
   deleteItem: vi.fn(),
+  createItem: vi.fn(),
+  VALID_ITEM_TYPES: [
+    "snippet",
+    "prompt",
+    "command",
+    "note",
+    "file",
+    "image",
+    "link",
+  ] as const,
 }));
 
-import { updateItem, deleteItem } from "./items";
+import { updateItem, deleteItem, createItem } from "./items";
 import { auth } from "@/auth";
 import {
   updateItem as updateItemQuery,
   deleteItem as deleteItemQuery,
+  createItem as createItemQuery,
 } from "@/lib/db/items";
 
 const mockAuth = vi.mocked(auth);
 const mockUpdateItemQuery = vi.mocked(updateItemQuery);
 const mockDeleteItemQuery = vi.mocked(deleteItemQuery);
+const mockCreateItemQuery = vi.mocked(createItemQuery);
 
 describe("updateItem server action", () => {
   beforeEach(() => {
@@ -242,5 +254,204 @@ describe("deleteItem server action", () => {
 
     expect(result.success).toBe(true);
     expect(mockDeleteItemQuery).toHaveBeenCalledWith("user-123", "item-123");
+  });
+});
+
+describe("createItem server action", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns error when not authenticated", async () => {
+    mockAuth.mockResolvedValue(null);
+
+    const result = await createItem({
+      typeName: "snippet",
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      tags: [],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Unauthorized");
+  });
+
+  it("returns validation error for empty title", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+
+    const result = await createItem({
+      typeName: "snippet",
+      title: "   ",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      tags: [],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Validation failed");
+    expect(result.fieldErrors?.title).toBeDefined();
+  });
+
+  it("returns validation error for invalid URL", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+
+    const result = await createItem({
+      typeName: "link",
+      title: "Test Link",
+      description: null,
+      content: null,
+      url: "not-a-url",
+      language: null,
+      tags: [],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Validation failed");
+    expect(result.fieldErrors?.url).toBeDefined();
+  });
+
+  it("returns error when URL is required for link but not provided", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+
+    const result = await createItem({
+      typeName: "link",
+      title: "Test Link",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      tags: [],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("URL is required for links");
+    expect(result.fieldErrors?.url).toContain("URL is required");
+  });
+
+  it("returns error when creation fails", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+    mockCreateItemQuery.mockResolvedValue(null);
+
+    const result = await createItem({
+      typeName: "snippet",
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      tags: [],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Failed to create item");
+  });
+
+  it("returns created item on success", async () => {
+    const mockItem = {
+      id: "item-123",
+      title: "New Snippet",
+      description: "A test snippet",
+      content: "const x = 1;",
+      url: null,
+      language: "javascript",
+      contentType: "TEXT",
+      isFavorite: false,
+      isPinned: false,
+      itemType: { name: "snippet", icon: "Code", color: "#3b82f6" },
+      tags: ["react"],
+      collections: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+    mockCreateItemQuery.mockResolvedValue(mockItem);
+
+    const result = await createItem({
+      typeName: "snippet",
+      title: "New Snippet",
+      description: "A test snippet",
+      content: "const x = 1;",
+      url: null,
+      language: "javascript",
+      tags: ["react"],
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual(mockItem);
+    expect(mockCreateItemQuery).toHaveBeenCalledWith("user-123", {
+      typeName: "snippet",
+      title: "New Snippet",
+      description: "A test snippet",
+      content: "const x = 1;",
+      url: null,
+      language: "javascript",
+      tags: ["react"],
+    });
+  });
+
+  it("filters empty tags", async () => {
+    const mockItem = {
+      id: "item-123",
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      contentType: "TEXT",
+      isFavorite: false,
+      isPinned: false,
+      itemType: { name: "snippet", icon: "Code", color: "#3b82f6" },
+      tags: ["valid", "another"],
+      collections: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+    mockCreateItemQuery.mockResolvedValue(mockItem);
+
+    await createItem({
+      typeName: "snippet",
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      tags: ["valid", "", "  ", "another"],
+    });
+
+    expect(mockCreateItemQuery).toHaveBeenCalledWith("user-123", {
+      typeName: "snippet",
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      tags: ["valid", "another"],
+    });
   });
 });

@@ -460,3 +460,13 @@ Section 10: Item CRUD, research & Unit tests
 -update component item-drawer.tsx
 -open route: http://localhost:3000/items
 -open route: http://localhost:3000/dashboard
+
+
+72. Create new item
+
+-create item-create-spec.md file
+-install shadcn components dialog and select
+-create component new-item-dialog.tsx
+-update existing tsx components and ts file
+-open route: http://localhost:3000/items
+-open route: http://localhost:3000/dashboard

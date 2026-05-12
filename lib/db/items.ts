@@ -404,3 +404,95 @@ export async function deleteItem(
 
   return true;
 }
+
+export interface CreateItemData {
+  typeName: ValidItemType;
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  language: string | null;
+  tags: string[];
+}
+
+/**
+ * Create a new item for a user
+ */
+export async function createItem(
+  userId: string,
+  data: CreateItemData,
+): Promise<ItemDetail | null> {
+  // Look up the item type
+  const itemType = await prisma.itemType.findFirst({
+    where: {
+      name: data.typeName,
+      isSystem: true,
+    },
+  });
+
+  if (!itemType) {
+    return null;
+  }
+
+  // Determine contentType based on item type
+  let contentType: "TEXT" | "FILE" | "URL" = "TEXT";
+  if (data.typeName === "link") {
+    contentType = "URL";
+  } else if (data.typeName === "file" || data.typeName === "image") {
+    contentType = "FILE";
+  }
+
+  const created = await prisma.item.create({
+    data: {
+      userId,
+      itemTypeId: itemType.id,
+      title: data.title,
+      description: data.description,
+      content: data.content,
+      url: data.url,
+      language: data.language,
+      contentType,
+      tags: {
+        connectOrCreate: data.tags.map((tagName) => ({
+          where: { name: tagName },
+          create: { name: tagName },
+        })),
+      },
+    },
+    include: {
+      itemType: true,
+      tags: true,
+      collections: {
+        include: {
+          collection: {
+            select: { id: true, name: true },
+          },
+        },
+      },
+    },
+  });
+
+  return {
+    id: created.id,
+    title: created.title,
+    description: created.description,
+    content: created.content,
+    url: created.url,
+    language: created.language,
+    contentType: created.contentType,
+    isFavorite: created.isFavorite,
+    isPinned: created.isPinned,
+    itemType: {
+      name: created.itemType.name,
+      icon: created.itemType.icon,
+      color: created.itemType.color,
+    },
+    tags: created.tags.map((tag) => tag.name),
+    collections: created.collections.map((ic) => ({
+      id: ic.collection.id,
+      name: ic.collection.name,
+    })),
+    createdAt: created.createdAt,
+    updatedAt: created.updatedAt,
+  };
+}

@@ -1,15 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { Search, Menu } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import NewItemDialog from "@/components/items/new-item-dialog";
 
 interface TopBarProps {
   onMenuClick?: () => void;
 }
 
 export default function TopBar({ onMenuClick }: TopBarProps) {
+  const [newItemOpen, setNewItemOpen] = useState(false);
+
   return (
     <header className="flex h-14 items-center gap-4 border-b border-border px-6">
       {/* Mobile menu button */}
@@ -48,8 +52,12 @@ export default function TopBar({ onMenuClick }: TopBarProps) {
         <Button variant="outline" size="sm">
           New Collection
         </Button>
-        <Button size="sm">New Item</Button>
+        <Button size="sm" onClick={() => setNewItemOpen(true)}>
+          New Item
+        </Button>
       </div>
+
+      <NewItemDialog open={newItemOpen} onOpenChange={setNewItemOpen} />
     </header>
   );
 }
