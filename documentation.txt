@@ -485,3 +485,14 @@ Section 11: Item display & R2 file storage
 -open link: https://www.npmjs.com/package/@monaco-editor/react
 -type command: npm i @monaco-editor/react
 -open route: http://localhost:3000/dashboard
+
+
+75. Markdown editor integration
+
+-create markdown-editor-spec.md file
+-open link: https://www.npmjs.com/package/@tailwindcss/typography
+-open link: https://www.npmjs.com/package/react-markdown
+-open link: https://www.npmjs.com/package/remark-gfm
+-type command: npm i @tailwindcss/typography react-markdown remark-gfm
+-create component markdown-editor.tsx
+-update existing tsx components
