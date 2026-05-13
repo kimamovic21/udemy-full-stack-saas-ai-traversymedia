@@ -9,6 +9,7 @@ import {
 } from "@/lib/db/items";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import ItemCard from "@/components/dashboard/item-card";
+import ItemsPageHeader from "@/components/items/items-page-header";
 
 interface ItemsPageProps {
   params: Promise<{ type: string }>;
@@ -59,12 +60,11 @@ export default async function ItemsPage({ params }: ItemsPageProps) {
     >
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">{displayName}</h1>
-          <p className="text-muted-foreground">
-            {items.length} {items.length === 1 ? "item" : "items"}
-          </p>
-        </div>
+        <ItemsPageHeader
+          typeName={typeName}
+          displayName={displayName}
+          itemCount={items.length}
+        />
 
         {/* Items Grid */}
         {items.length > 0 ? (

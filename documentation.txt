@@ -470,3 +470,18 @@ Section 10: Item CRUD, research & Unit tests
 -update existing tsx components and ts file
 -open route: http://localhost:3000/items
 -open route: http://localhost:3000/dashboard
+
+
+73. Playwright MCP CRUD test
+
+
+
+Section 11: Item display & R2 file storage
+
+
+74. Monaco code editor integration
+
+-open link: https://microsoft.github.io/monaco-editor
+-open link: https://www.npmjs.com/package/@monaco-editor/react
+-type command: npm i @monaco-editor/react
+-open route: http://localhost:3000/dashboard

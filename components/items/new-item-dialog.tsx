@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -23,13 +23,15 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createItem, type CreateItemInput } from "@/actions/items";
 import { getItemTypeIcon, ITEM_TYPE_COLORS } from "@/lib/constants/item-types";
+import CodeEditor from "./code-editor";
 
 interface NewItemDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultType?: ItemTypeName;
 }
 
-type ItemTypeName = "snippet" | "prompt" | "command" | "note" | "link";
+export type ItemTypeName = "snippet" | "prompt" | "command" | "note" | "link";
 
 const ITEM_TYPES: { value: ItemTypeName; label: string; icon: string }[] = [
   { value: "snippet", label: "Snippet", icon: "Code" },
@@ -42,10 +44,13 @@ const ITEM_TYPES: { value: ItemTypeName; label: string; icon: string }[] = [
 export default function NewItemDialog({
   open,
   onOpenChange,
+  defaultType,
 }: NewItemDialogProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [typeName, setTypeName] = useState<ItemTypeName>("snippet");
+  const [typeName, setTypeName] = useState<ItemTypeName>(
+    defaultType || "snippet",
+  );
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
@@ -53,8 +58,15 @@ export default function NewItemDialog({
   const [language, setLanguage] = useState("");
   const [tagsInput, setTagsInput] = useState("");
 
+  // Sync typeName when defaultType changes (e.g., opening from different type pages)
+  useEffect(() => {
+    if (defaultType) {
+      setTypeName(defaultType);
+    }
+  }, [defaultType]);
+
   const resetForm = () => {
-    setTypeName("snippet");
+    setTypeName(defaultType || "snippet");
     setTitle("");
     setDescription("");
     setContent("");
@@ -197,19 +209,23 @@ export default function NewItemDialog({
           {showContentField && (
             <div className="space-y-2">
               <Label htmlFor="content">Content</Label>
-              <Textarea
-                id="content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder={
-                  typeName === "snippet" || typeName === "command"
-                    ? "Enter code or command..."
-                    : "Enter content..."
-                }
-                rows={6}
-                className="font-mono text-sm"
-                disabled={isLoading}
-              />
+              {showLanguageField ? (
+                <CodeEditor
+                  value={content}
+                  onChange={setContent}
+                  language={language || "plaintext"}
+                />
+              ) : (
+                <Textarea
+                  id="content"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Enter content..."
+                  rows={6}
+                  className="font-mono text-sm"
+                  disabled={isLoading}
+                />
+              )}
             </div>
           )}
 

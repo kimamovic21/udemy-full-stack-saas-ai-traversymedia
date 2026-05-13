@@ -1,34 +1,20 @@
-# Current Feature: Item Drawer Edit Mode
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Edit button in item drawer toggles to inline edit mode (same drawer stays open)
-- Edit mode replaces action bar with Save and Cancel buttons
-- Cancel discards changes and returns to view mode
-- Save persists changes via server action, returns to view mode, refreshes drawer data
-- Toast notification on save success or error
-- Editable fields for all types: Title (required), Description (optional), Tags (comma-separated)
-- Type-specific fields: Content (snippet/prompt/command/note), Language (snippet/command), URL (link)
-- Non-editable in edit mode: Item type, Collections, Created/Updated dates
-- Zod validation in server action with `{ success, data, error }` response pattern
-- `updateItem` server action in `src/actions/items.ts`
-- `updateItem` query function in `lib/db/items.ts` with tag disconnect/connect-or-create
-- Call `router.refresh()` after save so card list reflects changes
+<!-- Add feature goals here -->
 
 ## Notes
 
-- No form library — use controlled inputs with local state
-- Client-side: disable Save button when title is empty
-- Server-side: Zod validates all fields (source of truth)
-- Content textarea doesn't need to be a code editor (later feature)
-- Return updated `ItemDetail` from query so drawer can refresh without second fetch
+<!-- Add notes and constraints here -->
 
 ## History
 
+- **Item Create** - New Item modal dialog from top bar with shadcn Dialog, type selector (snippet/prompt/command/note/link), dynamic fields based on type, createItem server action with Zod validation, createItem query with tag connectOrCreate, unit tests (Completed)
 - **Initial Setup** - Next.js 16, Tailwind CSS v4, TypeScript configured (Completed)
 - **Dashboard UI Phase 1** - ShadCN UI initialization, dashboard route at /dashboard, main layout with dark mode, top bar with search and buttons, sidebar and main placeholders (Completed)
 - **Dashboard UI Phase 2** - Collapsible sidebar with item type navigation, favorite and recent collections, user avatar area, mobile drawer, and responsive behavior (Completed)
@@ -52,3 +38,6 @@ In Progress
 - **Vitest Setup** - Vitest for unit testing server actions and utilities (not components), co-located test files, sample date utility tests, updated workflow and coding standards docs (Completed)
 - **Items List Three-Column Layout** - Changed items grid from 2 to 3 columns on lg breakpoint, responsive 1/2/3 column layout (Completed)
 - **Item Drawer** - Right-side slide-in drawer using shadcn Sheet, opens on ItemCard click, fetches full item detail via /api/items/[id] with auth, displays type icon/badges, action bar (Favorite/Pin/Copy/Edit/Delete), content with line numbers, tags, collections, dates, loading skeleton, ItemDrawerProvider context in DashboardLayout, getItemById query with ownership check, unit tests (Completed)
+- **Item Drawer Edit Mode** - Inline edit mode via Edit button, Save/Cancel action bar, editable Title/Description/Tags for all types, Content/Language for text types, URL for links, updateItem server action with Zod validation, updateItem query with tag disconnect/connect-or-create, toast notifications, router.refresh() after save (Completed)
+- **Item Delete** - Delete functionality via trash button in item drawer, DeleteItemDialog with shadcn AlertDialog confirmation, deleteItem server action with Zod validation, deleteItem query with ownership check, toast on success, drawer close and page refresh, unit tests (Completed)
+- **Code Editor** - Monaco Editor component for snippets/commands with macOS window styling (red/yellow/green dots), copy button, language label, readonly/edit modes, fluid height (max 400px), integrated into ItemDrawer and NewItemDialog, type-specific "New {Type}" buttons on items list pages with pre-selected type (Completed)

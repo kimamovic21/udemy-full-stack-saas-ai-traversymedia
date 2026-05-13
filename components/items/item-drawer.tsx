@@ -33,6 +33,7 @@ import { useItemDrawer } from "./item-drawer-provider";
 import { toast } from "sonner";
 import { updateItem, deleteItem } from "@/actions/items";
 import DeleteItemDialog from "./delete-item-dialog";
+import CodeEditor from "./code-editor";
 
 function DrawerSkeleton() {
   return (
@@ -348,14 +349,22 @@ export default function ItemDrawer() {
                     {showContent && (
                       <div className="space-y-2">
                         <Label htmlFor="content">Content</Label>
-                        <Textarea
-                          id="content"
-                          value={content}
-                          onChange={(e) => setContent(e.target.value)}
-                          placeholder="Enter content..."
-                          rows={10}
-                          className="font-mono text-sm"
-                        />
+                        {showLanguage ? (
+                          <CodeEditor
+                            value={content}
+                            onChange={setContent}
+                            language={language || "plaintext"}
+                          />
+                        ) : (
+                          <Textarea
+                            id="content"
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            placeholder="Enter content..."
+                            rows={10}
+                            className="font-mono text-sm"
+                          />
+                        )}
                       </div>
                     )}
 
@@ -486,20 +495,28 @@ export default function ItemDrawer() {
                       <p className="text-sm font-medium text-muted-foreground mb-2">
                         Content
                       </p>
-                      <div className="rounded-lg border border-border bg-muted/50 overflow-hidden">
-                        <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
-                          <code>
-                            {item.content.split("\n").map((line, i) => (
-                              <span key={i} className="flex">
-                                <span className="inline-block w-8 shrink-0 text-right text-muted-foreground/50 select-none pr-4">
-                                  {i + 1}
+                      {showLanguage ? (
+                        <CodeEditor
+                          value={item.content}
+                          language={item.language || "plaintext"}
+                          readOnly
+                        />
+                      ) : (
+                        <div className="rounded-lg border border-border bg-muted/50 overflow-hidden">
+                          <pre className="overflow-x-auto p-4 text-sm leading-relaxed">
+                            <code>
+                              {item.content.split("\n").map((line, i) => (
+                                <span key={i} className="flex">
+                                  <span className="inline-block w-8 shrink-0 text-right text-muted-foreground/50 select-none pr-4">
+                                    {i + 1}
+                                  </span>
+                                  <span className="flex-1">{line}</span>
                                 </span>
-                                <span className="flex-1">{line}</span>
-                              </span>
-                            ))}
-                          </code>
-                        </pre>
-                      </div>
+                              ))}
+                            </code>
+                          </pre>
+                        </div>
+                      )}
                     </div>
                   )}
 
