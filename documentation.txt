@@ -532,3 +532,9 @@ Section 11: Item display & R2 file storage
 -in folder items create component file-list-row.tsx
 -in folder db update items.ts file
 -open route: http://localhost:3000/dashboard
+
+
+80. Quick copy & code audit
+
+-update component item-card.tsx and db/items.ts file
+-open route: http://localhost:3000/dashboard

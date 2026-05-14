@@ -24,6 +24,8 @@ export interface ItemWithType {
   id: string;
   title: string;
   description: string | null;
+  content: string | null;
+  url: string | null;
   isFavorite: boolean;
   isPinned: boolean;
   itemType: ItemType;
@@ -148,6 +150,8 @@ export async function getPinnedItems(userId: string): Promise<ItemWithType[]> {
     id: item.id,
     title: item.title,
     description: item.description,
+    content: item.content,
+    url: item.url,
     isFavorite: item.isFavorite,
     isPinned: item.isPinned,
     itemType: {
@@ -190,6 +194,8 @@ export async function getRecentItems(
     id: item.id,
     title: item.title,
     description: item.description,
+    content: item.content,
+    url: item.url,
     isFavorite: item.isFavorite,
     isPinned: item.isPinned,
     itemType: {
@@ -246,6 +252,8 @@ export async function getItemsByType(
     id: item.id,
     title: item.title,
     description: item.description,
+    content: item.content,
+    url: item.url,
     isFavorite: item.isFavorite,
     isPinned: item.isPinned,
     itemType: {
