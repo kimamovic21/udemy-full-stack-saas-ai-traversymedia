@@ -513,3 +513,11 @@ Section 11: Item display & R2 file storage
 -type command: npm i @aws-sdk/client-s3 
 -add a logic for file & image upload to Cloudflare service
 -open route: http://localhost:3000/dashboard
+
+
+78. Image gallery display
+
+-update current-feature.md file
+-create image-display-spec.md file
+-create component image-thumbnail-card.tsx
+-update existing tsx component and items.ts file

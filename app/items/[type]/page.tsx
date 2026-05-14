@@ -9,6 +9,7 @@ import {
 } from "@/lib/db/items";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import ItemCard from "@/components/dashboard/item-card";
+import ImageThumbnailCard from "@/components/items/image-thumbnail-card";
 import ItemsPageHeader from "@/components/items/items-page-header";
 
 interface ItemsPageProps {
@@ -69,9 +70,13 @@ export default async function ItemsPage({ params }: ItemsPageProps) {
         {/* Items Grid */}
         {items.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {items.map((item) => (
-              <ItemCard key={item.id} item={item} />
-            ))}
+            {items.map((item) =>
+              typeName === "image" ? (
+                <ImageThumbnailCard key={item.id} item={item} />
+              ) : (
+                <ItemCard key={item.id} item={item} />
+              ),
+            )}
           </div>
         ) : (
           <div className="rounded-lg border border-border bg-card p-8 text-center">
