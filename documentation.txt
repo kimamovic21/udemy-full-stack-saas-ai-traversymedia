@@ -521,3 +521,14 @@ Section 11: Item display & R2 file storage
 -create image-display-spec.md file
 -create component image-thumbnail-card.tsx
 -update existing tsx component and items.ts file
+-open route: http://localhost:3000/dashboard
+
+
+79. File display
+
+-update current-feature.md file
+-create file-display-spec.md file
+-update component [type]/page.tsx
+-in folder items create component file-list-row.tsx
+-in folder db update items.ts file
+-open route: http://localhost:3000/dashboard
