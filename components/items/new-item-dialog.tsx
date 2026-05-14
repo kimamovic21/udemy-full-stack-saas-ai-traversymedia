@@ -18,12 +18,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createItem, type CreateItemInput } from "@/actions/items";
 import { getItemTypeIcon, ITEM_TYPE_COLORS } from "@/lib/constants/item-types";
 import CodeEditor from "./code-editor";
 import MarkdownEditor from "./markdown-editor";
+import FileUpload from "./file-upload";
 
 interface NewItemDialogProps {
   open: boolean;
@@ -31,14 +33,28 @@ interface NewItemDialogProps {
   defaultType?: ItemTypeName;
 }
 
-export type ItemTypeName = "snippet" | "prompt" | "command" | "note" | "link";
+export type ItemTypeName =
+  | "snippet"
+  | "prompt"
+  | "command"
+  | "note"
+  | "link"
+  | "file"
+  | "image";
 
-const ITEM_TYPES: { value: ItemTypeName; label: string; icon: string }[] = [
+const ITEM_TYPES: {
+  value: ItemTypeName;
+  label: string;
+  icon: string;
+  isPro?: boolean;
+}[] = [
   { value: "snippet", label: "Snippet", icon: "Code" },
   { value: "prompt", label: "Prompt", icon: "Sparkles" },
   { value: "command", label: "Command", icon: "Terminal" },
   { value: "note", label: "Note", icon: "StickyNote" },
   { value: "link", label: "Link", icon: "Link" },
+  { value: "file", label: "File", icon: "File", isPro: true },
+  { value: "image", label: "Image", icon: "Image", isPro: true },
 ];
 
 export default function NewItemDialog({
@@ -57,6 +73,11 @@ export default function NewItemDialog({
   const [url, setUrl] = useState("");
   const [language, setLanguage] = useState("");
   const [tagsInput, setTagsInput] = useState("");
+  const [fileData, setFileData] = useState<{
+    fileUrl: string;
+    fileName: string;
+    fileSize: number;
+  } | null>(null);
 
   // Sync typeName when defaultType changes (e.g., opening from different type pages)
   useEffect(() => {
@@ -73,6 +94,7 @@ export default function NewItemDialog({
     setUrl("");
     setLanguage("");
     setTagsInput("");
+    setFileData(null);
   };
 
   const handleClose = () => {
@@ -92,6 +114,13 @@ export default function NewItemDialog({
         .map((t) => t.trim())
         .filter((t) => t.length > 0);
 
+      // Validate file is required for file/image types
+      if ((typeName === "file" || typeName === "image") && !fileData) {
+        toast.error("Please upload a file");
+        setIsLoading(false);
+        return;
+      }
+
       const input: CreateItemInput = {
         typeName,
         title,
@@ -100,6 +129,9 @@ export default function NewItemDialog({
         url: url || null,
         language: language || null,
         tags,
+        fileUrl: fileData?.fileUrl || null,
+        fileName: fileData?.fileName || null,
+        fileSize: fileData?.fileSize || null,
       };
 
       const result = await createItem(input);
@@ -129,6 +161,7 @@ export default function NewItemDialog({
   );
   const showLanguageField = ["snippet", "command"].includes(typeName);
   const showUrlField = typeName === "link";
+  const showFileUpload = typeName === "file" || typeName === "image";
 
   const selectedType = ITEM_TYPES.find((t) => t.value === typeName);
   const IconComponent = selectedType
@@ -175,6 +208,14 @@ export default function NewItemDialog({
                       <div className="flex items-center gap-2">
                         <Icon className="h-4 w-4" style={{ color }} />
                         {type.label}
+                        {type.isPro && (
+                          <Badge
+                            variant="secondary"
+                            className="ml-1 px-1 py-0 text-[10px]"
+                          >
+                            PRO
+                          </Badge>
+                        )}
                       </div>
                     </SelectItem>
                   );
@@ -248,6 +289,18 @@ export default function NewItemDialog({
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com"
                 required
+                disabled={isLoading}
+              />
+            </div>
+          )}
+
+          {showFileUpload && (
+            <div className="space-y-2">
+              <Label>{typeName === "image" ? "Image" : "File"} *</Label>
+              <FileUpload
+                itemType={typeName as "file" | "image"}
+                onUploadComplete={setFileData}
+                onUploadError={(error) => toast.error(error)}
                 disabled={isLoading}
               />
             </div>

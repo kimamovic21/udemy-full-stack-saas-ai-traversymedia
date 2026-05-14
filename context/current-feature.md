@@ -14,6 +14,7 @@ Not Started
 
 ## History
 
+- **File & Image Upload** - Cloudflare R2 integration with upload/delete utilities, /api/upload and /api/download routes, FileUpload component with drag-and-drop and progress indicator, NewItemDialog file/image types with PRO badges, ItemDrawer image preview and file info with download button, R2 file cleanup on item deletion, 25 unit tests for R2 utilities (Completed)
 - **Markdown Editor** - MarkdownEditor component with Write/Preview tabs, react-markdown with remark-gfm for GitHub Flavored Markdown, @tailwindcss/typography plugin with prose styling, integrated into NewItemDialog and ItemDrawer for notes/prompts, macOS window styling in readonly mode, custom scrollbar styling (Completed)
 - **Item Create** - New Item modal dialog from top bar with shadcn Dialog, type selector (snippet/prompt/command/note/link), dynamic fields based on type, createItem server action with Zod validation, createItem query with tag connectOrCreate, unit tests (Completed)
 - **Initial Setup** - Next.js 16, Tailwind CSS v4, TypeScript configured (Completed)
@@ -42,3 +43,4 @@ Not Started
 - **Item Drawer Edit Mode** - Inline edit mode via Edit button, Save/Cancel action bar, editable Title/Description/Tags for all types, Content/Language for text types, URL for links, updateItem server action with Zod validation, updateItem query with tag disconnect/connect-or-create, toast notifications, router.refresh() after save (Completed)
 - **Item Delete** - Delete functionality via trash button in item drawer, DeleteItemDialog with shadcn AlertDialog confirmation, deleteItem server action with Zod validation, deleteItem query with ownership check, toast on success, drawer close and page refresh, unit tests (Completed)
 - **Code Editor** - Monaco Editor component for snippets/commands with macOS window styling (red/yellow/green dots), copy button, language label, readonly/edit modes, fluid height (max 400px), integrated into ItemDrawer and NewItemDialog, type-specific "New {Type}" buttons on items list pages with pre-selected type (Completed)
+- **GitHub OAuth Redirect Fix** - Switch from client-side signIn to server-side Server Action pattern, signInWithGitHub action in src/actions/auth.ts using redirectTo instead of callbackUrl, form action in sign-in page for reliable redirect (Completed)

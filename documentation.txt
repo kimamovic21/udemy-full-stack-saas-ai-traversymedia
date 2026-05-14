@@ -496,3 +496,20 @@ Section 11: Item display & R2 file storage
 -type command: npm i @tailwindcss/typography react-markdown remark-gfm
 -create component markdown-editor.tsx
 -update existing tsx components
+
+
+76. Cloudflare R2 bucket setup
+
+-open link: https://dash.cloudflare.com
+-create new bucket
+-create account API token
+-create new env variables
+
+
+77. File & image upload
+
+-create file-image.spec.md file
+-open link: https://www.npmjs.com/package/@aws-sdk/client-s3
+-type command: npm i @aws-sdk/client-s3 
+-add a logic for file & image upload to Cloudflare service
+-open route: http://localhost:3000/dashboard
