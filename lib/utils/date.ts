@@ -19,3 +19,16 @@ export function formatRelativeDate(date: Date | string): string {
     year: diffDays > 365 ? "numeric" : undefined,
   });
 }
+
+/**
+ * Format a date in long format for display (e.g., "January 15, 2024")
+ * Used for item created/updated dates
+ */
+export function formatLongDate(date: Date | string): string {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return dateObj.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}

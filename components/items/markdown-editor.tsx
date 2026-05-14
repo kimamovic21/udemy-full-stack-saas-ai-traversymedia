@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
-import { Copy, Check } from "lucide-react";
-import { toast } from "sonner";
-import ReactMarkdown from "react-markdown";
+import { useState, useRef, useEffect } from "react";
+import { useClipboard } from "@/hooks/use-clipboard";
 import remarkGfm from "remark-gfm";
+import ReactMarkdown from "react-markdown";
+import EditorHeader from "./editor-header";
 
 interface MarkdownEditorProps {
   value: string;
@@ -22,19 +22,10 @@ export default function MarkdownEditor({
   const [activeTab, setActiveTab] = useState<"write" | "preview">(
     readOnly ? "preview" : "write",
   );
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useClipboard();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      toast.success("Copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy");
-    }
-  }, [value]);
+  const handleCopy = () => copy(value);
 
   // Auto-resize textarea based on content (debounced)
   useEffect(() => {
@@ -62,73 +53,26 @@ export default function MarkdownEditor({
     maxHeight,
   );
 
+  // Tabs for write/preview mode (only shown when not readonly)
+  const tabs = readOnly
+    ? undefined
+    : [
+        { id: "write", label: "Write" },
+        { id: "preview", label: "Preview" },
+      ];
+
   return (
     <div className="rounded-lg border border-border overflow-hidden bg-[#1e1e1e]">
-      {/* Header with tabs and copy button */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[#2d2d2d] border-b border-border">
-        {/* Tabs or macOS dots */}
-        <div className="flex items-center gap-2">
-          {readOnly ? (
-            // macOS window dots for readonly mode
-            <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-              <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-              <div className="w-3 h-3 rounded-full bg-[#28c840]" />
-            </div>
-          ) : (
-            // Tabs for edit mode
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setActiveTab("write")}
-                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                  activeTab === "write"
-                    ? "bg-[#1e1e1e] text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Write
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab("preview")}
-                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                  activeTab === "preview"
-                    ? "bg-[#1e1e1e] text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Preview
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Label and copy button */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground uppercase tracking-wide">
-            Markdown
-          </span>
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            title="Copy content"
-          >
-            {copied ? (
-              <>
-                <Check className="h-3.5 w-3.5 text-green-500" />
-                <span className="text-green-500">Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy className="h-3.5 w-3.5" />
-                <span>Copy</span>
-              </>
-            )}
-          </button>
-        </div>
-      </div>
+      <EditorHeader
+        label="Markdown"
+        copied={copied}
+        onCopy={handleCopy}
+        copyTitle="Copy content"
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={(id) => setActiveTab(id as "write" | "preview")}
+        showDots={readOnly}
+      />
 
       {/* Content area */}
       {activeTab === "write" && !readOnly ? (

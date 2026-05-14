@@ -43,6 +43,76 @@ export interface CollectionWithTypes {
 // Maximum items to sample per collection for type aggregation
 const MAX_ITEMS_FOR_TYPE_SAMPLE = 50;
 
+// Type for items with itemType info used in type counting
+type ItemWithType = {
+  item: {
+    itemType: {
+      id: string;
+      name?: string;
+      icon?: string;
+      color: string;
+    };
+  };
+};
+
+/**
+ * Count items by type and return sorted array with full type info
+ */
+function countItemTypes(items: ItemWithType[]): CollectionItemType[] {
+  const typeCounts = new Map<string, CollectionItemType>();
+
+  for (const itemCollection of items) {
+    const itemType = itemCollection.item.itemType;
+    const existing = typeCounts.get(itemType.id);
+
+    if (existing) {
+      existing.count++;
+    } else {
+      typeCounts.set(itemType.id, {
+        name: itemType.name || "",
+        icon: itemType.icon || "",
+        color: itemType.color,
+        count: 1,
+      });
+    }
+  }
+
+  // Sort by count (descending)
+  return Array.from(typeCounts.values()).sort((a, b) => b.count - a.count);
+}
+
+/**
+ * Get dominant color from items (most frequently used type's color)
+ */
+function getDominantColor(items: ItemWithType[]): string | null {
+  const typeCounts = new Map<string, { color: string; count: number }>();
+
+  for (const itemCollection of items) {
+    const itemType = itemCollection.item.itemType;
+    const existing = typeCounts.get(itemType.id);
+
+    if (existing) {
+      existing.count++;
+    } else {
+      typeCounts.set(itemType.id, {
+        color: itemType.color,
+        count: 1,
+      });
+    }
+  }
+
+  let dominantColor: string | null = null;
+  let maxCount = 0;
+  for (const { color, count } of typeCounts.values()) {
+    if (count > maxCount) {
+      maxCount = count;
+      dominantColor = color;
+    }
+  }
+
+  return dominantColor;
+}
+
 /**
  * Get recent collections for a user with item type information
  * Returns collections sorted by updatedAt, with aggregated item type data
@@ -83,31 +153,7 @@ export async function getRecentCollections(
   });
 
   return collections.map((collection) => {
-    // Count items by type from sampled items
-    const typeCounts = new Map<string, CollectionItemType>();
-
-    for (const itemCollection of collection.items) {
-      const itemType = itemCollection.item.itemType;
-      const existing = typeCounts.get(itemType.id);
-
-      if (existing) {
-        existing.count++;
-      } else {
-        typeCounts.set(itemType.id, {
-          name: itemType.name,
-          icon: itemType.icon,
-          color: itemType.color,
-          count: 1,
-        });
-      }
-    }
-
-    // Convert to array and sort by count (descending)
-    const itemTypes = Array.from(typeCounts.values()).sort(
-      (a, b) => b.count - a.count,
-    );
-
-    // Get dominant color from most-used type
+    const itemTypes = countItemTypes(collection.items);
     const dominantColor = itemTypes.length > 0 ? itemTypes[0].color : null;
 
     return {
@@ -192,42 +238,13 @@ export async function getSidebarCollections(
 
   const processCollection = (
     collection: SidebarCollectionWithItems,
-  ): SidebarCollection => {
-    // Count items by type to find dominant color
-    const typeCounts = new Map<string, { color: string; count: number }>();
-
-    for (const itemCollection of collection.items) {
-      const itemType = itemCollection.item.itemType;
-      const existing = typeCounts.get(itemType.id);
-
-      if (existing) {
-        existing.count++;
-      } else {
-        typeCounts.set(itemType.id, {
-          color: itemType.color,
-          count: 1,
-        });
-      }
-    }
-
-    // Get dominant color from most-used type
-    let dominantColor: string | null = null;
-    let maxCount = 0;
-    for (const { color, count } of typeCounts.values()) {
-      if (count > maxCount) {
-        maxCount = count;
-        dominantColor = color;
-      }
-    }
-
-    return {
-      id: collection.id,
-      name: collection.name,
-      itemCount: collection._count.items,
-      isFavorite: collection.isFavorite,
-      dominantColor,
-    };
-  };
+  ): SidebarCollection => ({
+    id: collection.id,
+    name: collection.name,
+    itemCount: collection._count.items,
+    isFavorite: collection.isFavorite,
+    dominantColor: getDominantColor(collection.items),
+  });
 
   const favorites = favoriteCollections.map(processCollection);
   const recents = recentCollections.map(processCollection);

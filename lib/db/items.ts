@@ -57,6 +57,88 @@ export interface ItemDetail {
   updatedAt: Date;
 }
 
+// Prisma item type with relations for mapping
+type PrismaItemWithType = {
+  id: string;
+  title: string;
+  description: string | null;
+  content: string | null;
+  url: string | null;
+  isFavorite: boolean;
+  isPinned: boolean;
+  fileUrl: string | null;
+  fileName: string | null;
+  fileSize: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+  itemType: { name: string; icon: string; color: string };
+  tags: { name: string }[];
+};
+
+type PrismaItemWithDetail = PrismaItemWithType & {
+  language: string | null;
+  contentType: string;
+  collections: { collection: { id: string; name: string } }[];
+};
+
+/**
+ * Transform Prisma item to ItemWithType
+ */
+function toItemWithType(item: PrismaItemWithType): ItemWithType {
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    content: item.content,
+    url: item.url,
+    isFavorite: item.isFavorite,
+    isPinned: item.isPinned,
+    itemType: {
+      name: item.itemType.name,
+      icon: item.itemType.icon,
+      color: item.itemType.color,
+    },
+    tags: item.tags.map((tag) => tag.name),
+    fileUrl: item.fileUrl,
+    fileName: item.fileName,
+    fileSize: item.fileSize,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+  };
+}
+
+/**
+ * Transform Prisma item to ItemDetail
+ */
+function toItemDetail(item: PrismaItemWithDetail): ItemDetail {
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description,
+    content: item.content,
+    url: item.url,
+    language: item.language,
+    contentType: item.contentType,
+    fileUrl: item.fileUrl,
+    fileName: item.fileName,
+    fileSize: item.fileSize,
+    isFavorite: item.isFavorite,
+    isPinned: item.isPinned,
+    itemType: {
+      name: item.itemType.name,
+      icon: item.itemType.icon,
+      color: item.itemType.color,
+    },
+    tags: item.tags.map((tag) => tag.name),
+    collections: item.collections.map((ic) => ({
+      id: ic.collection.id,
+      name: ic.collection.name,
+    })),
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+  };
+}
+
 export interface DashboardStats {
   totalItems: number;
   totalCollections: number;
@@ -146,26 +228,7 @@ export async function getPinnedItems(userId: string): Promise<ItemWithType[]> {
     },
   });
 
-  return items.map((item) => ({
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    content: item.content,
-    url: item.url,
-    isFavorite: item.isFavorite,
-    isPinned: item.isPinned,
-    itemType: {
-      name: item.itemType.name,
-      icon: item.itemType.icon,
-      color: item.itemType.color,
-    },
-    tags: item.tags.map((tag) => tag.name),
-    fileUrl: item.fileUrl,
-    fileName: item.fileName,
-    fileSize: item.fileSize,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-  }));
+  return items.map(toItemWithType);
 }
 
 /**
@@ -190,26 +253,7 @@ export async function getRecentItems(
     },
   });
 
-  return items.map((item) => ({
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    content: item.content,
-    url: item.url,
-    isFavorite: item.isFavorite,
-    isPinned: item.isPinned,
-    itemType: {
-      name: item.itemType.name,
-      icon: item.itemType.icon,
-      color: item.itemType.color,
-    },
-    tags: item.tags.map((tag) => tag.name),
-    fileUrl: item.fileUrl,
-    fileName: item.fileName,
-    fileSize: item.fileSize,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-  }));
+  return items.map(toItemWithType);
 }
 
 /**
@@ -248,26 +292,7 @@ export async function getItemsByType(
     },
   });
 
-  return items.map((item) => ({
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    content: item.content,
-    url: item.url,
-    isFavorite: item.isFavorite,
-    isPinned: item.isPinned,
-    itemType: {
-      name: item.itemType.name,
-      icon: item.itemType.icon,
-      color: item.itemType.color,
-    },
-    tags: item.tags.map((tag) => tag.name),
-    fileUrl: item.fileUrl,
-    fileName: item.fileName,
-    fileSize: item.fileSize,
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-  }));
+  return items.map(toItemWithType);
 }
 
 /**
@@ -296,32 +321,7 @@ export async function getItemById(
     return null;
   }
 
-  return {
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    content: item.content,
-    url: item.url,
-    language: item.language,
-    contentType: item.contentType,
-    fileUrl: item.fileUrl,
-    fileName: item.fileName,
-    fileSize: item.fileSize,
-    isFavorite: item.isFavorite,
-    isPinned: item.isPinned,
-    itemType: {
-      name: item.itemType.name,
-      icon: item.itemType.icon,
-      color: item.itemType.color,
-    },
-    tags: item.tags.map((tag) => tag.name),
-    collections: item.collections.map((ic) => ({
-      id: ic.collection.id,
-      name: ic.collection.name,
-    })),
-    createdAt: item.createdAt,
-    updatedAt: item.updatedAt,
-  };
+  return toItemDetail(item);
 }
 
 export interface UpdateItemData {
@@ -381,32 +381,7 @@ export async function updateItem(
     },
   });
 
-  return {
-    id: updated.id,
-    title: updated.title,
-    description: updated.description,
-    content: updated.content,
-    url: updated.url,
-    language: updated.language,
-    contentType: updated.contentType,
-    fileUrl: updated.fileUrl,
-    fileName: updated.fileName,
-    fileSize: updated.fileSize,
-    isFavorite: updated.isFavorite,
-    isPinned: updated.isPinned,
-    itemType: {
-      name: updated.itemType.name,
-      icon: updated.itemType.icon,
-      color: updated.itemType.color,
-    },
-    tags: updated.tags.map((tag) => tag.name),
-    collections: updated.collections.map((ic) => ({
-      id: ic.collection.id,
-      name: ic.collection.name,
-    })),
-    createdAt: updated.createdAt,
-    updatedAt: updated.updatedAt,
-  };
+  return toItemDetail(updated);
 }
 
 /**

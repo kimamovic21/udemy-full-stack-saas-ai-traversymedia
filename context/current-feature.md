@@ -6,25 +6,29 @@ In Progress
 
 ## Goals
 
-Security and performance fixes identified from codebase audit:
+Code refactoring to reduce duplication and improve maintainability:
 
-1. **Bcrypt Rounds Consistency** - Standardize password hashing to 12 rounds across all auth endpoints (change-password and reset-password currently use 10, registration uses 12)
+1. **useClipboard Hook** - Extract copy-to-clipboard logic from item-drawer, code-editor, markdown-editor into reusable hook at src/hooks/use-clipboard.ts
 
-2. **Debounce Resize Effect** - Add debounce to markdown-editor.tsx useEffect that auto-resizes textarea on every keystroke
+2. **Data Mapping Utilities** - Extract toItemWithType() and toItemDetail() transform functions in src/lib/db/items.ts to eliminate 4x duplicate mapping logic
 
-3. **URL Protocol Validation** - Add Zod refinement to validate URLs use http/https protocol only (prevent javascript: and data: URLs)
+3. **Zod Field Error Parser** - Extract parseZodErrors() utility from items actions to shared location at src/lib/validation.ts
 
-4. **Next.js Image Optimization** - Replace native `<img>` tags with `next/image` for R2-hosted images (image-thumbnail-card.tsx, item-drawer.tsx, file-upload.tsx), configure remote patterns in next.config.ts
+4. **Editor Header Component** - Extract shared header (macOS dots, label, copy button) from code-editor and markdown-editor into EditorHeader component
 
-5. **Upload Rate Limiting** - Add rate limiting to /api/upload endpoint (10 uploads per hour per user)
+5. **Collection Type Counting** - Extract getDominantColor() and countItemTypes() utilities from collections.ts to eliminate duplicate logic
+
+6. **Date Formatting** - Add formatItemDates() to existing date.ts utility for consistent "Created/Updated" display
 
 ## Notes
 
-- Bcrypt: Only change the salt rounds number, no other modifications needed
-- Debounce: Use 100ms delay with cleanup function
-- URL validation: Add to updateItemSchema and createItemSchema in actions/items.ts
-- next/image: Need to add R2 domain to remotePatterns in next.config.ts
-- Rate limiting: Reuse existing rate-limit utility from src/lib/rate-limit.ts
+- useClipboard: Returns { copied, copy } - used in 3 components
+- Data mapping: toItemWithType used in getPinnedItems, getRecentItems, getItemsByType; toItemDetail used in getItemById, updateItem
+- Zod errors: Same field error extraction pattern in updateItem and createItem actions
+- EditorHeader: Both editors have identical macOS dot header with label and copy button
+- Type counting: Nearly identical logic in getRecentCollections and getSidebarCollections
+- Keep changes minimal - extract without changing behavior
+- Run tests after each extraction to verify no regressions
 
 ## History
 
@@ -61,3 +65,4 @@ Security and performance fixes identified from codebase audit:
 - **Image Gallery View** - ImageThumbnailCard component with 16:9 aspect ratio thumbnails using aspect-video, object-cover for image filling, 5% scale hover zoom effect with 300ms transition, fileUrl added to ItemWithType interface, conditionally renders for image type on items page (Completed)
 - **File List View** - FileListRow component with file extension icons, single-column list layout for /items/files (Google Drive style), each row shows file icon/title/name/size/date/download button, row hover highlight, click opens ItemDrawer, download via /api/download, mobile responsive stacking, ItemWithType extended with fileName/fileSize (Completed)
 - **Quick Copy Button** - Copy icon on item cards that appears on hover, copies content for text items or URL for links, green checkmark feedback (Completed)
+- **Security & Performance Audit Fixes** - Bcrypt rounds standardized to 12, debounced markdown editor resize, URL protocol validation (http/https only), next/image for R2 images with remote patterns config, upload rate limiting (10/hour per user) (Completed)

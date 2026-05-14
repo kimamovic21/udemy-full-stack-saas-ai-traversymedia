@@ -1,10 +1,10 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef } from "react";
 import Editor, { OnMount, loader } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
-import { Copy, Check } from "lucide-react";
-import { toast } from "sonner";
+import { useClipboard } from "@/hooks/use-clipboard";
+import EditorHeader from "./editor-header";
 
 // Configure Monaco to load from CDN
 loader.config({
@@ -27,22 +27,13 @@ export default function CodeEditor({
   readOnly = false,
 }: CodeEditorProps) {
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useClipboard();
 
   const handleEditorMount: OnMount = (editor) => {
     editorRef.current = editor;
   };
 
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      toast.success("Copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy");
-    }
-  }, [value]);
+  const handleCopy = () => copy(value);
 
   // Map common language aliases to Monaco language IDs
   const getMonacoLanguage = (lang: string): string => {
@@ -78,41 +69,12 @@ export default function CodeEditor({
 
   return (
     <div className="rounded-lg border border-border overflow-hidden bg-[#1e1e1e]">
-      {/* Header with macOS dots, language, and copy button */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[#2d2d2d] border-b border-border">
-        {/* macOS window dots */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-            <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-            <div className="w-3 h-3 rounded-full bg-[#28c840]" />
-          </div>
-        </div>
-
-        {/* Language and copy button */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground uppercase tracking-wide">
-            {displayLanguage}
-          </span>
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-            title="Copy code"
-          >
-            {copied ? (
-              <>
-                <Check className="h-3.5 w-3.5 text-green-500" />
-                <span className="text-green-500">Copied</span>
-              </>
-            ) : (
-              <>
-                <Copy className="h-3.5 w-3.5" />
-                <span>Copy</span>
-              </>
-            )}
-          </button>
-        </div>
-      </div>
+      <EditorHeader
+        label={displayLanguage}
+        copied={copied}
+        onCopy={handleCopy}
+        copyTitle="Copy code"
+      />
 
       {/* Monaco Editor */}
       <Editor

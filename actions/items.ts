@@ -9,24 +9,7 @@ import {
   VALID_ITEM_TYPES,
   type ItemDetail,
 } from "@/lib/db/items";
-
-// Validate URL uses http or https protocol only (prevents javascript:, data:, etc.)
-const isValidUrlProtocol = (url: string): boolean => {
-  try {
-    const parsed = new URL(url);
-    return ["http:", "https:"].includes(parsed.protocol);
-  } catch {
-    return false;
-  }
-};
-
-const safeUrlSchema = z
-  .string()
-  .url("Invalid URL")
-  .refine(isValidUrlProtocol, "URL must use http or https protocol")
-  .nullable()
-  .optional()
-  .transform((val) => val || null);
+import { parseZodErrors, safeUrlSchema } from "@/lib/validation";
 
 const updateItemSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -75,15 +58,11 @@ export async function updateItem(
   const parsed = updateItemSchema.safeParse(input);
 
   if (!parsed.success) {
-    const fieldErrors: Record<string, string[]> = {};
-    for (const issue of parsed.error.issues) {
-      const field = issue.path[0]?.toString() || "unknown";
-      if (!fieldErrors[field]) {
-        fieldErrors[field] = [];
-      }
-      fieldErrors[field].push(issue.message);
-    }
-    return { success: false, error: "Validation failed", fieldErrors };
+    return {
+      success: false,
+      error: "Validation failed",
+      fieldErrors: parseZodErrors(parsed.error),
+    };
   }
 
   const updated = await updateItemQuery(session.user.id, itemId, parsed.data);
@@ -174,15 +153,11 @@ export async function createItem(
   const parsed = createItemSchema.safeParse(input);
 
   if (!parsed.success) {
-    const fieldErrors: Record<string, string[]> = {};
-    for (const issue of parsed.error.issues) {
-      const field = issue.path[0]?.toString() || "unknown";
-      if (!fieldErrors[field]) {
-        fieldErrors[field] = [];
-      }
-      fieldErrors[field].push(issue.message);
-    }
-    return { success: false, error: "Validation failed", fieldErrors };
+    return {
+      success: false,
+      error: "Validation failed",
+      fieldErrors: parseZodErrors(parsed.error),
+    };
   }
 
   // Validate URL is required for link type
