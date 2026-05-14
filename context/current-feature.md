@@ -2,21 +2,32 @@
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
-<!-- Add feature goals here -->
+Security and performance fixes identified from codebase audit:
+
+1. **Bcrypt Rounds Consistency** - Standardize password hashing to 12 rounds across all auth endpoints (change-password and reset-password currently use 10, registration uses 12)
+
+2. **Debounce Resize Effect** - Add debounce to markdown-editor.tsx useEffect that auto-resizes textarea on every keystroke
+
+3. **URL Protocol Validation** - Add Zod refinement to validate URLs use http/https protocol only (prevent javascript: and data: URLs)
+
+4. **Next.js Image Optimization** - Replace native `<img>` tags with `next/image` for R2-hosted images (image-thumbnail-card.tsx, item-drawer.tsx, file-upload.tsx), configure remote patterns in next.config.ts
+
+5. **Upload Rate Limiting** - Add rate limiting to /api/upload endpoint (10 uploads per hour per user)
 
 ## Notes
 
-<!-- Add notes and constraints here -->
+- Bcrypt: Only change the salt rounds number, no other modifications needed
+- Debounce: Use 100ms delay with cleanup function
+- URL validation: Add to updateItemSchema and createItemSchema in actions/items.ts
+- next/image: Need to add R2 domain to remotePatterns in next.config.ts
+- Rate limiting: Reuse existing rate-limit utility from src/lib/rate-limit.ts
 
 ## History
 
-- **File & Image Upload** - Cloudflare R2 integration with upload/delete utilities, /api/upload and /api/download routes, FileUpload component with drag-and-drop and progress indicator, NewItemDialog file/image types with PRO badges, ItemDrawer image preview and file info with download button, R2 file cleanup on item deletion, 25 unit tests for R2 utilities (Completed)
-- **Markdown Editor** - MarkdownEditor component with Write/Preview tabs, react-markdown with remark-gfm for GitHub Flavored Markdown, @tailwindcss/typography plugin with prose styling, integrated into NewItemDialog and ItemDrawer for notes/prompts, macOS window styling in readonly mode, custom scrollbar styling (Completed)
-- **Item Create** - New Item modal dialog from top bar with shadcn Dialog, type selector (snippet/prompt/command/note/link), dynamic fields based on type, createItem server action with Zod validation, createItem query with tag connectOrCreate, unit tests (Completed)
 - **Initial Setup** - Next.js 16, Tailwind CSS v4, TypeScript configured (Completed)
 - **Dashboard UI Phase 1** - ShadCN UI initialization, dashboard route at /dashboard, main layout with dark mode, top bar with search and buttons, sidebar and main placeholders (Completed)
 - **Dashboard UI Phase 2** - Collapsible sidebar with item type navigation, favorite and recent collections, user avatar area, mobile drawer, and responsive behavior (Completed)
@@ -44,5 +55,9 @@ Not Started
 - **Item Delete** - Delete functionality via trash button in item drawer, DeleteItemDialog with shadcn AlertDialog confirmation, deleteItem server action with Zod validation, deleteItem query with ownership check, toast on success, drawer close and page refresh, unit tests (Completed)
 - **Code Editor** - Monaco Editor component for snippets/commands with macOS window styling (red/yellow/green dots), copy button, language label, readonly/edit modes, fluid height (max 400px), integrated into ItemDrawer and NewItemDialog, type-specific "New {Type}" buttons on items list pages with pre-selected type (Completed)
 - **GitHub OAuth Redirect Fix** - Switch from client-side signIn to server-side Server Action pattern, signInWithGitHub action in src/actions/auth.ts using redirectTo instead of callbackUrl, form action in sign-in page for reliable redirect (Completed)
+- **Item Create** - New Item modal dialog from top bar with shadcn Dialog, type selector (snippet/prompt/command/note/link), dynamic fields based on type, createItem server action with Zod validation, createItem query with tag connectOrCreate, unit tests (Completed)
+- **Markdown Editor** - MarkdownEditor component with Write/Preview tabs, react-markdown with remark-gfm for GitHub Flavored Markdown, @tailwindcss/typography plugin with prose styling, integrated into NewItemDialog and ItemDrawer for notes/prompts, macOS window styling in readonly mode, custom scrollbar styling (Completed)
+- **File & Image Upload** - Cloudflare R2 integration with upload/delete utilities, /api/upload and /api/download routes, FileUpload component with drag-and-drop and progress indicator, NewItemDialog file/image types with PRO badges, ItemDrawer image preview and file info with download button, R2 file cleanup on item deletion, 25 unit tests for R2 utilities (Completed)
 - **Image Gallery View** - ImageThumbnailCard component with 16:9 aspect ratio thumbnails using aspect-video, object-cover for image filling, 5% scale hover zoom effect with 300ms transition, fileUrl added to ItemWithType interface, conditionally renders for image type on items page (Completed)
 - **File List View** - FileListRow component with file extension icons, single-column list layout for /items/files (Google Drive style), each row shows file icon/title/name/size/date/download button, row hover highlight, click opens ItemDrawer, download via /api/download, mobile responsive stacking, ItemWithType extended with fileName/fileSize (Completed)
+- **Quick Copy Button** - Copy icon on item cards that appears on hover, copies content for text items or URL for links, green checkmark feedback (Completed)

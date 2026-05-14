@@ -36,15 +36,19 @@ export default function MarkdownEditor({
     }
   }, [value]);
 
-  // Auto-resize textarea based on content
+  // Auto-resize textarea based on content (debounced)
   useEffect(() => {
-    if (textareaRef.current && activeTab === "write") {
-      textareaRef.current.style.height = "auto";
-      const scrollHeight = textareaRef.current.scrollHeight;
-      const minHeight = 200;
-      const maxHeight = 400;
-      textareaRef.current.style.height = `${Math.min(Math.max(scrollHeight, minHeight), maxHeight)}px`;
-    }
+    const timeoutId = setTimeout(() => {
+      if (textareaRef.current && activeTab === "write") {
+        textareaRef.current.style.height = "auto";
+        const scrollHeight = textareaRef.current.scrollHeight;
+        const minHeight = 200;
+        const maxHeight = 400;
+        textareaRef.current.style.height = `${Math.min(Math.max(scrollHeight, minHeight), maxHeight)}px`;
+      }
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [value, activeTab]);
 
   // Calculate height based on content lines (for preview)

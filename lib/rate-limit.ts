@@ -47,6 +47,11 @@ export const rateLimitConfigs = {
     limiter: Ratelimit.slidingWindow(3, "15 m"),
     prefix: "ratelimit:resend-verification",
   },
+  // File upload: 10 uploads per hour (keyed by user ID)
+  upload: {
+    limiter: Ratelimit.slidingWindow(10, "1 h"),
+    prefix: "ratelimit:upload",
+  },
 } as const;
 
 export type RateLimitType = keyof typeof rateLimitConfigs;

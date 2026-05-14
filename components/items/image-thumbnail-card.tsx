@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Star, Pin } from "lucide-react";
 import { useItemDrawer } from "@/components/items/item-drawer-provider";
 import type { ItemWithType } from "@/lib/db/items";
+import Image from "next/image";
 
 interface ImageThumbnailCardProps {
   item: ItemWithType;
@@ -18,12 +19,14 @@ export default function ImageThumbnailCard({ item }: ImageThumbnailCardProps) {
       onClick={() => openDrawer(item.id)}
     >
       {/* Image Container with 16:9 aspect ratio */}
-      <div className="aspect-video overflow-hidden bg-muted">
+      <div className="aspect-video overflow-hidden bg-muted relative">
         {item.fileUrl ? (
-          <img
+          <Image
             src={item.fileUrl}
             alt={item.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-muted-foreground">

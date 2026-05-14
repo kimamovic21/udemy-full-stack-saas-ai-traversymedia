@@ -10,6 +10,24 @@ import {
   type ItemDetail,
 } from "@/lib/db/items";
 
+// Validate URL uses http or https protocol only (prevents javascript:, data:, etc.)
+const isValidUrlProtocol = (url: string): boolean => {
+  try {
+    const parsed = new URL(url);
+    return ["http:", "https:"].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+};
+
+const safeUrlSchema = z
+  .string()
+  .url("Invalid URL")
+  .refine(isValidUrlProtocol, "URL must use http or https protocol")
+  .nullable()
+  .optional()
+  .transform((val) => val || null);
+
 const updateItemSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
   description: z
@@ -23,12 +41,7 @@ const updateItemSchema = z.object({
     .nullable()
     .optional()
     .transform((val) => val || null),
-  url: z
-    .string()
-    .url("Invalid URL")
-    .nullable()
-    .optional()
-    .transform((val) => val || null),
+  url: safeUrlSchema,
   language: z
     .string()
     .trim()
@@ -122,12 +135,7 @@ const createItemSchema = z.object({
     .nullable()
     .optional()
     .transform((val) => val || null),
-  url: z
-    .string()
-    .url("Invalid URL")
-    .nullable()
-    .optional()
-    .transform((val) => val || null),
+  url: safeUrlSchema,
   language: z
     .string()
     .trim()
@@ -137,12 +145,7 @@ const createItemSchema = z.object({
   tags: z
     .array(z.string().trim())
     .transform((tags) => tags.filter((tag) => tag.length > 0)),
-  fileUrl: z
-    .string()
-    .url()
-    .nullable()
-    .optional()
-    .transform((val) => val || null),
+  fileUrl: safeUrlSchema,
   fileName: z
     .string()
     .nullable()
