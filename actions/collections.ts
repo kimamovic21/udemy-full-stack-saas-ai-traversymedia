@@ -4,6 +4,8 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import {
   createCollection as createCollectionQuery,
+  updateCollection as updateCollectionQuery,
+  deleteCollection as deleteCollectionQuery,
   getUserCollections as getUserCollectionsQuery,
   type CreatedCollection,
   type CollectionForPicker,
@@ -79,5 +81,104 @@ export async function getUserCollections(): Promise<GetCollectionsResult> {
     return { success: true, data: collections };
   } catch {
     return { success: false, error: "Failed to fetch collections" };
+  }
+}
+
+const updateCollectionSchema = z.object({
+  id: z.string().min(1, "Collection ID is required"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name is required")
+    .max(100, "Name must be 100 characters or less"),
+  description: z
+    .string()
+    .trim()
+    .max(500, "Description must be 500 characters or less")
+    .nullable()
+    .optional()
+    .transform((val) => val || null),
+});
+
+export type UpdateCollectionInput = z.infer<typeof updateCollectionSchema>;
+
+export async function updateCollection(
+  input: UpdateCollectionInput,
+): Promise<ActionResult> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const parsed = updateCollectionSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: "Validation failed",
+      fieldErrors: parseZodErrors(parsed.error),
+    };
+  }
+
+  try {
+    const updated = await updateCollectionQuery(
+      parsed.data.id,
+      session.user.id,
+      {
+        name: parsed.data.name,
+        description: parsed.data.description,
+      },
+    );
+
+    if (!updated) {
+      return { success: false, error: "Collection not found" };
+    }
+
+    return { success: true, data: updated };
+  } catch {
+    return { success: false, error: "Failed to update collection" };
+  }
+}
+
+const deleteCollectionSchema = z.object({
+  id: z.string().min(1, "Collection ID is required"),
+});
+
+export type DeleteCollectionInput = z.infer<typeof deleteCollectionSchema>;
+
+interface DeleteResult {
+  success: boolean;
+  error?: string;
+}
+
+export async function deleteCollection(
+  input: DeleteCollectionInput,
+): Promise<DeleteResult> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const parsed = deleteCollectionSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return { success: false, error: "Invalid collection ID" };
+  }
+
+  try {
+    const deleted = await deleteCollectionQuery(
+      parsed.data.id,
+      session.user.id,
+    );
+
+    if (!deleted) {
+      return { success: false, error: "Collection not found" };
+    }
+
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to delete collection" };
   }
 }

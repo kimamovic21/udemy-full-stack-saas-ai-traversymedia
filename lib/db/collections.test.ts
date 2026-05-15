@@ -1,11 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getCollectionById } from "./collections";
+import {
+  getCollectionById,
+  updateCollection,
+  deleteCollection,
+} from "./collections";
 
 // Mock Prisma client
 vi.mock("@/lib/prisma", () => ({
   prisma: {
     collection: {
       findFirst: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
     },
   },
 }));
@@ -13,6 +19,8 @@ vi.mock("@/lib/prisma", () => ({
 import { prisma } from "@/lib/prisma";
 
 const mockFindFirst = vi.mocked(prisma.collection.findFirst);
+const mockUpdate = vi.mocked(prisma.collection.update);
+const mockDelete = vi.mocked(prisma.collection.delete);
 
 const mockDate = new Date("2025-06-15T12:00:00Z");
 
@@ -172,5 +180,105 @@ describe("getCollectionById", () => {
         where: { id: "col-1", userId: "user-1" },
       }),
     );
+  });
+});
+
+describe("updateCollection", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns null when collection does not exist", async () => {
+    mockFindFirst.mockResolvedValue(null);
+
+    const result = await updateCollection("col-1", "user-1", {
+      name: "Updated Name",
+      description: null,
+    });
+
+    expect(result).toBeNull();
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  it("returns updated collection when successful", async () => {
+    const mockUpdated = {
+      id: "col-1",
+      name: "Updated Name",
+      description: "Updated description",
+      isFavorite: false,
+      createdAt: mockDate,
+      updatedAt: mockDate,
+    };
+
+    mockFindFirst.mockResolvedValue({ id: "col-1", userId: "user-1" } as never);
+    mockUpdate.mockResolvedValue(mockUpdated as never);
+
+    const result = await updateCollection("col-1", "user-1", {
+      name: "Updated Name",
+      description: "Updated description",
+    });
+
+    expect(result).toEqual({
+      id: "col-1",
+      name: "Updated Name",
+      description: "Updated description",
+      isFavorite: false,
+      createdAt: mockDate,
+      updatedAt: mockDate,
+    });
+    expect(mockUpdate).toHaveBeenCalledWith({
+      where: { id: "col-1" },
+      data: { name: "Updated Name", description: "Updated description" },
+    });
+  });
+
+  it("verifies ownership before updating", async () => {
+    mockFindFirst.mockResolvedValue(null);
+
+    await updateCollection("col-1", "user-1", {
+      name: "Test",
+      description: null,
+    });
+
+    expect(mockFindFirst).toHaveBeenCalledWith({
+      where: { id: "col-1", userId: "user-1" },
+    });
+  });
+});
+
+describe("deleteCollection", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns false when collection does not exist", async () => {
+    mockFindFirst.mockResolvedValue(null);
+
+    const result = await deleteCollection("col-1", "user-1");
+
+    expect(result).toBe(false);
+    expect(mockDelete).not.toHaveBeenCalled();
+  });
+
+  it("returns true when collection is deleted", async () => {
+    mockFindFirst.mockResolvedValue({ id: "col-1", userId: "user-1" } as never);
+    mockDelete.mockResolvedValue({ id: "col-1" } as never);
+
+    const result = await deleteCollection("col-1", "user-1");
+
+    expect(result).toBe(true);
+    expect(mockDelete).toHaveBeenCalledWith({
+      where: { id: "col-1" },
+    });
+  });
+
+  it("verifies ownership before deleting", async () => {
+    mockFindFirst.mockResolvedValue(null);
+
+    await deleteCollection("col-1", "user-1");
+
+    expect(mockFindFirst).toHaveBeenCalledWith({
+      where: { id: "col-1", userId: "user-1" },
+    });
   });
 });

@@ -1,6 +1,6 @@
+import type { CollectionWithTypes } from "@/lib/db/collections";
 import Link from "next/link";
 import CollectionCard from "./collection-card";
-import type { CollectionWithTypes } from "@/lib/db/collections";
 
 interface CollectionsSectionProps {
   collections: CollectionWithTypes[];
@@ -25,9 +25,7 @@ export default function CollectionsSection({
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {collections.map((collection) => (
-            <Link key={collection.id} href={`/collections/${collection.id}`}>
-              <CollectionCard collection={collection} />
-            </Link>
+            <CollectionCard key={collection.id} collection={collection} />
           ))}
         </div>
       )}

@@ -429,3 +429,67 @@ export async function createCollection(
     updatedAt: created.updatedAt,
   };
 }
+
+export interface UpdateCollectionData {
+  name: string;
+  description: string | null;
+}
+
+/**
+ * Update a collection (with ownership check)
+ */
+export async function updateCollection(
+  collectionId: string,
+  userId: string,
+  data: UpdateCollectionData,
+): Promise<CreatedCollection | null> {
+  // First verify ownership
+  const existing = await prisma.collection.findFirst({
+    where: { id: collectionId, userId },
+  });
+
+  if (!existing) {
+    return null;
+  }
+
+  const updated = await prisma.collection.update({
+    where: { id: collectionId },
+    data: {
+      name: data.name,
+      description: data.description,
+    },
+  });
+
+  return {
+    id: updated.id,
+    name: updated.name,
+    description: updated.description,
+    isFavorite: updated.isFavorite,
+    createdAt: updated.createdAt,
+    updatedAt: updated.updatedAt,
+  };
+}
+
+/**
+ * Delete a collection (with ownership check)
+ * Note: Items are NOT deleted, only the ItemCollection join records are removed (via cascade)
+ */
+export async function deleteCollection(
+  collectionId: string,
+  userId: string,
+): Promise<boolean> {
+  // First verify ownership
+  const existing = await prisma.collection.findFirst({
+    where: { id: collectionId, userId },
+  });
+
+  if (!existing) {
+    return false;
+  }
+
+  await prisma.collection.delete({
+    where: { id: collectionId },
+  });
+
+  return true;
+}

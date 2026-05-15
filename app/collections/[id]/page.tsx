@@ -1,14 +1,15 @@
 import { redirect, notFound } from "next/navigation";
+import { Star } from "lucide-react";
 import { auth } from "@/auth";
-import DashboardLayout from "@/components/layout/dashboard-layout";
-import ItemCard from "@/components/dashboard/item-card";
-import ImageThumbnailCard from "@/components/items/image-thumbnail-card";
-import FileListRow from "@/components/items/file-list-row";
 import { getSidebarCollections, getCollectionById } from "@/lib/db/collections";
 import { getItemTypesWithCounts, getItemsByCollection } from "@/lib/db/items";
 import { getUserById } from "@/lib/db/users";
 import { getItemTypeIcon } from "@/lib/constants/item-types";
-import { Star } from "lucide-react";
+import DashboardLayout from "@/components/layout/dashboard-layout";
+import ItemCard from "@/components/dashboard/item-card";
+import ImageThumbnailCard from "@/components/items/image-thumbnail-card";
+import FileListRow from "@/components/items/file-list-row";
+import CollectionActions from "@/components/collections/collection-actions";
 
 interface CollectionDetailPageProps {
   params: Promise<{ id: string }>;
@@ -58,17 +59,20 @@ export default async function CollectionDetailPage({
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold text-foreground">
-              {collection.name}
-            </h1>
-            {collection.isFavorite && (
-              <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
-            )}
-            <span className="text-muted-foreground">
-              ({collection.itemCount}{" "}
-              {collection.itemCount === 1 ? "item" : "items"})
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-semibold text-foreground">
+                {collection.name}
+              </h1>
+              {collection.isFavorite && (
+                <Star className="h-5 w-5 fill-yellow-500 text-yellow-500" />
+              )}
+              <span className="text-muted-foreground">
+                ({collection.itemCount}{" "}
+                {collection.itemCount === 1 ? "item" : "items"})
+              </span>
+            </div>
+            <CollectionActions collection={collection} />
           </div>
           {collection.description && (
             <p className="text-muted-foreground">{collection.description}</p>

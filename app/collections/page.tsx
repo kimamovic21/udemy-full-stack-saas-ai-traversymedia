@@ -1,12 +1,11 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { FolderOpen } from "lucide-react";
 import { auth } from "@/auth";
-import DashboardLayout from "@/components/layout/dashboard-layout";
-import CollectionCard from "@/components/dashboard/collection-card";
 import { getSidebarCollections, getAllCollections } from "@/lib/db/collections";
 import { getItemTypesWithCounts } from "@/lib/db/items";
 import { getUserById } from "@/lib/db/users";
-import { FolderOpen } from "lucide-react";
+import DashboardLayout from "@/components/layout/dashboard-layout";
+import CollectionCard from "@/components/dashboard/collection-card";
 
 export default async function CollectionsPage() {
   const session = await auth();
@@ -47,9 +46,7 @@ export default async function CollectionsPage() {
         {collections.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {collections.map((collection) => (
-              <Link key={collection.id} href={`/collections/${collection.id}`}>
-                <CollectionCard collection={collection} />
-              </Link>
+              <CollectionCard key={collection.id} collection={collection} />
             ))}
           </div>
         ) : (

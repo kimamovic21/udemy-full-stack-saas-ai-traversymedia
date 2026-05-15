@@ -572,3 +572,13 @@ Section 12: Collections, search palette & favorites
 -open route: http://localhost:3000/dashboard
 -open route: http://localhost:3000/collections
 -open route: http://localhost:3000/collections/[id]
+
+
+84. Edit & delete collections
+
+-update current-feature.md file
+-in folder collections create new tsx components
+-update existing tsx components and ts file
+-open route: http://localhost:3000/dashboard
+-open route: http://localhost:3000/collections
+-open route: http://localhost:3000/collections/[id] 
