@@ -22,7 +22,9 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createItem, type CreateItemInput } from "@/actions/items";
+import { getUserCollections } from "@/actions/collections";
 import { getItemTypeIcon, ITEM_TYPE_COLORS } from "@/lib/constants/item-types";
+import CollectionPicker, { type CollectionOption } from "./collection-picker";
 import CodeEditor from "./code-editor";
 import MarkdownEditor from "./markdown-editor";
 import FileUpload from "./file-upload";
@@ -78,6 +80,21 @@ export default function NewItemDialog({
     fileName: string;
     fileSize: number;
   } | null>(null);
+  const [collections, setCollections] = useState<CollectionOption[]>([]);
+  const [selectedCollectionIds, setSelectedCollectionIds] = useState<string[]>(
+    [],
+  );
+
+  // Fetch collections when dialog opens
+  useEffect(() => {
+    if (open) {
+      getUserCollections().then((result) => {
+        if (result.success && result.data) {
+          setCollections(result.data);
+        }
+      });
+    }
+  }, [open]);
 
   // Sync typeName when defaultType changes (e.g., opening from different type pages)
   useEffect(() => {
@@ -95,6 +112,7 @@ export default function NewItemDialog({
     setLanguage("");
     setTagsInput("");
     setFileData(null);
+    setSelectedCollectionIds([]);
   };
 
   const handleClose = () => {
@@ -129,6 +147,8 @@ export default function NewItemDialog({
         url: url || null,
         language: language || null,
         tags,
+        collectionIds:
+          selectedCollectionIds.length > 0 ? selectedCollectionIds : undefined,
         fileUrl: fileData?.fileUrl || null,
         fileName: fileData?.fileName || null,
         fileSize: fileData?.fileSize || null,
@@ -316,6 +336,18 @@ export default function NewItemDialog({
               disabled={isLoading}
             />
           </div>
+
+          {collections.length > 0 && (
+            <div className="space-y-2">
+              <Label>Collections</Label>
+              <CollectionPicker
+                collections={collections}
+                selectedIds={selectedCollectionIds}
+                onChange={setSelectedCollectionIds}
+                disabled={isLoading}
+              />
+            </div>
+          )}
 
           <div className="flex justify-end gap-3 pt-2">
             <Button

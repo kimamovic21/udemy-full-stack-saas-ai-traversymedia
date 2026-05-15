@@ -202,6 +202,51 @@ describe("updateItem server action", () => {
       tags: ["valid", "another"],
     });
   });
+
+  it("passes collectionIds when provided", async () => {
+    const mockItem = {
+      id: "item-123",
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      contentType: "TEXT",
+      isFavorite: false,
+      isPinned: false,
+      itemType: { name: "snippet", icon: "Code", color: "#3b82f6" },
+      tags: [],
+      collections: [{ id: "coll-1", name: "React" }],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+    mockUpdateItemQuery.mockResolvedValue(mockItem);
+
+    await updateItem("item-123", {
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      tags: [],
+      collectionIds: ["coll-1", "coll-2"],
+    });
+
+    expect(mockUpdateItemQuery).toHaveBeenCalledWith("user-123", "item-123", {
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      tags: [],
+      collectionIds: ["coll-1", "coll-2"],
+    });
+  });
 });
 
 describe("deleteItem server action", () => {
@@ -476,6 +521,59 @@ describe("createItem server action", () => {
       url: null,
       language: null,
       tags: ["valid", "another"],
+      fileUrl: null,
+      fileName: null,
+      fileSize: null,
+    });
+  });
+
+  it("passes collectionIds when provided", async () => {
+    const mockItem = {
+      id: "item-123",
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      contentType: "TEXT",
+      isFavorite: false,
+      isPinned: false,
+      itemType: { name: "snippet", icon: "Code", color: "#3b82f6" },
+      tags: [],
+      collections: [{ id: "coll-1", name: "React" }],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+    mockCreateItemQuery.mockResolvedValue(mockItem);
+
+    await createItem({
+      typeName: "snippet",
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      tags: [],
+      collectionIds: ["coll-1", "coll-2"],
+      fileUrl: null,
+      fileName: null,
+      fileSize: null,
+    });
+
+    expect(mockCreateItemQuery).toHaveBeenCalledWith("user-123", {
+      typeName: "snippet",
+      title: "Test",
+      description: null,
+      content: null,
+      url: null,
+      language: null,
+      tags: [],
+      collectionIds: ["coll-1", "coll-2"],
       fileUrl: null,
       fileName: null,
       fileSize: null,

@@ -269,6 +269,29 @@ export interface CreatedCollection {
 /**
  * Create a new collection for a user
  */
+export interface CollectionForPicker {
+  id: string;
+  name: string;
+}
+
+/**
+ * Get all collections for a user (for picker dropdowns)
+ */
+export async function getUserCollections(
+  userId: string,
+): Promise<CollectionForPicker[]> {
+  const collections = await prisma.collection.findMany({
+    where: { userId },
+    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+    },
+  });
+
+  return collections;
+}
+
 export async function createCollection(
   userId: string,
   data: CreateCollectionData,

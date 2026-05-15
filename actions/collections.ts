@@ -4,7 +4,9 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import {
   createCollection as createCollectionQuery,
+  getUserCollections as getUserCollectionsQuery,
   type CreatedCollection,
+  type CollectionForPicker,
 } from "@/lib/db/collections";
 import { parseZodErrors } from "@/lib/validation";
 
@@ -56,5 +58,26 @@ export async function createCollection(
     return { success: true, data: created };
   } catch {
     return { success: false, error: "Failed to create collection" };
+  }
+}
+
+interface GetCollectionsResult {
+  success: boolean;
+  data?: CollectionForPicker[];
+  error?: string;
+}
+
+export async function getUserCollections(): Promise<GetCollectionsResult> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  try {
+    const collections = await getUserCollectionsQuery(session.user.id);
+    return { success: true, data: collections };
+  } catch {
+    return { success: false, error: "Failed to fetch collections" };
   }
 }

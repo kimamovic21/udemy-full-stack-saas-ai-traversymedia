@@ -8,14 +8,19 @@ vi.mock("@/auth", () => ({
 // Mock the db module
 vi.mock("@/lib/db/collections", () => ({
   createCollection: vi.fn(),
+  getUserCollections: vi.fn(),
 }));
 
-import { createCollection } from "./collections";
+import { createCollection, getUserCollections } from "./collections";
 import { auth } from "@/auth";
-import { createCollection as createCollectionQuery } from "@/lib/db/collections";
+import {
+  createCollection as createCollectionQuery,
+  getUserCollections as getUserCollectionsQuery,
+} from "@/lib/db/collections";
 
 const mockAuth = vi.mocked(auth);
 const mockCreateCollectionQuery = vi.mocked(createCollectionQuery);
+const mockGetUserCollectionsQuery = vi.mocked(getUserCollectionsQuery);
 
 describe("createCollection server action", () => {
   beforeEach(() => {
@@ -179,5 +184,65 @@ describe("createCollection server action", () => {
       name: "Test Collection",
       description: null,
     });
+  });
+});
+
+describe("getUserCollections server action", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns error when not authenticated", async () => {
+    mockAuth.mockResolvedValue(null);
+
+    const result = await getUserCollections();
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Unauthorized");
+  });
+
+  it("returns collections on success", async () => {
+    const mockCollections = [
+      { id: "coll-1", name: "React Patterns" },
+      { id: "coll-2", name: "Python Scripts" },
+    ];
+
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+    mockGetUserCollectionsQuery.mockResolvedValue(mockCollections);
+
+    const result = await getUserCollections();
+
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual(mockCollections);
+    expect(mockGetUserCollectionsQuery).toHaveBeenCalledWith("user-123");
+  });
+
+  it("returns error when database operation fails", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+    mockGetUserCollectionsQuery.mockRejectedValue(new Error("DB error"));
+
+    const result = await getUserCollections();
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Failed to fetch collections");
+  });
+
+  it("returns empty array when user has no collections", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123" },
+      expires: new Date().toISOString(),
+    });
+    mockGetUserCollectionsQuery.mockResolvedValue([]);
+
+    const result = await getUserCollections();
+
+    expect(result.success).toBe(true);
+    expect(result.data).toEqual([]);
   });
 });

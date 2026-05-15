@@ -1,25 +1,16 @@
-# Current Feature: Collection Create
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Add "New Collection" button in top bar (next to New Item button)
-- Modal dialog with Name and Description fields
-- User-scoped collections (authenticated user only)
-- Follow existing patterns: lib/db functions for server, API routes for client
-- Toast notifications on success/failure
-- UI updates immediately with new collection after save
+<!-- Add feature goals here -->
 
 ## Notes
 
-- Pattern reference: NewItemDialog component, createItem action/query
-- Collections need: name (required), description (optional)
-- Update sidebar collections list after creation
-- Update dashboard collections section after creation
-- Validate name is not empty
+<!-- Add notes and constraints here -->
 
 ## History
 
@@ -58,3 +49,5 @@ In Progress
 - **Quick Copy Button** - Copy icon on item cards that appears on hover, copies content for text items or URL for links, green checkmark feedback (Completed)
 - **Security & Performance Audit Fixes** - Bcrypt rounds standardized to 12, debounced markdown editor resize, URL protocol validation (http/https only), next/image for R2 images with remote patterns config, upload rate limiting (10/hour per user) (Completed)
 - **Code Deduplication Refactor** - useClipboard hook for 3 components, toItemWithType/toItemDetail transforms in items.ts, parseZodErrors/safeUrlSchema in validation.ts, EditorHeader shared component, countItemTypes/getDominantColor in collections.ts, formatLongDate utility (~255 lines eliminated) (Completed)
+- **Collection Create** - New Collection button in top bar, NewCollectionDialog modal with name/description fields, createCollection server action with Zod validation, createCollection db query, 8 unit tests, toast notifications, router.refresh() for UI updates (Completed)
+- **Item Collections Assignment** - CollectionPicker component with multi-select using shadcn Popover + Command, getUserCollections query and server action, createItem/updateItem with collection connections, integrated in NewItemDialog and ItemDrawer edit mode, 6 new tests (Completed)

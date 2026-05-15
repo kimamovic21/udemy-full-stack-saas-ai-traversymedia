@@ -551,3 +551,13 @@ Section 12: Collections, search palette & favorites
 -in folder components create folder collections and component new-collection-dialog.tsx
 -update component top-bar.tsx and collections.ts file
 -open route: http://localhost:3000/dashboard and click button New collection
+
+
+82. Add item to collections
+
+-open link: https://github.com/dip/cmdk
+-type command: npm i cmdk
+-type command: npx shadcn@latest add command popover
+-create component collection-picker.tsx
+-update existing tsx components and ts files
+-open route: http://localhost:3000/dashboard 

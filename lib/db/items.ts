@@ -331,6 +331,7 @@ export interface UpdateItemData {
   url: string | null;
   language: string | null;
   tags: string[];
+  collectionIds?: string[];
 }
 
 /**
@@ -349,6 +350,22 @@ export async function updateItem(
 
   if (!existing || existing.userId !== userId) {
     return null;
+  }
+
+  // Update collections if provided (delete all existing, then create new)
+  if (data.collectionIds !== undefined) {
+    await prisma.itemCollection.deleteMany({
+      where: { itemId },
+    });
+
+    if (data.collectionIds.length > 0) {
+      await prisma.itemCollection.createMany({
+        data: data.collectionIds.map((collectionId) => ({
+          itemId,
+          collectionId,
+        })),
+      });
+    }
   }
 
   // Update item with tag disconnect/connect-or-create
@@ -429,6 +446,7 @@ export interface CreateItemData {
   url: string | null;
   language: string | null;
   tags: string[];
+  collectionIds?: string[];
   fileUrl?: string | null;
   fileName?: string | null;
   fileSize?: number | null;
@@ -480,6 +498,13 @@ export async function createItem(
           create: { name: tagName },
         })),
       },
+      collections: data.collectionIds?.length
+        ? {
+            create: data.collectionIds.map((collectionId) => ({
+              collectionId,
+            })),
+          }
+        : undefined,
     },
     include: {
       itemType: true,
