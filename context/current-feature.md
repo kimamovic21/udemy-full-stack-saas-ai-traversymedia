@@ -1,4 +1,4 @@
-# Current Feature
+# Current Feature: Collection Create
 
 ## Status
 
@@ -6,29 +6,20 @@ In Progress
 
 ## Goals
 
-Code refactoring to reduce duplication and improve maintainability:
-
-1. **useClipboard Hook** - Extract copy-to-clipboard logic from item-drawer, code-editor, markdown-editor into reusable hook at src/hooks/use-clipboard.ts
-
-2. **Data Mapping Utilities** - Extract toItemWithType() and toItemDetail() transform functions in src/lib/db/items.ts to eliminate 4x duplicate mapping logic
-
-3. **Zod Field Error Parser** - Extract parseZodErrors() utility from items actions to shared location at src/lib/validation.ts
-
-4. **Editor Header Component** - Extract shared header (macOS dots, label, copy button) from code-editor and markdown-editor into EditorHeader component
-
-5. **Collection Type Counting** - Extract getDominantColor() and countItemTypes() utilities from collections.ts to eliminate duplicate logic
-
-6. **Date Formatting** - Add formatItemDates() to existing date.ts utility for consistent "Created/Updated" display
+- Add "New Collection" button in top bar (next to New Item button)
+- Modal dialog with Name and Description fields
+- User-scoped collections (authenticated user only)
+- Follow existing patterns: lib/db functions for server, API routes for client
+- Toast notifications on success/failure
+- UI updates immediately with new collection after save
 
 ## Notes
 
-- useClipboard: Returns { copied, copy } - used in 3 components
-- Data mapping: toItemWithType used in getPinnedItems, getRecentItems, getItemsByType; toItemDetail used in getItemById, updateItem
-- Zod errors: Same field error extraction pattern in updateItem and createItem actions
-- EditorHeader: Both editors have identical macOS dot header with label and copy button
-- Type counting: Nearly identical logic in getRecentCollections and getSidebarCollections
-- Keep changes minimal - extract without changing behavior
-- Run tests after each extraction to verify no regressions
+- Pattern reference: NewItemDialog component, createItem action/query
+- Collections need: name (required), description (optional)
+- Update sidebar collections list after creation
+- Update dashboard collections section after creation
+- Validate name is not empty
 
 ## History
 
@@ -66,3 +57,4 @@ Code refactoring to reduce duplication and improve maintainability:
 - **File List View** - FileListRow component with file extension icons, single-column list layout for /items/files (Google Drive style), each row shows file icon/title/name/size/date/download button, row hover highlight, click opens ItemDrawer, download via /api/download, mobile responsive stacking, ItemWithType extended with fileName/fileSize (Completed)
 - **Quick Copy Button** - Copy icon on item cards that appears on hover, copies content for text items or URL for links, green checkmark feedback (Completed)
 - **Security & Performance Audit Fixes** - Bcrypt rounds standardized to 12, debounced markdown editor resize, URL protocol validation (http/https only), next/image for R2 images with remote patterns config, upload rate limiting (10/hour per user) (Completed)
+- **Code Deduplication Refactor** - useClipboard hook for 3 components, toItemWithType/toItemDetail transforms in items.ts, parseZodErrors/safeUrlSchema in validation.ts, EditorHeader shared component, countItemTypes/getDominantColor in collections.ts, formatLongDate utility (~255 lines eliminated) (Completed)

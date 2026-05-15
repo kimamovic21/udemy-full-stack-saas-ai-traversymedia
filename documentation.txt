@@ -538,3 +538,16 @@ Section 11: Item display & R2 file storage
 
 -update component item-card.tsx and db/items.ts file
 -open route: http://localhost:3000/dashboard
+
+
+
+Section 12: Collections, search palette & favorites
+
+
+81. Create collections
+
+-update current-feature.md file
+-in folder actions create files collections.test.ts and collections.ts
+-in folder components create folder collections and component new-collection-dialog.tsx
+-update component top-bar.tsx and collections.ts file
+-open route: http://localhost:3000/dashboard and click button New collection
