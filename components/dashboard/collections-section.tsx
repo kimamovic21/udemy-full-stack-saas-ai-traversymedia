@@ -25,7 +25,9 @@ export default function CollectionsSection({
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {collections.map((collection) => (
-            <CollectionCard key={collection.id} collection={collection} />
+            <Link key={collection.id} href={`/collections/${collection.id}`}>
+              <CollectionCard collection={collection} />
+            </Link>
           ))}
         </div>
       )}

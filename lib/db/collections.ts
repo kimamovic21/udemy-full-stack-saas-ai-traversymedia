@@ -292,6 +292,122 @@ export async function getUserCollections(
   return collections;
 }
 
+/**
+ * Get all collections for a user with item type information
+ */
+export async function getAllCollections(
+  userId: string,
+): Promise<CollectionWithTypes[]> {
+  const collections = await prisma.collection.findMany({
+    where: { userId },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      _count: {
+        select: { items: true },
+      },
+      items: {
+        take: MAX_ITEMS_FOR_TYPE_SAMPLE,
+        include: {
+          item: {
+            select: {
+              itemType: {
+                select: {
+                  id: true,
+                  name: true,
+                  icon: true,
+                  color: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return collections.map((collection) => {
+    const itemTypes = countItemTypes(collection.items);
+    const dominantColor = itemTypes.length > 0 ? itemTypes[0].color : null;
+
+    return {
+      id: collection.id,
+      name: collection.name,
+      description: collection.description,
+      isFavorite: collection.isFavorite,
+      itemCount: collection._count.items,
+      itemTypes,
+      dominantColor,
+      createdAt: collection.createdAt,
+      updatedAt: collection.updatedAt,
+    };
+  });
+}
+
+export interface CollectionDetail {
+  id: string;
+  name: string;
+  description: string | null;
+  isFavorite: boolean;
+  itemCount: number;
+  itemTypes: CollectionItemType[];
+  dominantColor: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * Get a single collection by ID with ownership check
+ */
+export async function getCollectionById(
+  collectionId: string,
+  userId: string,
+): Promise<CollectionDetail | null> {
+  const collection = await prisma.collection.findFirst({
+    where: { id: collectionId, userId },
+    include: {
+      _count: {
+        select: { items: true },
+      },
+      items: {
+        take: MAX_ITEMS_FOR_TYPE_SAMPLE,
+        include: {
+          item: {
+            select: {
+              itemType: {
+                select: {
+                  id: true,
+                  name: true,
+                  icon: true,
+                  color: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!collection) {
+    return null;
+  }
+
+  const itemTypes = countItemTypes(collection.items);
+  const dominantColor = itemTypes.length > 0 ? itemTypes[0].color : null;
+
+  return {
+    id: collection.id,
+    name: collection.name,
+    description: collection.description,
+    isFavorite: collection.isFavorite,
+    itemCount: collection._count.items,
+    itemTypes,
+    dominantColor,
+    createdAt: collection.createdAt,
+    updatedAt: collection.updatedAt,
+  };
+}
+
 export async function createCollection(
   userId: string,
   data: CreateCollectionData,

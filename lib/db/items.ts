@@ -296,6 +296,30 @@ export async function getItemsByType(
 }
 
 /**
+ * Get items by collection ID for a user
+ */
+export async function getItemsByCollection(
+  userId: string,
+  collectionId: string,
+): Promise<ItemWithType[]> {
+  const items = await prisma.item.findMany({
+    where: {
+      userId,
+      collections: {
+        some: { collectionId },
+      },
+    },
+    orderBy: [{ isPinned: "desc" }, { updatedAt: "desc" }],
+    include: {
+      itemType: true,
+      tags: true,
+    },
+  });
+
+  return items.map(toItemWithType);
+}
+
+/**
  * Get full item detail by ID for a user
  */
 export async function getItemById(

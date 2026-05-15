@@ -561,3 +561,14 @@ Section 12: Collections, search palette & favorites
 -create component collection-picker.tsx
 -update existing tsx components and ts files
 -open route: http://localhost:3000/dashboard 
+
+
+83. Collection pages
+
+-create folder collections and component page.tsx
+-create folder [id] and component page.tsx
+-create files collections.test.ts and users.ts
+-update existing tsx component and ts file
+-open route: http://localhost:3000/dashboard
+-open route: http://localhost:3000/collections
+-open route: http://localhost:3000/collections/[id]
