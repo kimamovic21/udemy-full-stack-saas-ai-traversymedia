@@ -582,3 +582,12 @@ Section 12: Collections, search palette & favorites
 -open route: http://localhost:3000/dashboard
 -open route: http://localhost:3000/collections
 -open route: http://localhost:3000/collections/[id] 
+
+
+85. Search command palette
+
+-update current-feature.md file
+-in folder actions create files search.test.ts and search.ts
+-in folder components create folder search, components command-palette.tsx and search-provider.tsx
+-update existing tsx components and ts files
+-open route: http://localhost:3000/dashboard and search
