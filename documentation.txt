@@ -591,3 +591,14 @@ Section 12: Collections, search palette & favorites
 -in folder components create folder search, components command-palette.tsx and search-provider.tsx
 -update existing tsx components and ts files
 -open route: http://localhost:3000/dashboard and search
+
+
+86. Pagination for items & collections
+
+-update current-feature.md file
+-create pagination-spec.md file
+-in folder shared create component pagination.tsx
+-in folder constants create pagination.ts file
+-update existing tsx components and ts files
+-open route: http://localhost:3000/dashboard
+-open route: http://localhost:3000/collections

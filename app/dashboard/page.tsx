@@ -11,6 +11,10 @@ import {
   getDashboardStats,
   getItemTypesWithCounts,
 } from "@/lib/db/items";
+import {
+  DASHBOARD_COLLECTIONS_LIMIT,
+  DASHBOARD_RECENT_ITEMS_LIMIT,
+} from "@/lib/constants/pagination";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import StatsCards from "@/components/dashboard/stats-cards";
 import CollectionsSection from "@/components/dashboard/collections-section";
@@ -38,9 +42,9 @@ export default async function DashboardPage() {
     sidebarCollections,
   ] = user
     ? await Promise.all([
-        getRecentCollections(user.id, 6),
+        getRecentCollections(user.id, DASHBOARD_COLLECTIONS_LIMIT),
         getPinnedItems(user.id),
-        getRecentItems(user.id, 10),
+        getRecentItems(user.id, DASHBOARD_RECENT_ITEMS_LIMIT),
         getDashboardStats(user.id),
         getItemTypesWithCounts(user.id),
         getSidebarCollections(user.id),

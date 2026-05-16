@@ -4,10 +4,19 @@ import { auth } from "@/auth";
 import { getSidebarCollections, getAllCollections } from "@/lib/db/collections";
 import { getItemTypesWithCounts } from "@/lib/db/items";
 import { getUserById } from "@/lib/db/users";
+import { COLLECTIONS_PER_PAGE } from "@/lib/constants/pagination";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import CollectionCard from "@/components/dashboard/collection-card";
+import Pagination from "@/components/shared/pagination";
 
-export default async function CollectionsPage() {
+interface CollectionsPageProps {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function CollectionsPage({
+  searchParams,
+}: CollectionsPageProps) {
+  const { page: pageParam } = await searchParams;
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -20,11 +29,17 @@ export default async function CollectionsPage() {
     redirect("/sign-in");
   }
 
-  const [collections, itemTypes, sidebarCollections] = await Promise.all([
-    getAllCollections(user.id),
-    getItemTypesWithCounts(user.id),
-    getSidebarCollections(user.id),
-  ]);
+  // Parse page number (default to 1)
+  const currentPage = Math.max(1, parseInt(pageParam || "1", 10) || 1);
+
+  const [paginatedCollections, itemTypes, sidebarCollections] =
+    await Promise.all([
+      getAllCollections(user.id, currentPage, COLLECTIONS_PER_PAGE),
+      getItemTypesWithCounts(user.id),
+      getSidebarCollections(user.id),
+    ]);
+
+  const { collections, totalCount, totalPages } = paginatedCollections;
 
   return (
     <DashboardLayout
@@ -39,7 +54,7 @@ export default async function CollectionsPage() {
           <h1 className="text-2xl font-semibold text-foreground">
             Collections
           </h1>
-          <span className="text-muted-foreground">({collections.length})</span>
+          <span className="text-muted-foreground">({totalCount})</span>
         </div>
 
         {/* Collections Grid */}
@@ -56,6 +71,13 @@ export default async function CollectionsPage() {
             </p>
           </div>
         )}
+
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          baseUrl="/collections"
+        />
       </div>
     </DashboardLayout>
   );
