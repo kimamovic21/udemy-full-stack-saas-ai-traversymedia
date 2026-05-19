@@ -65,6 +65,7 @@ export default async function ProfilePage() {
         email: user.email,
         image: user.image,
       }}
+      editorPreferences={user.editorPreferences}
     >
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}

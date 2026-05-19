@@ -14,6 +14,7 @@ Not Started
 
 ## History
 
+- **Settings Page** - Settings page at /settings with Change Password and Delete Account, Settings link in sidebar dropdowns, getUserWithSettings utility, simplified ProfileInfo (Completed)
 - **Initial Setup** - Next.js 16, Tailwind CSS v4, TypeScript configured (Completed)
 - **Dashboard UI Phase 1** - ShadCN UI initialization, dashboard route at /dashboard, main layout with dark mode, top bar with search and buttons, sidebar and main placeholders (Completed)
 - **Dashboard UI Phase 2** - Collapsible sidebar with item type navigation, favorite and recent collections, user avatar area, mobile drawer, and responsive behavior (Completed)

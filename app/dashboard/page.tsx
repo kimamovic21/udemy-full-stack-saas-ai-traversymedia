@@ -11,6 +11,7 @@ import {
   getDashboardStats,
   getItemTypesWithCounts,
 } from "@/lib/db/items";
+import { getEditorPreferences } from "@/lib/db/users";
 import {
   DASHBOARD_COLLECTIONS_LIMIT,
   DASHBOARD_RECENT_ITEMS_LIMIT,
@@ -40,6 +41,7 @@ export default async function DashboardPage() {
     stats,
     itemTypes,
     sidebarCollections,
+    editorPreferences,
   ] = user
     ? await Promise.all([
         getRecentCollections(user.id, DASHBOARD_COLLECTIONS_LIMIT),
@@ -48,6 +50,7 @@ export default async function DashboardPage() {
         getDashboardStats(user.id),
         getItemTypesWithCounts(user.id),
         getSidebarCollections(user.id),
+        getEditorPreferences(user.id),
       ])
     : [
         [],
@@ -61,6 +64,7 @@ export default async function DashboardPage() {
         },
         [],
         { favorites: [], recents: [] },
+        undefined,
       ];
 
   return (
@@ -68,6 +72,7 @@ export default async function DashboardPage() {
       itemTypes={itemTypes}
       sidebarCollections={sidebarCollections}
       user={user}
+      editorPreferences={editorPreferences}
     >
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}

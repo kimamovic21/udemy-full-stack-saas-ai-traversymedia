@@ -7,6 +7,7 @@ import {
   getItemTypesWithCounts,
   VALID_ITEM_TYPES,
 } from "@/lib/db/items";
+import { getEditorPreferences } from "@/lib/db/users";
 import { ITEMS_PER_PAGE } from "@/lib/constants/pagination";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import ItemCard from "@/components/dashboard/item-card";
@@ -55,11 +56,13 @@ export default async function ItemsPage({
     redirect("/sign-in");
   }
 
-  const [paginatedItems, itemTypes, sidebarCollections] = await Promise.all([
-    getItemsByType(user.id, typeName, currentPage, ITEMS_PER_PAGE),
-    getItemTypesWithCounts(user.id),
-    getSidebarCollections(user.id),
-  ]);
+  const [paginatedItems, itemTypes, sidebarCollections, editorPreferences] =
+    await Promise.all([
+      getItemsByType(user.id, typeName, currentPage, ITEMS_PER_PAGE),
+      getItemTypesWithCounts(user.id),
+      getSidebarCollections(user.id),
+      getEditorPreferences(user.id),
+    ]);
 
   const { items, totalCount, totalPages } = paginatedItems;
   const displayName =
@@ -70,6 +73,7 @@ export default async function ItemsPage({
       itemTypes={itemTypes}
       sidebarCollections={sidebarCollections}
       user={user}
+      editorPreferences={editorPreferences}
     >
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}

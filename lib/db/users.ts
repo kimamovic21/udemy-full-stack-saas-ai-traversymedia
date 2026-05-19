@@ -1,4 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import {
+  type EditorPreferences,
+  mergeWithDefaults,
+} from "@/lib/constants/editor";
 
 export interface DashboardUser {
   id: string;
@@ -22,6 +26,7 @@ export async function getUserById(
 export interface UserWithSettings extends DashboardUser {
   hasPassword: boolean;
   createdAt: Date;
+  editorPreferences: EditorPreferences;
 }
 
 /**
@@ -39,6 +44,7 @@ export async function getUserWithSettings(
       image: true,
       password: true,
       createdAt: true,
+      editorPreferences: true,
     },
   });
 
@@ -51,5 +57,44 @@ export async function getUserWithSettings(
     image: user.image,
     hasPassword: !!user.password,
     createdAt: user.createdAt,
+    editorPreferences: mergeWithDefaults(
+      user.editorPreferences as Partial<EditorPreferences> | null,
+    ),
   };
+}
+
+/**
+ * Update user's editor preferences
+ */
+export async function updateEditorPreferences(
+  userId: string,
+  preferences: EditorPreferences,
+): Promise<boolean> {
+  try {
+    // Convert to plain JSON object for Prisma
+    const jsonPreferences = JSON.parse(JSON.stringify(preferences));
+    await prisma.user.update({
+      where: { id: userId },
+      data: { editorPreferences: jsonPreferences },
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Get user's editor preferences
+ */
+export async function getEditorPreferences(
+  userId: string,
+): Promise<EditorPreferences> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { editorPreferences: true },
+  });
+
+  return mergeWithDefaults(
+    user?.editorPreferences as Partial<EditorPreferences> | null,
+  );
 }

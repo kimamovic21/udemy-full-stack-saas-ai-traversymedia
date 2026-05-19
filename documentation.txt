@@ -613,3 +613,18 @@ Section 12: Collections, search palette & favorites
 -update existing tsx components and users.ts file
 -open route: http://localhost:3000/dashboard
 -open route: http://localhost:3000/settings 
+
+
+88. Editor settings
+
+-update current-feature.md file
+-create editor-settings-spec.md file
+-type command: npx shadcn@latest add switch
+-update schema.prisma file
+-in folder actions create files settings.test.ts and settings.ts
+-type command: npx prisma migrate dev --name add_editor_preferences
+-in folder settings create components editor-preferences-provider.tsx and editor-settings.tsx
+-update existing tsx components
+-update users.ts file
+-open route: http://localhost:3000/dashboard
+-open route: http://localhost:3000/settings

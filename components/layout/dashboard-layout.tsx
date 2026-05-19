@@ -3,13 +3,15 @@
 import { useState } from "react";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollections } from "@/lib/db/collections";
+import type { EditorPreferences } from "@/lib/constants/editor";
 import TopBar from "@/components/layout/top-bar";
 import Sidebar from "@/components/layout/sidebar";
 import MobileSidebar from "@/components/layout/mobile-sidebar";
-import { ItemDrawerProvider } from "@/components/items/item-drawer-provider";
+import ItemDrawerProvider from "@/components/items/item-drawer-provider";
 import ItemDrawer from "@/components/items/item-drawer";
 import SearchProvider from "@/components/search/search-provider";
 import CommandPalette from "@/components/search/command-palette";
+import EditorPreferencesProvider from "@/components/settings/editor-preferences-provider";
 
 interface User {
   id: string;
@@ -23,6 +25,7 @@ interface DashboardLayoutProps {
   itemTypes: ItemTypeWithCount[];
   sidebarCollections: SidebarCollections;
   user: User | null;
+  editorPreferences?: EditorPreferences;
 }
 
 export default function DashboardLayout({
@@ -30,9 +33,19 @@ export default function DashboardLayout({
   itemTypes,
   sidebarCollections,
   user,
+  editorPreferences,
 }: DashboardLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Wrap content with EditorPreferencesProvider if preferences are provided
+  const content = (
+    <>
+      <main className="flex-1 overflow-auto p-6">{children}</main>
+      <ItemDrawer />
+      <CommandPalette />
+    </>
+  );
 
   return (
     <SearchProvider>
@@ -61,9 +74,13 @@ export default function DashboardLayout({
 
           {/* Main Content */}
           <ItemDrawerProvider>
-            <main className="flex-1 overflow-auto p-6">{children}</main>
-            <ItemDrawer />
-            <CommandPalette />
+            {editorPreferences ? (
+              <EditorPreferencesProvider initialPreferences={editorPreferences}>
+                {content}
+              </EditorPreferencesProvider>
+            ) : (
+              content
+            )}
           </ItemDrawerProvider>
         </div>
       </div>
