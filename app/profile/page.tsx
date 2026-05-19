@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getSidebarCollections } from "@/lib/db/collections";
 import { getItemTypesWithCounts } from "@/lib/db/items";
+import { getUserWithSettings } from "@/lib/db/users";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import ProfileInfo from "@/components/profile/profile-info";
 import ProfileStats from "@/components/profile/profile-stats";
@@ -14,17 +15,7 @@ export default async function ProfilePage() {
     redirect("/sign-in");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true,
-      password: true,
-      createdAt: true,
-    },
-  });
+  const user = await getUserWithSettings(session.user.id);
 
   if (!user) {
     redirect("/sign-in");
@@ -79,7 +70,9 @@ export default async function ProfilePage() {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-foreground">Profile</h1>
-          <p className="text-muted-foreground">Manage your account settings</p>
+          <p className="text-muted-foreground">
+            View your account information and usage
+          </p>
         </div>
 
         {/* Profile Info */}
@@ -89,7 +82,6 @@ export default async function ProfilePage() {
             name: user.name,
             email: user.email,
             image: user.image,
-            hasPassword: !!user.password,
             createdAt: user.createdAt,
           }}
         />

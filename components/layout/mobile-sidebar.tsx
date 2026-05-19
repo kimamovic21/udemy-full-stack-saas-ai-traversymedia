@@ -1,7 +1,7 @@
 "use client";
 
 import { signOut } from "next-auth/react";
-import { Star, LogOut, User } from "lucide-react";
+import { Star, LogOut, User, Settings } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -186,6 +186,16 @@ export default function MobileSidebar({
                   >
                     <User className="mr-2 h-4 w-4" />
                     Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/settings"
+                    onClick={onClose}
+                    className="flex items-center"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

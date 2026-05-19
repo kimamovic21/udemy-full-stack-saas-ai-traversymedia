@@ -602,3 +602,14 @@ Section 12: Collections, search palette & favorites
 -update existing tsx components and ts files
 -open route: http://localhost:3000/dashboard
 -open route: http://localhost:3000/collections
+
+
+87. Move account actions to settings
+
+-update current-feature.md file
+-create folder settings and component page.tsx
+-create folder settings and component account-settings.tsx
+-move components change-password-dialog.tsx and delete-account-dialog.tsx to folder settings
+-update existing tsx components and users.ts file
+-open route: http://localhost:3000/dashboard
+-open route: http://localhost:3000/settings 
