@@ -1,4 +1,4 @@
-# Current Feature: Pinned Items
+# Current Feature: Homepage Mockup
 
 ## Status
 
@@ -6,21 +6,24 @@ In Progress
 
 ## Goals
 
-- Create toggleItemPin server action with ownership check and Zod validation
-- Make Pin button in ItemDrawer clickable (exists but has no onClick)
-- Optimistic UI updates for instant feedback on pin/unpin
-- Toast notification on success/error
-- Pinned items sort to top of item listings
-- Follow the existing Favorite Button pattern
-- Items only (not collections)
-- Pin icon on ItemCard remains as static indicator
+- Create a static marketing homepage in `prototypes/homepage/` with `index.html`, `styles.css`, `script.js`
+- Hero section with "chaos to order" concept: floating icons (left), pulsing arrow (center), dashboard preview (right)
+- Animated chaos icons that drift, bounce off walls, and repel from mouse cursor
+- Fixed top nav with logo, Features/Pricing links, Sign In/Get Started buttons
+- Features section with 6 cards using item type accent colors
+- AI section with Pro Feature badge, capabilities checklist, and code editor mockup
+- Pricing section with Free vs Pro cards, yearly toggle ($72/yr), Pro highlighted as "Most Popular"
+- CTA section and footer with logo, link columns, dynamic copyright year
+- Scroll fade-in animations and navbar opacity on scroll
+- Responsive: stack hero vertically on mobile, single column grids, arrow rotates 90°
 
 ## Notes
 
-- Follow the same pattern used for toggleItemFavorite
-- The Pin button already exists in the ItemDrawer action bar but is not wired up
-- Dashboard already has a pinned items section that should reflect pinned state
-- getItemsByType query already sorts pinned items first
+- Dark theme with accent colors: Snippet (#3b82f6), Prompt (#f59e0b), Command (#06b6d4), Note (#22c55e), File (#64748b), Image (#ec4899), URL (#6366f1)
+- This is a standalone static prototype, NOT part of the Next.js app
+- Chaos icons use requestAnimationFrame for animation
+- Arrow has CSS pulse animation
+- Full spec at context/features/homepage-mockup-spec.md
 
 ## History
 
@@ -70,3 +73,4 @@ In Progress
 - **Global Search / Command Palette** - Cmd+K/Ctrl+K opens command palette, search across items and collections, grouped results with type icons and item counts, keyboard navigation, TopBar search trigger, SearchProvider context with data pre-fetching, stricter substring matching, 7 new unit tests (Completed)
 - **Pagination** - Reusable Pagination component with numbered pages and prev/next buttons, pagination on /items/[type], /collections, and /collections/[id] pages, server-side pagination with skip/take, pagination constants (ITEMS_PER_PAGE=21, COLLECTIONS_PER_PAGE=21), dashboard limits (DASHBOARD_COLLECTIONS_LIMIT=6, DASHBOARD_RECENT_ITEMS_LIMIT=10) (Completed)
 - **Favorites Sorting** - Client-side sorting on /favorites page, FavoritesItemList component with sort by Name/Date/Type, FavoritesCollectionList component with sort by Name/Date, shadcn Select dropdowns with compact monospace styling, useMemo for sorted lists, default sort by newest (Completed)
+- **Pinned Items** - toggleItemPin db query and server action with ownership check and Zod validation, wired up ItemDrawer pin button with optimistic state update, blue highlight when pinned, toast feedback, router.refresh(), 5 new unit tests (Completed)

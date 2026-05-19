@@ -656,3 +656,15 @@ Section 12: Collections, search palette & favorites
 -update existing tsx components and ts files
 -open route: http://localhost:3000/favorites
 -open route: http://localhost:3000/collections 
+
+
+
+Section 13: Homepage & Stripe integration
+
+
+92. Homepage mockup (HTML/CSS/JS)
+
+-update current-feature.md file
+-create homepage-mockup-spec.md file
+-create folders prototypes and homepage
+-in folder homepage create files index.html, script.js and styles.css
