@@ -628,3 +628,14 @@ Section 12: Collections, search palette & favorites
 -update users.ts file
 -open route: http://localhost:3000/dashboard
 -open route: http://localhost:3000/settings
+
+
+89. Favorites page
+
+-update current-feature.md file
+-create favorites-spec.md file
+-create folder favorites and component page.tsx
+-in folder components create folder favorites and tsx components
+-update existing tsx components and ts files
+-open route: http://localhost:3000/dashboard
+-open route: http://localhost:3000/favorites

@@ -44,11 +44,12 @@ export async function getUserWithSettings(
       image: true,
       password: true,
       createdAt: true,
-      editorPreferences: true,
     },
   });
 
   if (!user) return null;
+
+  const editorPreferences = await getEditorPreferences(userId);
 
   return {
     id: user.id,
@@ -57,9 +58,7 @@ export async function getUserWithSettings(
     image: user.image,
     hasPassword: !!user.password,
     createdAt: user.createdAt,
-    editorPreferences: mergeWithDefaults(
-      user.editorPreferences as Partial<EditorPreferences> | null,
-    ),
+    editorPreferences,
   };
 }
 
@@ -73,9 +72,10 @@ export async function updateEditorPreferences(
   try {
     // Convert to plain JSON object for Prisma
     const jsonPreferences = JSON.parse(JSON.stringify(preferences));
+    const updateData: any = { editorPreferences: jsonPreferences };
     await prisma.user.update({
       where: { id: userId },
-      data: { editorPreferences: jsonPreferences },
+      data: updateData,
     });
     return true;
   } catch {
@@ -89,12 +89,9 @@ export async function updateEditorPreferences(
 export async function getEditorPreferences(
   userId: string,
 ): Promise<EditorPreferences> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { editorPreferences: true },
-  });
+  const user = await prisma.user.findUnique({ where: { id: userId } });
 
   return mergeWithDefaults(
-    user?.editorPreferences as Partial<EditorPreferences> | null,
+    (user as any)?.editorPreferences as Partial<EditorPreferences> | null,
   );
 }
