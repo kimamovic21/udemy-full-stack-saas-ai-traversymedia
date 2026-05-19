@@ -647,3 +647,12 @@ Section 12: Collections, search palette & favorites
 -update existing tsx components and ts files
 -open route: http://localhost:3000/favorites
 -open route: http://localhost:3000/collections
+
+
+91. Pinned items
+
+-update current-feature.md file
+-create pinned-spec.md file
+-update existing tsx components and ts files
+-open route: http://localhost:3000/favorites
+-open route: http://localhost:3000/collections 
