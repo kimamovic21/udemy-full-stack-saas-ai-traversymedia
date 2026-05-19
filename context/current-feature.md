@@ -1,4 +1,4 @@
-# Current Feature: Favorite Toggle
+# Current Feature
 
 ## Status
 
@@ -6,19 +6,25 @@ In Progress
 
 ## Goals
 
-- Wire up favorite toggle on items (ItemDrawer) and collections (CollectionCard dropdown, CollectionActions button)
-- Add toggleItemFavorite and toggleCollectionFavorite db queries and server actions
-- Toast feedback, router.refresh() after toggle, unit tests
+- Add client-side sorting controls to the /favorites page
+- Sort options: Name (A-Z / Z-A), Date (newest / oldest), Item Type (grouped by type)
+- Sorting applies independently to both Items and Collections sections
+- Collections sort by Name and Date only (no item type)
+- Preserve the existing compact list layout and server component data fetching
+- No URL state or server-side changes needed — purely client-side
 
 ## Notes
 
-- Prisma schema already has `isFavorite` on Item and Collection - no migration needed
-- UI buttons/icons already exist but have no onClick handlers
-- Star filled yellow (#eab308) when active (existing styling in place)
-- Follow existing patterns: Zod validation, ownership checks, { success, data, error } return
+- Current page is a server component ([page.tsx](src/app/favorites/page.tsx)) that fetches data and renders FavoriteItemRow / FavoriteCollectionRow
+- Need to extract the list rendering into a client component to handle sort state
+- Use a small sort dropdown or toggle buttons in each section header
+- Keep it minimal — match existing dev-focused aesthetic (monospace, compact)
+- ItemWithType has `item.title`, `item.updatedAt`, `item.itemType.name` for sorting
+- FavoriteCollection has `collection.name`, `collection.updatedAt` for sorting
 
 ## History
 
+- **Favorite Toggle** - toggleItemFavorite and toggleCollectionFavorite db queries and server actions with ownership checks and Zod validation, wired up ItemDrawer favorite button with optimistic state update, CollectionCard dropdown Favorite/Unfavorite menu item, CollectionActions star button on collection detail page, toast feedback, router.refresh(), 10 new unit tests (Completed)
 - **Favorites Page** - Star icon in TopBar linking to /favorites, getFavoriteItems and getFavoriteCollections db queries, FavoriteItemRow and FavoriteCollectionRow components with compact VS Code/terminal-style rows, /favorites page with separate items/collections sections, click item opens ItemDrawer, click collection navigates to detail, empty state (Completed)
 
 - **Editor Preferences Settings** - Editor preferences on settings page with font size, tab size, word wrap, minimap, and theme dropdowns/toggles, editorPreferences JSON column on User model with migration, EditorPreferencesProvider context, updateEditorPreferences server action, Monaco editor applies user preferences, auto-save with toast, 19 unit tests (Completed)
