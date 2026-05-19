@@ -639,3 +639,11 @@ Section 12: Collections, search palette & favorites
 -update existing tsx components and ts files
 -open route: http://localhost:3000/dashboard
 -open route: http://localhost:3000/favorites
+
+
+90. Favorites toggle & sort
+
+-update current-feature.md file
+-update existing tsx components and ts files
+-open route: http://localhost:3000/favorites
+-open route: http://localhost:3000/collections
