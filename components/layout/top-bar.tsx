@@ -1,9 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Menu, Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, Menu, Star, Plus, FolderPlus, FilePlus } from "lucide-react";
 import { useSearch } from "@/components/search/search-provider";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import NewItemDialog from "@/components/items/new-item-dialog";
 import NewCollectionDialog from "@/components/collections/new-collection-dialog";
@@ -18,30 +24,30 @@ export default function TopBar({ onMenuClick }: TopBarProps) {
   const { openSearch } = useSearch();
 
   return (
-    <header className="flex h-14 items-center gap-4 border-b border-border px-6">
+    <header className="flex h-14 items-center gap-2 sm:gap-4 border-b border-border px-3 sm:px-6">
       {/* Mobile menu button */}
       <Button
         variant="ghost"
         size="icon"
-        className="lg:hidden"
+        className="lg:hidden shrink-0"
         onClick={onMenuClick}
       >
         <Menu className="h-5 w-5" />
       </Button>
 
       {/* Logo */}
-      <Link href="/dashboard" className="flex items-center gap-2">
+      <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
         <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <span className="text-sm font-bold">DS</span>
         </div>
-        <span className="text-lg font-semibold">DevStash</span>
+        <span className="hidden sm:inline text-lg font-semibold">DevStash</span>
       </Link>
 
-      {/* Search trigger - opens command palette */}
+      {/* Search trigger - full bar on sm+, icon-only on mobile */}
       <button
         type="button"
         onClick={openSearch}
-        className="relative mx-auto flex max-w-md flex-1 items-center h-9 rounded-md border border-input bg-background px-3 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+        className="relative mx-auto hidden sm:flex max-w-md flex-1 items-center h-9 rounded-md border border-input bg-background px-3 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
       >
         <Search className="mr-2 h-4 w-4" />
         <span className="flex-1 text-left">Search items...</span>
@@ -50,21 +56,58 @@ export default function TopBar({ onMenuClick }: TopBarProps) {
         </kbd>
       </button>
 
+      {/* Mobile search icon */}
+      <div className="flex-1 sm:hidden" />
+      <Button
+        variant="ghost"
+        size="icon"
+        className="sm:hidden shrink-0"
+        onClick={openSearch}
+      >
+        <Search className="h-5 w-5" />
+      </Button>
+
       {/* Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/favorites" title="Favorites">
             <Star className="h-5 w-5" />
           </Link>
         </Button>
+
+        {/* Mobile: + dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" className="sm:hidden">
+              <Plus className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setNewItemOpen(true)}>
+              <FilePlus className="mr-2 h-4 w-4" />
+              New Item
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setNewCollectionOpen(true)}>
+              <FolderPlus className="mr-2 h-4 w-4" />
+              New Collection
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Desktop: full buttons */}
         <Button
           variant="outline"
           size="sm"
+          className="hidden sm:inline-flex"
           onClick={() => setNewCollectionOpen(true)}
         >
           New Collection
         </Button>
-        <Button size="sm" onClick={() => setNewItemOpen(true)}>
+        <Button
+          size="sm"
+          className="hidden sm:inline-flex"
+          onClick={() => setNewItemOpen(true)}
+        >
           New Item
         </Button>
       </div>

@@ -1,4 +1,4 @@
-# Current Feature: Homepage
+# Current Feature
 
 ## Status
 
@@ -6,29 +6,24 @@ In Progress
 
 ## Goals
 
-- Convert the static HTML prototype (`prototypes/homepage/`) into the actual Next.js homepage at `src/app/page.tsx`
-- Faithfully reproduce the design, layout, and animations using Tailwind CSS and shadcn/ui
-- Build 11 components: page shell, Navbar, HeroSection, ChaosAnimation, DashboardPreview, FeaturesSection, AISection, PricingSection, CTASection, Footer, ScrollFadeIn
-- Server components by default; client components only for Navbar (scroll effect, mobile menu), HeroSection, ChaosAnimation, PricingSection (billing toggle), ScrollFadeIn (IntersectionObserver)
-- All navigation links wired up: Sign In -> /sign-in, Get Started -> /register, Features/Pricing -> anchor scroll
-- Responsive layout: 3-col -> 2-col -> 1-col grids, mobile hamburger menu
-- Dark theme matching prototype with blue gradient accents
-- Smooth scroll via `scroll-smooth` on html/body
+- Fix top bar overflow on mobile (header is 590px, overflows 320-375px viewports)
+- Hide "DevStash" logo text below `sm`, keep the "DS" badge only
+- Collapse search bar to icon-only below `sm`, still opens command palette on tap
+- Replace "New Collection" and "New Item" buttons with a single "+" dropdown menu on mobile (below `sm`)
+- Keep Favorites star visible at all sizes
+- Target mobile top bar layout: `☰  [DS]  🔍  ☆  +`
 
 ## Notes
 
-- Use Lucide React icons instead of inline SVGs
-- Use `next/link` for internal routes, plain `<a>` for anchor links
-- Chaos animation: port requestAnimationFrame loop into useEffect with ref-based state, clean up on unmount
-- ScrollFadeIn: IntersectionObserver with threshold 0.1, CSS transition (opacity 0->1, translateY 24px->0)
-- Pricing toggle: useState for isYearly, swap $8/month to $6/month (billed $72/yr)
-- Navbar scroll effect: track window.scrollY in useEffect, toggle background opacity/border
-- Use shadcn Button component (variant="default" for primary, variant="outline" for ghost)
-- Feature card accent colors via inline styles or Tailwind arbitrary values
-- Reference files: prototypes/homepage/index.html, styles.css, script.js
+- Actions div (Favorites, New Collection, New Item) is entirely off-screen on mobile
+- No overflow-hidden on header, so content silently overflows
+- At 768px (tablet) it fits fine, issue is below ~640px
+- Use shadcn DropdownMenu for the "+" button
+- Show full layout (text buttons, search bar, logo text) at `sm` (640px) and above
 
 ## History
 
+- **Homepage** - Converted static HTML prototype into 11 Next.js components (Navbar, HeroSection, ChaosAnimation, DashboardPreview, FeaturesSection, AISection, PricingSection, CTASection, Footer, ScrollFadeIn), page shell at src/app/page.tsx, chaos-to-order animation with rAF/mouse repulsion, scroll fade-in via IntersectionObserver, pricing monthly/yearly toggle, navbar scroll effect with mobile hamburger menu, responsive 3->2->1 col grids, dark theme with blue gradient accents, smooth scroll, all links wired to /sign-in /register and anchor sections (Completed)
 - **Favorite Toggle** - toggleItemFavorite and toggleCollectionFavorite db queries and server actions with ownership checks and Zod validation, wired up ItemDrawer favorite button with optimistic state update, CollectionCard dropdown Favorite/Unfavorite menu item, CollectionActions star button on collection detail page, toast feedback, router.refresh(), 10 new unit tests (Completed)
 - **Favorites Page** - Star icon in TopBar linking to /favorites, getFavoriteItems and getFavoriteCollections db queries, FavoriteItemRow and FavoriteCollectionRow components with compact VS Code/terminal-style rows, /favorites page with separate items/collections sections, click item opens ItemDrawer, click collection navigates to detail, empty state (Completed)
 - **Editor Preferences Settings** - Editor preferences on settings page with font size, tab size, word wrap, minimap, and theme dropdowns/toggles, editorPreferences JSON column on User model with migration, EditorPreferencesProvider context, updateEditorPreferences server action, Monaco editor applies user preferences, auto-save with toast, 19 unit tests (Completed)
