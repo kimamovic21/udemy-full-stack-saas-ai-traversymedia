@@ -668,3 +668,18 @@ Section 13: Homepage & Stripe integration
 -create homepage-mockup-spec.md file
 -create folders prototypes and homepage
 -in folder homepage create files index.html, script.js and styles.css
+
+
+93. Implement homepage
+
+-update files index.html and styles.css
+open route: http://localhost:3000/collections 
+
+
+94. Fix top bar on mobile
+
+
+95. UI review agent
+
+
+96. Small UI update

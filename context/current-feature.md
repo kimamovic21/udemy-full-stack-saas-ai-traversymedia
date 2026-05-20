@@ -1,16 +1,31 @@
-# Current Feature
+# Current Feature: Homepage
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
-<!-- Add feature goals here -->
+- Convert the static HTML prototype (`prototypes/homepage/`) into the actual Next.js homepage at `src/app/page.tsx`
+- Faithfully reproduce the design, layout, and animations using Tailwind CSS and shadcn/ui
+- Build 11 components: page shell, Navbar, HeroSection, ChaosAnimation, DashboardPreview, FeaturesSection, AISection, PricingSection, CTASection, Footer, ScrollFadeIn
+- Server components by default; client components only for Navbar (scroll effect, mobile menu), HeroSection, ChaosAnimation, PricingSection (billing toggle), ScrollFadeIn (IntersectionObserver)
+- All navigation links wired up: Sign In -> /sign-in, Get Started -> /register, Features/Pricing -> anchor scroll
+- Responsive layout: 3-col -> 2-col -> 1-col grids, mobile hamburger menu
+- Dark theme matching prototype with blue gradient accents
+- Smooth scroll via `scroll-smooth` on html/body
 
 ## Notes
 
-<!-- Add notes and constraints here -->
+- Use Lucide React icons instead of inline SVGs
+- Use `next/link` for internal routes, plain `<a>` for anchor links
+- Chaos animation: port requestAnimationFrame loop into useEffect with ref-based state, clean up on unmount
+- ScrollFadeIn: IntersectionObserver with threshold 0.1, CSS transition (opacity 0->1, translateY 24px->0)
+- Pricing toggle: useState for isYearly, swap $8/month to $6/month (billed $72/yr)
+- Navbar scroll effect: track window.scrollY in useEffect, toggle background opacity/border
+- Use shadcn Button component (variant="default" for primary, variant="outline" for ghost)
+- Feature card accent colors via inline styles or Tailwind arbitrary values
+- Reference files: prototypes/homepage/index.html, styles.css, script.js
 
 ## History
 
