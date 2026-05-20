@@ -1,16 +1,27 @@
-# Current Feature
+# Current Feature: Stripe Integration - Phase 1 (Core Infrastructure)
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
-<!-- Add feature goals here -->
+- Install Stripe SDK and initialize in `src/lib/stripe.ts`
+- Create usage limit utilities in `src/lib/usage.ts` (MAX_ITEMS=50, MAX_COLLECTIONS=3 for free tier)
+- Write unit tests for usage limit functions (`src/lib/usage.test.ts`)
+- Add `isPro` to NextAuth session/JWT types and sync from database in auth callbacks
+- Create checkout session API route (`POST /api/stripe/checkout`) with plan mapping
+- Create customer portal API route (`POST /api/stripe/portal`)
 
 ## Notes
 
-<!-- Add notes and constraints here -->
+- Database already has `isPro`, `stripeCustomerId`, `stripeSubscriptionId` fields on User model
+- Env vars needed: `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID_MONTHLY`, `STRIPE_PRICE_ID_YEARLY`
+- Price IDs stay server-side only - client sends `plan: 'monthly' | 'yearly'`, API maps to env var
+- No UI changes in this phase - all API routes testable with curl/Postman
+- JWT callback queries `isPro` from DB on every session validation (fast PK lookup)
+- Customer portal requires prior Stripe customer creation (happens during first checkout)
+- Success URL: `/settings?upgraded=true`, Cancel URL: `/settings`
 
 ## History
 
@@ -18,7 +29,9 @@ Not Started
 - **Favorite Toggle** - toggleItemFavorite and toggleCollectionFavorite db queries and server actions with ownership checks and Zod validation, wired up ItemDrawer favorite button with optimistic state update, CollectionCard dropdown Favorite/Unfavorite menu item, CollectionActions star button on collection detail page, toast feedback, router.refresh(), 10 new unit tests (Completed)
 - **Favorites Page** - Star icon in TopBar linking to /favorites, getFavoriteItems and getFavoriteCollections db queries, FavoriteItemRow and FavoriteCollectionRow components with compact VS Code/terminal-style rows, /favorites page with separate items/collections sections, click item opens ItemDrawer, click collection navigates to detail, empty state (Completed)
 - **Editor Preferences Settings** - Editor preferences on settings page with font size, tab size, word wrap, minimap, and theme dropdowns/toggles, editorPreferences JSON column on User model with migration, EditorPreferencesProvider context, updateEditorPreferences server action, Monaco editor applies user preferences, auto-save with toast, 19 unit tests (Completed)
+
 - **Settings Page** - Settings page at /settings with Change Password and Delete Account, Settings link in sidebar dropdowns, getUserWithSettings utility, simplified ProfileInfo (Completed)
+
 - **Initial Setup** - Next.js 16, Tailwind CSS v4, TypeScript configured (Completed)
 - **Dashboard UI Phase 1** - ShadCN UI initialization, dashboard route at /dashboard, main layout with dark mode, top bar with search and buttons, sidebar and main placeholders (Completed)
 - **Dashboard UI Phase 2** - Collapsible sidebar with item type navigation, favorite and recent collections, user avatar area, mobile drawer, and responsive behavior (Completed)

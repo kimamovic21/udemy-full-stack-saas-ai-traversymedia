@@ -683,3 +683,30 @@ open route: http://localhost:3000/collections
 
 
 96. Small UI update
+
+
+97. Stripe sandbox setup
+
+-open link: https://stripe.com
+-open Stripe dashboard and create Udemy Devstash Sandbox
+-create a product Devstash Pro Plan
+-in .env file create five Stripe env variables
+
+
+98. Stripe integration plan
+
+-update current-feature.md file
+-in folder research create stripe-integration-research.md file
+-in folder docs create stripe-integration-plan.md file
+-in folder features create files stripe-phase-1-spec.md and stripe-phase-2-spec.md 
+
+
+99. Stripe implementation - phase 1
+
+-open link: https://www.npmjs.com/package/stripe
+-type command: npm i stripe
+-in folder lib create files stripe.ts, usage.test.ts and usage.ts
+-update auth.ts file
+-in folder types update next-auth.d.ts file
+-in folder api create folder stripe
+-in folder stripe create folders checkout and portal with route.ts files
