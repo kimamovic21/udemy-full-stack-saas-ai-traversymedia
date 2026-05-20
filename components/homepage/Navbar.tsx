@@ -1,9 +1,11 @@
 "use client";
 
+/* eslint-disable @next/next/no-html-link-for-pages */
+
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { FolderOpen, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -23,7 +25,7 @@ export default function Navbar() {
           : "bg-[#0a0a0f]/60 border-b border-transparent"
       }`}
     >
-      <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-300 mx-auto px-6 h-16 flex items-center justify-between">
         <Link
           href="/"
           className="flex items-center gap-2.5 font-bold text-lg text-[#e4e4ef]"
@@ -34,13 +36,13 @@ export default function Navbar() {
 
         <div className="hidden md:flex gap-8">
           <a
-            href="#features"
+            href="/#features"
             className="text-sm font-medium text-[#8888a4] hover:text-[#e4e4ef] transition-colors"
           >
             Features
           </a>
           <a
-            href="#pricing"
+            href="/#pricing"
             className="text-sm font-medium text-[#8888a4] hover:text-[#e4e4ef] transition-colors"
           >
             Pricing
@@ -57,7 +59,7 @@ export default function Navbar() {
           </Button>
           <Button
             asChild
-            className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-400 text-white border-0 hover:opacity-90"
+            className="bg-linear-to-r from-blue-700 via-blue-600 to-blue-400 text-white border-0 hover:opacity-90"
           >
             <Link href="/register">Get Started</Link>
           </Button>
@@ -75,14 +77,14 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="md:hidden flex flex-col gap-2 px-6 pb-6 border-t border-[#1e1e2e]">
           <a
-            href="#features"
+            href="/#features"
             className="text-[#8888a4] text-sm py-2"
             onClick={() => setMobileOpen(false)}
           >
             Features
           </a>
           <a
-            href="#pricing"
+            href="/#pricing"
             className="text-[#8888a4] text-sm py-2"
             onClick={() => setMobileOpen(false)}
           >
@@ -99,7 +101,7 @@ export default function Navbar() {
           </Button>
           <Button
             asChild
-            className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-400 text-white border-0 justify-center"
+            className="bg-linear-to-r from-blue-700 via-blue-600 to-blue-400 text-white border-0 justify-center"
           >
             <Link href="/register" onClick={() => setMobileOpen(false)}>
               Get Started
