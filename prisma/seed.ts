@@ -67,7 +67,14 @@ async function main() {
 
   const demoUser = await prisma.user.upsert({
     where: { email: "demo@devstash.io" },
-    update: {},
+    update: {
+      name: "Demo User",
+      password: hashedPassword,
+      isPro: false,
+      stripeCustomerId: null,
+      stripeSubscriptionId: null,
+      emailVerified: new Date(),
+    },
     create: {
       email: "demo@devstash.io",
       name: "Demo User",

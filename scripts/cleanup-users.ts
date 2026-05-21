@@ -29,6 +29,17 @@ async function main() {
     console.log(`\nTotal users: ${totalUsersBefore}`);
     console.log(`Users to delete (excluding ${DEMO_EMAIL}): ${usersToDelete}`);
 
+    // Reset demo user's Stripe fields
+    await prisma.user.updateMany({
+      where: { email: DEMO_EMAIL },
+      data: {
+        isPro: false,
+        stripeCustomerId: null,
+        stripeSubscriptionId: null,
+      },
+    });
+    console.log(`\nReset Stripe fields for ${DEMO_EMAIL}`);
+
     if (usersToDelete === 0) {
       console.log("\nNo users to delete. Only the demo user exists.");
       return;
