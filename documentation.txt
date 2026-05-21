@@ -751,3 +751,11 @@ open route: http://localhost:3000/collections
 -open PostgreSQL db and check table users
 -open route: http://localhost:3000/settings and click button Manage billing
 -open route billing.stripe.com
+
+
+103. Production Stripe testing
+
+-update current-feature.md file
+-update current tsx components and ts files
+-open Developers settings and create a webhook with six events
+-add your env variables to production

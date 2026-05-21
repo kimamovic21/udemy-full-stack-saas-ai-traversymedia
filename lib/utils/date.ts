@@ -1,74 +1,35 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
-import { formatRelativeDate } from "./date";
+/**
+ * Format a date as a relative time string
+ * Returns "Today", "Yesterday", "X days ago", or a formatted date
+ */
+export function formatRelativeDate(date: Date | string): string {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - dateObj.getTime());
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-describe("formatRelativeDate", () => {
-  afterEach(() => {
-    vi.useRealTimers();
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  const weeks = Math.floor(diffDays / 7);
+  if (diffDays < 30) return `${weeks} ${weeks === 1 ? "week" : "weeks"} ago`;
+
+  return dateObj.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: diffDays > 365 ? "numeric" : undefined,
   });
+}
 
-  it('returns "Today" for the current date', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
-
-    expect(formatRelativeDate(new Date("2025-06-15T08:00:00Z"))).toBe("Today");
+/**
+ * Format a date in long format for display (e.g., "January 15, 2024")
+ * Used for item created/updated dates
+ */
+export function formatLongDate(date: Date | string): string {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  return dateObj.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   });
-
-  it('returns "Yesterday" for one day ago', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
-
-    expect(formatRelativeDate(new Date("2025-06-14T12:00:00Z"))).toBe(
-      "Yesterday",
-    );
-  });
-
-  it('returns "X days ago" for 2-6 days ago', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
-
-    expect(formatRelativeDate(new Date("2025-06-12T12:00:00Z"))).toBe(
-      "3 days ago",
-    );
-  });
-
-  it('returns "1 week ago" for 7-13 days ago', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
-
-    expect(formatRelativeDate(new Date("2025-06-08T12:00:00Z"))).toBe(
-      "1 week ago",
-    );
-  });
-
-  it('returns "X weeks ago" for 14-29 days ago', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
-
-    expect(formatRelativeDate(new Date("2025-06-01T12:00:00Z"))).toBe(
-      "2 weeks ago",
-    );
-  });
-
-  it("returns formatted date for 30+ days ago", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
-
-    const result = formatRelativeDate(new Date("2025-04-01T12:00:00Z"));
-    expect(result).toBe("Apr 1");
-  });
-
-  it("includes year for dates over 365 days ago", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
-
-    const result = formatRelativeDate(new Date("2024-01-15T12:00:00Z"));
-    expect(result).toBe("Jan 15, 2024");
-  });
-
-  it("accepts string dates", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date("2025-06-15T12:00:00Z"));
-
-    expect(formatRelativeDate("2025-06-15T08:00:00Z")).toBe("Today");
-  });
-});
+}

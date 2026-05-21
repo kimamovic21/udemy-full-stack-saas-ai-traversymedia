@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,11 +21,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 import { createItem, type CreateItemInput } from "@/actions/items";
 import { getUserCollections } from "@/actions/collections";
 import { getItemTypeIcon, ITEM_TYPE_COLORS } from "@/lib/constants/item-types";
+import { LANGUAGES } from "@/lib/constants/editor";
 import CollectionPicker, { type CollectionOption } from "./collection-picker";
 import CodeEditor from "./code-editor";
 import MarkdownEditor from "./markdown-editor";
@@ -267,6 +268,27 @@ export default function NewItemDialog({
             />
           </div>
 
+          {showLanguageField && (
+            <div className="space-y-2">
+              <Label htmlFor="language">Language</Label>
+              <Select
+                value={language || "plaintext"}
+                onValueChange={setLanguage}
+              >
+                <SelectTrigger id="language">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LANGUAGES.map((lang) => (
+                    <SelectItem key={lang.value} value={lang.value}>
+                      {lang.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {showContentField && (
             <div className="space-y-2">
               <Label htmlFor="content">Content</Label>
@@ -283,19 +305,6 @@ export default function NewItemDialog({
                   placeholder="Write your content in Markdown..."
                 />
               )}
-            </div>
-          )}
-
-          {showLanguageField && (
-            <div className="space-y-2">
-              <Label htmlFor="language">Language</Label>
-              <Input
-                id="language"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                placeholder="e.g., javascript, python, bash"
-                disabled={isLoading}
-              />
             </div>
           )}
 
