@@ -4,10 +4,10 @@ import { useState } from "react";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollections } from "@/lib/db/collections";
 import type { EditorPreferences } from "@/lib/constants/editor";
-import { ItemDrawerProvider } from "@/components/items/item-drawer-provider";
 import TopBar from "@/components/layout/top-bar";
 import Sidebar from "@/components/layout/sidebar";
 import MobileSidebar from "@/components/layout/mobile-sidebar";
+import ItemDrawerProvider from "@/components/items/item-drawer-provider";
 import ItemDrawer from "@/components/items/item-drawer";
 import SearchProvider from "@/components/search/search-provider";
 import CommandPalette from "@/components/search/command-palette";
@@ -26,6 +26,7 @@ interface DashboardLayoutProps {
   sidebarCollections: SidebarCollections;
   user: User | null;
   editorPreferences?: EditorPreferences;
+  isPro?: boolean;
 }
 
 export default function DashboardLayout({
@@ -34,6 +35,7 @@ export default function DashboardLayout({
   sidebarCollections,
   user,
   editorPreferences,
+  isPro,
 }: DashboardLayoutProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -50,7 +52,10 @@ export default function DashboardLayout({
   return (
     <SearchProvider>
       <div className="flex h-screen flex-col">
-        <TopBar onMenuClick={() => setIsMobileSidebarOpen(true)} />
+        <TopBar
+          onMenuClick={() => setIsMobileSidebarOpen(true)}
+          isPro={isPro}
+        />
         <div className="flex flex-1 overflow-hidden">
           {/* Desktop Sidebar */}
           <div className="hidden lg:block">

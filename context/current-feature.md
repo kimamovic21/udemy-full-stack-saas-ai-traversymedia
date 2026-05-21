@@ -1,38 +1,18 @@
-# Current Feature: Stripe Phase 2 (Webhooks, Feature Gating & UI)
+# Current Feature
 
 ## Status
 
-In Progress
+Not Started
 
 ## Goals
 
-- Handle Stripe webhook events to sync subscription status to database
-- Gate item creation behind free tier limits (50 items)
-- Gate collection creation behind free tier limits (3 collections)
-- Gate file/image uploads behind Pro check
-- Add billing section to settings page with usage display and upgrade/manage buttons
-- Show upgrade success toast after checkout redirect
+<!-- Add feature goals here -->
 
 ## Notes
 
-- Requires Stripe CLI for local webhook testing (`stripe listen --forward-to localhost:3000/api/webhooks/stripe`)
-- Webhook route uses `request.text()` for raw body - no special Next.js config needed
-- `updateMany` in webhook handlers for idempotent duplicate event handling
-- Payment failures only log warnings - Stripe retries automatically, downgrade only on `subscription.deleted`
-- `checkout.session.completed` uses `metadata.userId`; other handlers use `stripeCustomerId`
-- Customer/subscription fields may be string or object - handle both with typeof checks
-- New files: `src/app/api/webhooks/stripe/route.ts`, `src/components/settings/billing-settings.tsx`
-- Modified files: `src/actions/items.ts`, `src/actions/collections.ts`, `src/app/api/upload/route.ts`, `src/app/settings/page.tsx`
-- Full spec: `context/features/stripe-phase-2-spec.md`
+<!-- Add notes and constraints here -->
 
 ## History
-
-- **Homepage** - Converted static HTML prototype into 11 Next.js components (Navbar, HeroSection, ChaosAnimation, DashboardPreview, FeaturesSection, AISection, PricingSection, CTASection, Footer, ScrollFadeIn), page shell at src/app/page.tsx, chaos-to-order animation with rAF/mouse repulsion, scroll fade-in via IntersectionObserver, pricing monthly/yearly toggle, navbar scroll effect with mobile hamburger menu, responsive 3->2->1 col grids, dark theme with blue gradient accents, smooth scroll, all links wired to /sign-in /register and anchor sections (Completed)
-- **Favorite Toggle** - toggleItemFavorite and toggleCollectionFavorite db queries and server actions with ownership checks and Zod validation, wired up ItemDrawer favorite button with optimistic state update, CollectionCard dropdown Favorite/Unfavorite menu item, CollectionActions star button on collection detail page, toast feedback, router.refresh(), 10 new unit tests (Completed)
-- **Favorites Page** - Star icon in TopBar linking to /favorites, getFavoriteItems and getFavoriteCollections db queries, FavoriteItemRow and FavoriteCollectionRow components with compact VS Code/terminal-style rows, /favorites page with separate items/collections sections, click item opens ItemDrawer, click collection navigates to detail, empty state (Completed)
-- **Editor Preferences Settings** - Editor preferences on settings page with font size, tab size, word wrap, minimap, and theme dropdowns/toggles, editorPreferences JSON column on User model with migration, EditorPreferencesProvider context, updateEditorPreferences server action, Monaco editor applies user preferences, auto-save with toast, 19 unit tests (Completed)
-
-- **Settings Page** - Settings page at /settings with Change Password and Delete Account, Settings link in sidebar dropdowns, getUserWithSettings utility, simplified ProfileInfo (Completed)
 
 - **Initial Setup** - Next.js 16, Tailwind CSS v4, TypeScript configured (Completed)
 - **Dashboard UI Phase 1** - ShadCN UI initialization, dashboard route at /dashboard, main layout with dark mode, top bar with search and buttons, sidebar and main placeholders (Completed)
@@ -77,7 +57,13 @@ In Progress
 - **Pagination** - Reusable Pagination component with numbered pages and prev/next buttons, pagination on /items/[type], /collections, and /collections/[id] pages, server-side pagination with skip/take, pagination constants (ITEMS_PER_PAGE=21, COLLECTIONS_PER_PAGE=21), dashboard limits (DASHBOARD_COLLECTIONS_LIMIT=6, DASHBOARD_RECENT_ITEMS_LIMIT=10) (Completed)
 - **Favorites Sorting** - Client-side sorting on /favorites page, FavoritesItemList component with sort by Name/Date/Type, FavoritesCollectionList component with sort by Name/Date, shadcn Select dropdowns with compact monospace styling, useMemo for sorted lists, default sort by newest (Completed)
 - **Pinned Items** - toggleItemPin db query and server action with ownership check and Zod validation, wired up ItemDrawer pin button with optimistic state update, blue highlight when pinned, toast feedback, router.refresh(), 5 new unit tests (Completed)
+- **Favorite Toggle** - toggleItemFavorite and toggleCollectionFavorite db queries and server actions with ownership checks and Zod validation, wired up ItemDrawer favorite button with optimistic state update, CollectionCard dropdown Favorite/Unfavorite menu item, CollectionActions star button on collection detail page, toast feedback, router.refresh(), 10 new unit tests (Completed)
+- **Favorites Page** - Star icon in TopBar linking to /favorites, getFavoriteItems and getFavoriteCollections db queries, FavoriteItemRow and FavoriteCollectionRow components with compact VS Code/terminal-style rows, /favorites page with separate items/collections sections, click item opens ItemDrawer, click collection navigates to detail, empty state (Completed)
+- **Settings Page** - Settings page at /settings with Change Password and Delete Account, Settings link in sidebar dropdowns, getUserWithSettings utility, simplified ProfileInfo (Completed)
+- **Editor Preferences Settings** - Editor preferences on settings page with font size, tab size, word wrap, minimap, and theme dropdowns/toggles, editorPreferences JSON column on User model with migration, EditorPreferencesProvider context, updateEditorPreferences server action, Monaco editor applies user preferences, auto-save with toast, 19 unit tests (Completed)
+- **Homepage** - Converted static HTML prototype into 11 Next.js components (Navbar, HeroSection, ChaosAnimation, DashboardPreview, FeaturesSection, AISection, PricingSection, CTASection, Footer, ScrollFadeIn), page shell at src/app/page.tsx, chaos-to-order animation with rAF/mouse repulsion, scroll fade-in via IntersectionObserver, pricing monthly/yearly toggle, navbar scroll effect with mobile hamburger menu, responsive 3->2->1 col grids, dark theme with blue gradient accents, smooth scroll, all links wired to /sign-in /register and anchor sections (Completed)
 - **Homepage Mockup** - Static marketing homepage prototype in prototypes/homepage/ with dark theme, hero section featuring chaos-to-order animation (8 floating icons with requestAnimationFrame, mouse repulsion, pulsing arrow, dashboard preview with topbar and content cards), fixed navbar with scroll opacity, 6 feature cards with accent colors, AI section with Pro badge and code editor mockup with syntax highlighting and AI-generated tags demo, pricing section with Free/Pro cards and monthly/yearly toggle, CTA section, footer with dynamic year, scroll fade-in animations via IntersectionObserver, fully responsive mobile layout (Completed)
 - **Top Bar Mobile Responsive** - Fixed top bar overflow on mobile (590px content in 320-375px viewport), hide "DevStash" logo text below sm keeping DS badge, collapse search bar to icon-only on mobile still opening command palette, replace New Item/New Collection buttons with single + icon DropdownMenu on mobile, reduced gap/padding for small screens, shrink-0 on fixed elements, full layout preserved at sm+ breakpoint (Completed)
 - **Auth Nav & Dashboard Logo** - Added homepage Navbar to all auth pages (sign-in, register, verify-email, forgot-password, reset-password) via shared (auth)/layout.tsx, replaced DS blue box in dashboard TopBar with FolderOpen icon matching homepage nav, fixed Navbar anchor links to absolute paths (/#features, /#pricing), adjusted auth page min-height for navbar offset (Completed)
 - **Stripe Phase 1 (Core Infrastructure)** - Stripe SDK initialization in src/lib/stripe.ts, usage limit utilities (MAX_ITEMS=50, MAX_COLLECTIONS=3 for free tier) with getUserUsage/canCreateItem/canCreateCollection in src/lib/usage.ts, 9 unit tests, isPro added to NextAuth session/JWT types with DB sync in auth callbacks, checkout session API route (POST /api/stripe/checkout) with monthly/yearly plan-to-priceId mapping and find-or-create Stripe customer, customer portal API route (POST /api/stripe/portal), .env.example with Stripe env vars (Completed)
+- **Stripe Phase 2 (Webhooks, Feature Gating & UI)** - Stripe webhook handler at /api/webhooks/stripe for checkout.session.completed, invoice.paid, invoice.payment_failed, customer.subscription.updated, customer.subscription.deleted with idempotent updateMany and typeof checks, feature gating on createItem (Pro type check for file/image + 50 item limit), createCollection (3 collection limit), upload route (Pro DB check with 403), BillingSettings component with plan badge, usage counts, upgrade buttons ($8/mo and $72/yr), manage billing portal, upgrade success toast via useSearchParams, wired into settings page between editor and account sections, 4 new unit tests (Completed)

@@ -66,6 +66,7 @@ export default async function ProfilePage() {
         image: user.image,
       }}
       editorPreferences={user.editorPreferences}
+      isPro={session.user.isPro}
     >
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}

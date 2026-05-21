@@ -729,3 +729,25 @@ open route: http://localhost:3000/collections
 -update component [type]/page.tsx
 -in folder shared create component pro-upgrade-gate.tsx
 -open route: http://localhost:3000/collections
+
+
+102. Webhooks & local Stripe testing
+
+-update files current-feature.md and SKILL.md
+-update existing tsx components
+-create folder upgrade and component page.tsx
+-create component upgrade-pricing.tsx
+-delete component pro-upgrade-gate.tsx
+-open link: https://docs.stripe.com/stripe-cli
+-type command: stripe listen --forward-to localhost:3000/api/webhooks/stripe
+-open route: http://localhost:3000/items/files and click button Upgrade
+-open route checkout.stripe.com
+-open link: https://docs.stripe.com/testing
+-type test card numbers and click button Subscribe
+-open terminal to see webhook being triggered
+-open route: http://localhost:3000/settings
+-open route: http://localhost:3000/items/files
+-open route: http://localhost:3000/items/images
+-open PostgreSQL db and check table users
+-open route: http://localhost:3000/settings and click button Manage billing
+-open route billing.stripe.com

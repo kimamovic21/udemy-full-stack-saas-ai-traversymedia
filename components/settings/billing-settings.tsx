@@ -94,7 +94,9 @@ export default function BillingSettings({
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground">Current plan:</span>
           {isPro ? (
-            <Badge className="bg-blue-600 hover:bg-blue-700">Pro</Badge>
+            <Badge className="bg-blue-600 hover:bg-blue-700 text-white">
+              Pro
+            </Badge>
           ) : (
             <Badge variant="secondary">Free</Badge>
           )}
