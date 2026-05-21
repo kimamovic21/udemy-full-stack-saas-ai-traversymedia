@@ -3,8 +3,10 @@ import { auth } from "@/auth";
 import { getSidebarCollections } from "@/lib/db/collections";
 import { getItemTypesWithCounts } from "@/lib/db/items";
 import { getUserWithSettings } from "@/lib/db/users";
+import { getUserUsage } from "@/lib/usage";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import AccountSettings from "@/components/settings/account-settings";
+import BillingSettings from "@/components/settings/billing-settings";
 import EditorSettings from "@/components/settings/editor-settings";
 
 export default async function SettingsPage() {
@@ -20,10 +22,13 @@ export default async function SettingsPage() {
     redirect("/sign-in");
   }
 
-  // Get sidebar data for layout
-  const [itemTypesWithCounts, sidebarCollections] = await Promise.all([
+  const isPro = session.user.isPro ?? false;
+
+  // Get sidebar data and usage stats for layout
+  const [itemTypesWithCounts, sidebarCollections, usage] = await Promise.all([
     getItemTypesWithCounts(user.id),
     getSidebarCollections(user.id),
+    getUserUsage(user.id, isPro),
   ]);
 
   return (
@@ -47,6 +52,13 @@ export default async function SettingsPage() {
 
         {/* Editor Settings */}
         <EditorSettings />
+
+        {/* Billing Settings */}
+        <BillingSettings
+          isPro={isPro}
+          itemCount={usage.itemCount}
+          collectionCount={usage.collectionCount}
+        />
 
         {/* Account Settings */}
         <AccountSettings hasPassword={user.hasPassword} />

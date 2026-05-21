@@ -710,3 +710,14 @@ open route: http://localhost:3000/collections
 -in folder types update next-auth.d.ts file
 -in folder api create folder stripe
 -in folder stripe create folders checkout and portal with route.ts files
+
+
+100. Stripe implementation - phase 2
+
+-update current-feature.md file
+-in folder actions update ts files
+-in folder upload update route.ts file
+-create folders webhooks, stripe and route.ts file
+-in folder settings update component page.tsx
+-in folder settings create component billing-settings.tsx
+-open route: http://localhost:3000/collections 
