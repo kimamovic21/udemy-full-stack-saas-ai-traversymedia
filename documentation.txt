@@ -759,3 +759,10 @@ open route: http://localhost:3000/collections
 -update current tsx components and ts files
 -open Developers settings and create a webhook with six events
 -add your env variables to production
+
+
+104. Upgrade page & cleanup
+
+-update current-feature.md file
+-in folder actions update test ts files
+-create md files ai-integration-research.md and ai-integration-plan.md

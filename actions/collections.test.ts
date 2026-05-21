@@ -1,4 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
+import type { Session } from "next-auth";
 
 // Mock the auth module
 vi.mock("@/auth", () => ({
@@ -36,7 +37,7 @@ import {
 } from "@/lib/db/collections";
 import { canCreateCollection } from "@/lib/usage";
 
-const mockAuth = vi.mocked(auth);
+const mockAuth = auth as unknown as Mock<() => Promise<Session | null>>;
 const mockCreateCollectionQuery = vi.mocked(createCollectionQuery);
 const mockUpdateCollectionQuery = vi.mocked(updateCollectionQuery);
 const mockDeleteCollectionQuery = vi.mocked(deleteCollectionQuery);
@@ -67,7 +68,7 @@ describe("createCollection server action", () => {
 
   it("returns validation error for empty name", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
 
@@ -83,7 +84,7 @@ describe("createCollection server action", () => {
 
   it("returns validation error for name exceeding 100 characters", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
 
@@ -99,7 +100,7 @@ describe("createCollection server action", () => {
 
   it("returns validation error for description exceeding 500 characters", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
 
@@ -115,7 +116,7 @@ describe("createCollection server action", () => {
 
   it("returns error when database operation fails", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockCreateCollectionQuery.mockRejectedValue(new Error("DB error"));
@@ -140,7 +141,7 @@ describe("createCollection server action", () => {
     };
 
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockCreateCollectionQuery.mockResolvedValue(mockCollection);
@@ -169,7 +170,7 @@ describe("createCollection server action", () => {
     };
 
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockCreateCollectionQuery.mockResolvedValue(mockCollection);
@@ -212,7 +213,7 @@ describe("createCollection server action", () => {
     };
 
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockCreateCollectionQuery.mockResolvedValue(mockCollection);
@@ -250,7 +251,7 @@ describe("getUserCollections server action", () => {
     ];
 
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockGetUserCollectionsQuery.mockResolvedValue(mockCollections);
@@ -264,7 +265,7 @@ describe("getUserCollections server action", () => {
 
   it("returns error when database operation fails", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockGetUserCollectionsQuery.mockRejectedValue(new Error("DB error"));
@@ -277,7 +278,7 @@ describe("getUserCollections server action", () => {
 
   it("returns empty array when user has no collections", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockGetUserCollectionsQuery.mockResolvedValue([]);
@@ -309,7 +310,7 @@ describe("updateCollection server action", () => {
 
   it("returns validation error for empty name", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
 
@@ -326,7 +327,7 @@ describe("updateCollection server action", () => {
 
   it("returns validation error for missing id", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
 
@@ -342,7 +343,7 @@ describe("updateCollection server action", () => {
 
   it("returns error when collection not found", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockUpdateCollectionQuery.mockResolvedValue(null);
@@ -368,7 +369,7 @@ describe("updateCollection server action", () => {
     };
 
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockUpdateCollectionQuery.mockResolvedValue(mockCollection);
@@ -393,7 +394,7 @@ describe("updateCollection server action", () => {
 
   it("returns error when database operation fails", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockUpdateCollectionQuery.mockRejectedValue(new Error("DB error"));
@@ -425,7 +426,7 @@ describe("deleteCollection server action", () => {
 
   it("returns validation error for empty id", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
 
@@ -437,7 +438,7 @@ describe("deleteCollection server action", () => {
 
   it("returns error when collection not found", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockDeleteCollectionQuery.mockResolvedValue(false);
@@ -450,7 +451,7 @@ describe("deleteCollection server action", () => {
 
   it("returns success when collection is deleted", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockDeleteCollectionQuery.mockResolvedValue(true);
@@ -466,7 +467,7 @@ describe("deleteCollection server action", () => {
 
   it("returns error when database operation fails", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockDeleteCollectionQuery.mockRejectedValue(new Error("DB error"));
@@ -494,7 +495,7 @@ describe("toggleCollectionFavorite server action", () => {
 
   it("returns error for empty collection ID", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
 
@@ -506,7 +507,7 @@ describe("toggleCollectionFavorite server action", () => {
 
   it("returns error when collection not found", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockToggleCollectionFavoriteQuery.mockResolvedValue(null);
@@ -519,7 +520,7 @@ describe("toggleCollectionFavorite server action", () => {
 
   it("returns new favorite state when toggled on", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockToggleCollectionFavoriteQuery.mockResolvedValue(true);
@@ -536,7 +537,7 @@ describe("toggleCollectionFavorite server action", () => {
 
   it("returns new favorite state when toggled off", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockToggleCollectionFavoriteQuery.mockResolvedValue(false);

@@ -1,4 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
+import type { Session } from "next-auth";
 
 // Mock the auth module
 vi.mock("@/auth", () => ({
@@ -15,7 +16,7 @@ import { auth } from "@/auth";
 import { updateEditorPreferences as updateEditorPreferencesQuery } from "@/lib/db/users";
 import { DEFAULT_EDITOR_PREFERENCES } from "@/lib/constants/editor";
 
-const mockAuth = vi.mocked(auth);
+const mockAuth = auth as unknown as Mock<() => Promise<Session | null>>;
 const mockUpdateEditorPreferencesQuery = vi.mocked(
   updateEditorPreferencesQuery,
 );
@@ -36,7 +37,7 @@ describe("updateEditorPreferences server action", () => {
 
   it("returns error for invalid font size", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
 
@@ -51,7 +52,7 @@ describe("updateEditorPreferences server action", () => {
 
   it("returns error for invalid tab size", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
 
@@ -66,7 +67,7 @@ describe("updateEditorPreferences server action", () => {
 
   it("returns error for invalid theme", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
 
@@ -81,7 +82,7 @@ describe("updateEditorPreferences server action", () => {
 
   it("successfully updates valid preferences", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockUpdateEditorPreferencesQuery.mockResolvedValue(true);
@@ -105,7 +106,7 @@ describe("updateEditorPreferences server action", () => {
 
   it("returns error when database update fails", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockUpdateEditorPreferencesQuery.mockResolvedValue(false);
@@ -118,7 +119,7 @@ describe("updateEditorPreferences server action", () => {
 
   it("handles database exceptions gracefully", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockUpdateEditorPreferencesQuery.mockRejectedValue(
@@ -133,7 +134,7 @@ describe("updateEditorPreferences server action", () => {
 
   it("validates all valid font sizes", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockUpdateEditorPreferencesQuery.mockResolvedValue(true);
@@ -151,7 +152,7 @@ describe("updateEditorPreferences server action", () => {
 
   it("validates all valid themes", async () => {
     mockAuth.mockResolvedValue({
-      user: { id: "user-123" },
+      user: { id: "user-123", isPro: false },
       expires: new Date().toISOString(),
     });
     mockUpdateEditorPreferencesQuery.mockResolvedValue(true);
