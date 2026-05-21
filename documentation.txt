@@ -721,3 +721,11 @@ open route: http://localhost:3000/collections
 -in folder settings update component page.tsx
 -in folder settings create component billing-settings.tsx
 -open route: http://localhost:3000/collections 
+
+
+101. Feature gate testing
+
+-update seed.ts file
+-update component [type]/page.tsx
+-in folder shared create component pro-upgrade-gate.tsx
+-open route: http://localhost:3000/collections
