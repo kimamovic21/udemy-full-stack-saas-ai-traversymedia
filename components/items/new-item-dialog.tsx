@@ -29,11 +29,13 @@ import CollectionPicker, { type CollectionOption } from "./collection-picker";
 import CodeEditor from "./code-editor";
 import MarkdownEditor from "./markdown-editor";
 import FileUpload from "./file-upload";
+import SuggestTagsButton from "./suggest-tags-button";
 
 interface NewItemDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultType?: ItemTypeName;
+  isPro?: boolean;
 }
 
 export type ItemTypeName =
@@ -64,6 +66,7 @@ export default function NewItemDialog({
   open,
   onOpenChange,
   defaultType,
+  isPro,
 }: NewItemDialogProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -336,7 +339,31 @@ export default function NewItemDialog({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="tags">Tags</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="tags">Tags</Label>
+              {isPro && (
+                <SuggestTagsButton
+                  title={title}
+                  content={content || null}
+                  language={language || null}
+                  typeName={typeName}
+                  existingTags={tagsInput
+                    .split(",")
+                    .map((t) => t.trim())
+                    .filter((t) => t.length > 0)}
+                  onAcceptTag={(tag) => {
+                    setTagsInput((prev) => {
+                      const trimmed = prev.trim();
+                      if (!trimmed) return tag;
+                      return trimmed.endsWith(",")
+                        ? `${trimmed} ${tag}`
+                        : `${trimmed}, ${tag}`;
+                    });
+                  }}
+                  disabled={isLoading}
+                />
+              )}
+            </div>
             <Input
               id="tags"
               value={tagsInput}

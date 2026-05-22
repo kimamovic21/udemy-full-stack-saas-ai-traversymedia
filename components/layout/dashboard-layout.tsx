@@ -7,7 +7,7 @@ import type { EditorPreferences } from "@/lib/constants/editor";
 import TopBar from "@/components/layout/top-bar";
 import Sidebar from "@/components/layout/sidebar";
 import MobileSidebar from "@/components/layout/mobile-sidebar";
-import { ItemDrawerProvider } from "@/components/items/item-drawer-provider";
+import ItemDrawerProvider from "@/components/items/item-drawer-provider";
 import ItemDrawer from "@/components/items/item-drawer";
 import SearchProvider from "@/components/search/search-provider";
 import CommandPalette from "@/components/search/command-palette";
@@ -78,7 +78,7 @@ export default function DashboardLayout({
           />
 
           {/* Main Content */}
-          <ItemDrawerProvider>
+          <ItemDrawerProvider isPro={isPro}>
             {editorPreferences ? (
               <EditorPreferencesProvider initialPreferences={editorPreferences}>
                 {content}

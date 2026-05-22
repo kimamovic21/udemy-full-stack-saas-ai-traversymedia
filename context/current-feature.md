@@ -1,16 +1,34 @@
-# Current Feature
+# Current Feature: AI Auto-Tagging
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
-<!-- Add feature goals here -->
+- Create OpenAI client utility (`src/lib/openai.ts`) with `AI_MODEL` constant set to `gpt-5-nano`
+- Use the OpenAI **Responses API** (NOT Chat Completions) — `client.responses.create()` with `instructions` + `input` + `text: { format: { type: 'json_object' } }`
+- Create `generateAutoTags` server action with auth, Pro gating, Zod validation, rate limiting
+- Add AI rate limit config (20 requests/hour per user) to existing rate limit utility
+- Add "Suggest Tags" button (Sparkles icon, ghost variant) near tags input in NewItemDialog and ItemDrawer edit mode
+- Display suggested tags as badges with accept (check) and reject (X) controls per tag
+- Accepted tags get added to the item's tag list
+- Tags are freeform, normalized to lowercase
+- Truncate content to 2000 chars before API call
+- Handle both `{"tags": [...]}` and `[...]` response formats from the model
+- Hide Suggest Tags button for free users (Pro-only UI gating)
+- Server-side Pro gating enforcement in the action
+- Error handling via toast (Pro gating, rate limit, AI service errors)
+- Unit tests for the server action
 
 ## Notes
 
-<!-- Add notes and constraints here -->
+- `OPENAI_API_KEY` already in `.env`
+- Must use Responses API — gpt-5-nano returns empty content with Chat Completions API
+- `max_tokens` not supported by gpt-5-nano — avoid or use `max_output_tokens`
+- Don't use `zodResponseFormat` structured output (excessive token usage) — use `json_object` and parse manually
+- `isPro` available server-side via session but not passed to create/edit UI components — need to pass as prop or fetch client-side for button visibility
+- See `docs/ai-integration-plan.md` for full architectural context
 
 ## History
 

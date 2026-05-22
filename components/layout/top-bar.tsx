@@ -134,7 +134,11 @@ export default function TopBar({ onMenuClick, isPro }: TopBarProps) {
         </Button>
       </div>
 
-      <NewItemDialog open={newItemOpen} onOpenChange={setNewItemOpen} />
+      <NewItemDialog
+        open={newItemOpen}
+        onOpenChange={setNewItemOpen}
+        isPro={isPro}
+      />
       <NewCollectionDialog
         open={newCollectionOpen}
         onOpenChange={setNewCollectionOpen}

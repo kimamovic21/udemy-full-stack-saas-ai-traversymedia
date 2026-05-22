@@ -51,11 +51,12 @@ import {
   toggleItemPin,
 } from "@/actions/items";
 import { getUserCollections } from "@/actions/collections";
+import CollectionPicker, { type CollectionOption } from "./collection-picker";
 import Image from "next/image";
 import DeleteItemDialog from "./delete-item-dialog";
 import CodeEditor from "./code-editor";
 import MarkdownEditor from "./markdown-editor";
-import CollectionPicker, { type CollectionOption } from "./collection-picker";
+import SuggestTagsButton from "./suggest-tags-button";
 
 function DrawerSkeleton() {
   return (
@@ -96,7 +97,8 @@ const FILE_TYPES = ["file", "image"];
 
 export default function ItemDrawer() {
   const router = useRouter();
-  const { isOpen, item, isLoading, closeDrawer, setItem } = useItemDrawer();
+  const { isOpen, item, isLoading, isPro, closeDrawer, setItem } =
+    useItemDrawer();
   const { copy } = useClipboard();
 
   // Edit mode state
@@ -129,10 +131,11 @@ export default function ItemDrawer() {
     }
   }, [item]);
 
-  // Reset edit mode when drawer closes
+  // Reset edit mode and delete dialog when drawer closes
   useEffect(() => {
     if (!isOpen) {
       setIsEditing(false);
+      setShowDeleteDialog(false);
     }
   }, [isOpen]);
 
@@ -505,7 +508,31 @@ export default function ItemDrawer() {
 
                     {/* Tags */}
                     <div className="space-y-2">
-                      <Label htmlFor="tags">Tags</Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="tags">Tags</Label>
+                        {isPro && (
+                          <SuggestTagsButton
+                            title={title}
+                            content={content || null}
+                            language={language || null}
+                            typeName={typeName}
+                            existingTags={tags
+                              .split(",")
+                              .map((t) => t.trim())
+                              .filter((t) => t.length > 0)}
+                            onAcceptTag={(tag) => {
+                              setTags((prev) => {
+                                const trimmed = prev.trim();
+                                if (!trimmed) return tag;
+                                return trimmed.endsWith(",")
+                                  ? `${trimmed} ${tag}`
+                                  : `${trimmed}, ${tag}`;
+                              });
+                            }}
+                            disabled={isSaving}
+                          />
+                        )}
+                      </div>
                       <Input
                         id="tags"
                         value={tags}

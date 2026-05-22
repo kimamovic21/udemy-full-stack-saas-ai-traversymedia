@@ -766,3 +766,22 @@ open route: http://localhost:3000/collections
 -update current-feature.md file
 -in folder actions update test ts files
 -create md files ai-integration-research.md and ai-integration-plan.md
+
+
+
+Section 14: Implement AI features
+
+
+105. Open AI key & integration plan
+
+-update current-feature.md file
+-create ai-auto-tag-spec.md file
+-open link: https://platform.openai.com/login
+-create API key
+-create env variable OPENAI_API_KEY in .env file
+-open link: https://www.npmjs.com/package/openai
+-type command: npm i openai
+-create component suggest-tags-button.tsx
+-create openai.ts file
+-update existing tsx components and ts files
+-in folder actions create files ai.test.ts and ai.ts

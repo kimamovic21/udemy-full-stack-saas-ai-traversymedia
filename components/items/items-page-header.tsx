@@ -9,12 +9,14 @@ interface ItemsPageHeaderProps {
   typeName: string;
   displayName: string;
   itemCount: number;
+  isPro?: boolean;
 }
 
 export default function ItemsPageHeader({
   typeName,
   displayName,
   itemCount,
+  isPro,
 }: ItemsPageHeaderProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -37,6 +39,7 @@ export default function ItemsPageHeader({
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         defaultType={typeName as ItemTypeName}
+        isPro={isPro}
       />
     </>
   );

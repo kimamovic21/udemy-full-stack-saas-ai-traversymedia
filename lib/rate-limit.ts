@@ -52,6 +52,11 @@ export const rateLimitConfigs = {
     limiter: Ratelimit.slidingWindow(10, "1 h"),
     prefix: "ratelimit:upload",
   },
+  // AI requests: 20 per hour (keyed by user ID)
+  ai: {
+    limiter: Ratelimit.slidingWindow(20, "1 h"),
+    prefix: "ratelimit:ai",
+  },
 } as const;
 
 export type RateLimitType = keyof typeof rateLimitConfigs;
