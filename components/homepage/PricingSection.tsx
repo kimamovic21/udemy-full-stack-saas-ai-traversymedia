@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import ScrollFadeIn from "./ScrollFadeIn";
 
 const FREE_FEATURES = [
@@ -21,6 +21,7 @@ const PRO_FEATURES = [
   "All item types including Files & Images",
   "AI auto-tagging & summaries",
   "\u201CExplain This Code\u201D",
+  "AI Prompt Optimizer",
   "Data export (JSON/ZIP)",
 ];
 

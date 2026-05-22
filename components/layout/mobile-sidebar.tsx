@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Star, LogOut, User, Settings } from "lucide-react";
 import {
@@ -17,6 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import { getItemTypeIcon } from "@/lib/constants/item-types";
 import { UserAvatar } from "@/components/shared/user-avatar";
 import type { ItemTypeWithCount } from "@/lib/db/items";
@@ -45,6 +47,8 @@ export default function MobileSidebar({
   sidebarCollections,
   user,
 }: MobileSidebarProps) {
+  const pathname = usePathname();
+
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="left" className="w-64 p-0">
@@ -65,13 +69,18 @@ export default function MobileSidebar({
               </h3>
               {itemTypes.map((type) => {
                 const Icon = getItemTypeIcon(type.icon);
+                const isActive = pathname === `/items/${type.name}s`;
 
                 return (
                   <Link
                     key={type.name}
                     href={`/items/${type.name}s`}
                     onClick={onClose}
-                    className="flex items-center gap-3 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent"
+                    className={cn(
+                      "flex items-center gap-3 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent",
+                      isActive &&
+                        "bg-accent text-accent-foreground font-medium",
+                    )}
                   >
                     <Icon className="h-4 w-4" style={{ color: type.color }} />
                     <span className="capitalize">{type.name}s</span>
@@ -109,7 +118,11 @@ export default function MobileSidebar({
                       key={collection.id}
                       href={`/collections/${collection.id}`}
                       onClick={onClose}
-                      className="flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent"
+                      className={cn(
+                        "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent",
+                        pathname === `/collections/${collection.id}` &&
+                          "bg-accent text-accent-foreground font-medium",
+                      )}
                     >
                       <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
                       <span className="flex-1 truncate">{collection.name}</span>
@@ -132,7 +145,11 @@ export default function MobileSidebar({
                       key={collection.id}
                       href={`/collections/${collection.id}`}
                       onClick={onClose}
-                      className="flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent"
+                      className={cn(
+                        "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors hover:bg-accent",
+                        pathname === `/collections/${collection.id}` &&
+                          "bg-accent text-accent-foreground font-medium",
+                      )}
                     >
                       <div
                         className="h-3 w-3 rounded-full"
@@ -154,7 +171,11 @@ export default function MobileSidebar({
               <Link
                 href="/collections"
                 onClick={onClose}
-                className="mt-2 flex items-center gap-2 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                className={cn(
+                  "mt-2 flex items-center gap-2 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
+                  pathname === "/collections" &&
+                    "bg-accent text-accent-foreground font-medium",
+                )}
               >
                 View all collections
               </Link>

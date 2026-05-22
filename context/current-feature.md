@@ -6,20 +6,19 @@ In Progress
 
 ## Goals
 
-Improve font sizes in the item drawer and markdown editor for better readability. The code editor (Monaco) is user-controlled and should not be changed.
-
-1. **Description text** - Bump from `text-sm` (14px) to `text-base` (16px) in item-drawer.tsx view mode
-2. **Markdown editor preview** - Remove `prose-sm` from the prose container in markdown-editor.tsx so it defaults to 16px with better line-height
-3. **Markdown editor textarea** (write mode) - Bump from `text-sm` to `text-base` in markdown-editor.tsx
-4. **URL link text** - Bump from `text-sm` to `text-base` in item-drawer.tsx view mode
-5. **Editor toolbar buttons** - Bump from `text-xs` (12px) to `text-sm` (14px) in editor-header.tsx (Copy, Explain, Optimize, label, tabs, etc.)
+1. Add sidebar active link highlighting using `usePathname()` in both desktop and mobile sidebars (High)
+2. Add GitHub OAuth button to register page matching sign-in page pattern (High)
+3. Add active state to sidebar collection links for `/collections` and `/collections/[id]` (Medium)
+4. Add "AI Prompt Optimizer" to homepage pricing Pro features list (Medium)
+5. Fix copy button / date text overlap on narrow item cards (Low)
+6. Add GitHub OAuth hint to register page footer (Low)
 
 ## Notes
 
-- The code editor font size is controlled by user editor preferences - do not change
-- Badges/tags at 12px are fine as-is
-- Details metadata (Created/Updated) at 14px is fine as-is
-- Section labels (Description, Content, Tags, etc.) at 14px are fine as-is
+- Sidebar files (`sidebar.tsx`, `mobile-sidebar.tsx`) don't import `usePathname` at all - needs to be added
+- Register form (`register-form.tsx`) is missing the entire GitHub OAuth section that exists in `sign-in-form.tsx`
+- PricingSection.tsx `PRO_FEATURES` array is missing "AI Prompt Optimizer"
+- ItemCard copy button uses `absolute bottom-2 right-2` which can overlap content on narrow viewports
 
 ## History
 
@@ -81,3 +80,4 @@ Improve font sizes in the item drawer and markdown editor for better readability
 - **AI Description Generator** - generateDescription server action with auth/Pro gating/Zod validation/rate limiting, GenerateDescriptionButton component with "Describe" label and Sparkles icon, integrated next to Description label in NewItemDialog and ItemDrawer edit mode (Pro-only), uses title/content/URL/language/type context with 2000 char truncation, handles {description:"..."} and plain string AI response formats, 12 new unit tests (Completed)
 - **AI Explain Code** - explainCode server action with auth/Pro gating/Zod validation/rate limiting, Explain button (Sparkles icon) in code editor header for snippet/command types in item drawer read mode, Code/Explain tab interface after generating, markdown-rendered explanation in same container, Crown icon + tooltip for free users (Pro gating UI), Loader2 spinner during generation, error toasts, TooltipProvider in dashboard layout, extraButtons prop on EditorHeader, 12 new unit tests (Completed)
 - **AI Prompt Optimizer** - optimizePrompt server action with auth/Pro gating/Zod validation/rate limiting, Optimize button (Sparkles icon) in MarkdownEditor header for prompt types in item drawer read mode, Original/Optimized tab interface after generating, "Use This" button (Check icon, emerald green) to accept and save optimized prompt via updateItem, Crown icon + tooltip for free users (Pro gating UI), extraButtons prop added to MarkdownEditor's EditorHeader, 12 new unit tests (Completed)
+- **Drawer & Editor Font Sizes** - Improved readability in item drawer and editors: description text and URL links bumped from text-sm (14px) to text-base (16px), markdown editor preview removed prose-sm for 16px default with better line-height, markdown textarea bumped to text-base, editor toolbar buttons (Copy, Explain, Optimize, language label, tabs) bumped from text-xs (12px) to text-sm (14px) across editor-header.tsx, code-editor.tsx, and markdown-editor.tsx (Completed)
