@@ -1,4 +1,4 @@
-# Current Feature: AI Explain Code
+# Current Feature: AI Prompt Optimizer
 
 ## Status
 
@@ -6,23 +6,22 @@ In Progress
 
 ## Goals
 
-- Create `explainCode` server action with auth, Pro gating, Zod validation, rate limiting
-- Add "Explain" button (Sparkles icon) to code editor window controls header (next to Copy button)
-- Only show for snippet and command types in the item drawer (not in create/edit forms)
-- After generating, show Code/Explain tabs in the editor header to toggle between views
-- Render explanation as markdown in the same container space as the code editor
-- Explanation should be concise (~200-300 words) covering what the code does and key concepts
-- Loading state: Loader2 spinner while generating
-- Pro gating in UI: show Crown icon + tooltip for free users
-- Error handling via toast (Pro gating, rate limit, AI service errors)
-- Unit tests for server action
+- Add `optimizePrompt` server action in `src/actions/ai.ts` with auth/Pro gating, Zod validation, rate limiting (reuse existing patterns from `explainCode`/`generateDescription`)
+- Add `showOptimize`, `isPro`, `title`, and `onAcceptOptimized` props to MarkdownEditor for prompt types in read-only mode (mirrors CodeEditor's `showExplain` pattern)
+- Add "Optimize" button (Sparkles icon) in the MarkdownEditor header via `extraButtons` prop on EditorHeader, with Crown icon + tooltip for free users
+- After optimizing, show Original/Optimized tabs in the MarkdownEditor (like Code/Explain tabs in CodeEditor)
+- Show an "Use This" button on the Optimized tab that calls `onAcceptOptimized` to update the item's content via the existing `updateItem` server action
+- Wire up in ItemDrawer: pass `showOptimize`, `isPro`, `title`, and `onAcceptOptimized` handler to MarkdownEditor for prompt type items in read-only view mode
+- The `onAcceptOptimized` handler should save the optimized prompt to the item, show a toast, and refresh the page
+- Write unit tests for the `optimizePrompt` server action
 
 ## Notes
 
-- Explanations are not saved to the database — regenerated on each click
-- Not available in create/edit forms, only in the item drawer read view
-- `isPro` needs to be passed as a prop to the item drawer / code editor
-- See `docs/ai-integration-plan.md` for full architectural context
+- Follow the exact same pattern as "Explain" in CodeEditor (`showExplain` / `extraButtons` / tabs / Crown tooltip)
+- The MarkdownEditor needs `extraButtons` added to its EditorHeader usage (it doesn't have it currently)
+- Only show Optimize for `prompt` type items (not notes), in read-only mode (item drawer view mode)
+- AI prompt: "You are a prompt engineering expert. Analyze the following prompt and return an improved version. Make it clearer, more specific, and more effective. Preserve the original intent. Return a JSON object with an `optimizedPrompt` key."
+- Truncate content to 2000 chars (existing MAX_CONTENT_LENGTH)
 
 ## History
 
@@ -82,3 +81,4 @@ In Progress
 - **Stripe Phase 2 (Webhooks, Feature Gating & UI)** - Stripe webhook handler at /api/webhooks/stripe for checkout.session.completed, invoice.paid, invoice.payment_failed, customer.subscription.updated, customer.subscription.deleted with idempotent updateMany and typeof checks, feature gating on createItem (Pro type check for file/image + 50 item limit), createCollection (3 collection limit), upload route (Pro DB check with 403), BillingSettings component with plan badge, usage counts, upgrade buttons ($8/mo and $72/yr), manage billing portal, upgrade success toast via useSearchParams, wired into settings page between editor and account sections, 4 new unit tests (Completed)
 - **AI Auto-Tagging** - OpenAI client utility (gpt-5-nano via Responses API), generateAutoTags server action with auth/Pro gating/Zod validation/rate limiting (20 req/hr), SuggestTagsButton component with accept/reject badge controls, integrated in NewItemDialog and ItemDrawer edit mode (Pro-only), isPro prop threaded through DashboardLayout/TopBar/ItemsPageHeader/ItemDrawerProvider, content truncation to 2000 chars, handles both {tags:[...]} and [...] response formats, normalizes to lowercase with dedup, 13 unit tests (Completed)
 - **AI Description Generator** - generateDescription server action with auth/Pro gating/Zod validation/rate limiting, GenerateDescriptionButton component with "Describe" label and Sparkles icon, integrated next to Description label in NewItemDialog and ItemDrawer edit mode (Pro-only), uses title/content/URL/language/type context with 2000 char truncation, handles {description:"..."} and plain string AI response formats, 12 new unit tests (Completed)
+- **AI Explain Code** - explainCode server action with auth/Pro gating/Zod validation/rate limiting, Explain button (Sparkles icon) in code editor header for snippet/command types in item drawer read mode, Code/Explain tab interface after generating, markdown-rendered explanation in same container, Crown icon + tooltip for free users (Pro gating UI), Loader2 spinner during generation, error toasts, TooltipProvider in dashboard layout, extraButtons prop on EditorHeader, 12 new unit tests (Completed)
