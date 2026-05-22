@@ -624,6 +624,10 @@ export default function ItemDrawer() {
                           value={item.content}
                           language={item.language || "plaintext"}
                           readOnly
+                          showExplain
+                          isPro={isPro}
+                          title={item.title}
+                          typeName={typeName}
                         />
                       ) : (
                         <MarkdownEditor value={item.content} readOnly />

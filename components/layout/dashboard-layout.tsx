@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollections } from "@/lib/db/collections";
 import type { EditorPreferences } from "@/lib/constants/editor";
@@ -51,44 +52,48 @@ export default function DashboardLayout({
 
   return (
     <SearchProvider>
-      <div className="flex h-screen flex-col">
-        <TopBar
-          onMenuClick={() => setIsMobileSidebarOpen(true)}
-          isPro={isPro}
-        />
-        <div className="flex flex-1 overflow-hidden">
-          {/* Desktop Sidebar */}
-          <div className="hidden lg:block">
-            <Sidebar
-              isCollapsed={isSidebarCollapsed}
-              onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+      <TooltipProvider>
+        <div className="flex h-screen flex-col">
+          <TopBar
+            onMenuClick={() => setIsMobileSidebarOpen(true)}
+            isPro={isPro}
+          />
+          <div className="flex flex-1 overflow-hidden">
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:block">
+              <Sidebar
+                isCollapsed={isSidebarCollapsed}
+                onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                itemTypes={itemTypes}
+                sidebarCollections={sidebarCollections}
+                user={user}
+              />
+            </div>
+
+            {/* Mobile Sidebar */}
+            <MobileSidebar
+              isOpen={isMobileSidebarOpen}
+              onClose={() => setIsMobileSidebarOpen(false)}
               itemTypes={itemTypes}
               sidebarCollections={sidebarCollections}
               user={user}
             />
+
+            {/* Main Content */}
+            <ItemDrawerProvider isPro={isPro}>
+              {editorPreferences ? (
+                <EditorPreferencesProvider
+                  initialPreferences={editorPreferences}
+                >
+                  {content}
+                </EditorPreferencesProvider>
+              ) : (
+                content
+              )}
+            </ItemDrawerProvider>
           </div>
-
-          {/* Mobile Sidebar */}
-          <MobileSidebar
-            isOpen={isMobileSidebarOpen}
-            onClose={() => setIsMobileSidebarOpen(false)}
-            itemTypes={itemTypes}
-            sidebarCollections={sidebarCollections}
-            user={user}
-          />
-
-          {/* Main Content */}
-          <ItemDrawerProvider isPro={isPro}>
-            {editorPreferences ? (
-              <EditorPreferencesProvider initialPreferences={editorPreferences}>
-                {content}
-              </EditorPreferencesProvider>
-            ) : (
-              content
-            )}
-          </ItemDrawerProvider>
         </div>
-      </div>
+      </TooltipProvider>
     </SearchProvider>
   );
 }
