@@ -18,7 +18,7 @@ vi.mock("@/lib/rate-limit", () => ({
   formatRetryTime: vi.fn((s: number) => `${s} seconds`),
 }));
 
-import { generateAutoTags } from "./ai";
+import { generateAutoTags, generateDescription } from "./ai";
 import { auth } from "@/auth";
 import { getOpenAIClient } from "@/lib/openai";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -311,5 +311,280 @@ describe("generateAutoTags server action", () => {
     const callInput = mockCreate.mock.calls[0][0].input as string;
     expect(callInput).not.toContain("Content:");
     expect(callInput).not.toContain("Language:");
+  });
+});
+
+// ============================================
+// generateDescription tests
+// ============================================
+
+const validDescInput = {
+  title: "useAuth React Hook",
+  content: "const useAuth = () => { return useContext(AuthContext); }",
+  url: null,
+  language: "typescript",
+  typeName: "snippet",
+};
+
+describe("generateDescription server action", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockCheckRateLimit.mockResolvedValue({
+      success: true,
+      remaining: 19,
+      reset: 0,
+      retryAfter: 0,
+    });
+  });
+
+  it("returns error when not authenticated", async () => {
+    mockAuth.mockResolvedValue(null);
+
+    const result = await generateDescription(validDescInput);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Unauthorized");
+  });
+
+  it("returns error when user is not Pro", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: false },
+      expires: new Date().toISOString(),
+    });
+
+    const result = await generateDescription(validDescInput);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("AI features require a Pro subscription");
+  });
+
+  it("returns error when validation fails (empty title)", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: true },
+      expires: new Date().toISOString(),
+    });
+
+    const result = await generateDescription({ ...validDescInput, title: "" });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("Validation failed");
+  });
+
+  it("returns error when rate limited", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: true },
+      expires: new Date().toISOString(),
+    });
+    mockCheckRateLimit.mockResolvedValue({
+      success: false,
+      remaining: 0,
+      reset: Date.now() + 60000,
+      retryAfter: 60,
+    });
+
+    const result = await generateDescription(validDescInput);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("Too many AI requests");
+    expect(mockCheckRateLimit).toHaveBeenCalledWith("ai", "user-123");
+  });
+
+  it('returns description on success with { description: "..." } format', async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: true },
+      expires: new Date().toISOString(),
+    });
+
+    const mockClient = {
+      responses: {
+        create: vi.fn().mockResolvedValue({
+          output_text: JSON.stringify({
+            description:
+              "A custom React hook that provides authentication context access.",
+          }),
+        }),
+      },
+    };
+    mockGetOpenAIClient.mockReturnValue(
+      mockClient as unknown as ReturnType<typeof getOpenAIClient>,
+    );
+
+    const result = await generateDescription(validDescInput);
+
+    expect(result.success).toBe(true);
+    expect(result.data).toBe(
+      "A custom React hook that provides authentication context access.",
+    );
+  });
+
+  it("handles plain string response", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: true },
+      expires: new Date().toISOString(),
+    });
+
+    const mockClient = {
+      responses: {
+        create: vi.fn().mockResolvedValue({
+          output_text: JSON.stringify("A hook for auth context."),
+        }),
+      },
+    };
+    mockGetOpenAIClient.mockReturnValue(
+      mockClient as unknown as ReturnType<typeof getOpenAIClient>,
+    );
+
+    const result = await generateDescription(validDescInput);
+
+    expect(result.success).toBe(true);
+    expect(result.data).toBe("A hook for auth context.");
+  });
+
+  it("returns error when AI returns empty response", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: true },
+      expires: new Date().toISOString(),
+    });
+
+    const mockClient = {
+      responses: {
+        create: vi.fn().mockResolvedValue({ output_text: "" }),
+      },
+    };
+    mockGetOpenAIClient.mockReturnValue(
+      mockClient as unknown as ReturnType<typeof getOpenAIClient>,
+    );
+
+    const result = await generateDescription(validDescInput);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("AI returned an empty response");
+  });
+
+  it("returns error when AI returns unexpected format", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: true },
+      expires: new Date().toISOString(),
+    });
+
+    const mockClient = {
+      responses: {
+        create: vi.fn().mockResolvedValue({
+          output_text: JSON.stringify({ result: 123 }),
+        }),
+      },
+    };
+    mockGetOpenAIClient.mockReturnValue(
+      mockClient as unknown as ReturnType<typeof getOpenAIClient>,
+    );
+
+    const result = await generateDescription(validDescInput);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("AI returned an unexpected format");
+  });
+
+  it("returns error when OpenAI API throws", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: true },
+      expires: new Date().toISOString(),
+    });
+
+    const mockClient = {
+      responses: {
+        create: vi.fn().mockRejectedValue(new Error("API error")),
+      },
+    };
+    mockGetOpenAIClient.mockReturnValue(
+      mockClient as unknown as ReturnType<typeof getOpenAIClient>,
+    );
+
+    const result = await generateDescription(validDescInput);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe(
+      "Failed to generate description. Please try again.",
+    );
+  });
+
+  it("truncates content to 2000 chars", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: true },
+      expires: new Date().toISOString(),
+    });
+
+    const longContent = "a".repeat(5000);
+    const mockCreate = vi.fn().mockResolvedValue({
+      output_text: JSON.stringify({ description: "A test item." }),
+    });
+    const mockClient = { responses: { create: mockCreate } };
+    mockGetOpenAIClient.mockReturnValue(
+      mockClient as unknown as ReturnType<typeof getOpenAIClient>,
+    );
+
+    await generateDescription({ ...validDescInput, content: longContent });
+
+    const callInput = mockCreate.mock.calls[0][0].input as string;
+    expect(callInput).toContain("a".repeat(2000));
+    expect(callInput).not.toContain("a".repeat(2001));
+  });
+
+  it("includes URL in context for link types", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: true },
+      expires: new Date().toISOString(),
+    });
+
+    const mockCreate = vi.fn().mockResolvedValue({
+      output_text: JSON.stringify({
+        description: "A useful documentation link.",
+      }),
+    });
+    const mockClient = { responses: { create: mockCreate } };
+    mockGetOpenAIClient.mockReturnValue(
+      mockClient as unknown as ReturnType<typeof getOpenAIClient>,
+    );
+
+    await generateDescription({
+      title: "React Docs",
+      content: null,
+      url: "https://react.dev",
+      language: null,
+      typeName: "link",
+    });
+
+    const callInput = mockCreate.mock.calls[0][0].input as string;
+    expect(callInput).toContain("URL: https://react.dev");
+  });
+
+  it("works without content (title-only)", async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: "user-123", isPro: true },
+      expires: new Date().toISOString(),
+    });
+
+    const mockCreate = vi.fn().mockResolvedValue({
+      output_text: JSON.stringify({
+        description: "A collection of React patterns.",
+      }),
+    });
+    const mockClient = { responses: { create: mockCreate } };
+    mockGetOpenAIClient.mockReturnValue(
+      mockClient as unknown as ReturnType<typeof getOpenAIClient>,
+    );
+
+    const result = await generateDescription({
+      title: "React Patterns",
+      content: null,
+      url: null,
+      language: null,
+      typeName: "note",
+    });
+
+    expect(result.success).toBe(true);
+    const callInput = mockCreate.mock.calls[0][0].input as string;
+    expect(callInput).not.toContain("Content:");
+    expect(callInput).not.toContain("Language:");
+    expect(callInput).not.toContain("URL:");
   });
 });

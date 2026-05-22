@@ -3,11 +3,55 @@ import { prisma } from "@/lib/prisma";
 // Maximum allowed limit for queries to prevent abuse
 const MAX_QUERY_LIMIT = 100;
 
+const SYSTEM_ITEM_TYPES = [
+  { name: "snippet", icon: "Code", color: "#3b82f6" },
+  { name: "prompt", icon: "Sparkles", color: "#8b5cf6" },
+  { name: "command", icon: "Terminal", color: "#f97316" },
+  { name: "note", icon: "StickyNote", color: "#fde047" },
+  { name: "file", icon: "File", color: "#6b7280" },
+  { name: "image", icon: "Image", color: "#ec4899" },
+  { name: "link", icon: "Link", color: "#10b981" },
+] as const;
+
 /**
  * Validate and cap limit parameter
  */
 function validateLimit(limit: number, defaultLimit: number): number {
   return Math.min(Math.max(1, limit), MAX_QUERY_LIMIT) || defaultLimit;
+}
+
+async function ensureSystemItemTypes() {
+  const existingTypes = await prisma.itemType.findMany({
+    where: { isSystem: true },
+    select: { id: true, name: true },
+  });
+
+  const existingByName = new Map(
+    existingTypes.map((type) => [type.name, type.id]),
+  );
+
+  for (const type of SYSTEM_ITEM_TYPES) {
+    if (!existingByName.has(type.name)) {
+      await prisma.itemType.create({
+        data: {
+          name: type.name,
+          icon: type.icon,
+          color: type.color,
+          isSystem: true,
+        },
+      });
+      continue;
+    }
+
+    const duplicates = existingTypes.filter((itemType) => itemType.name === type.name);
+    if (duplicates.length > 1) {
+      await prisma.itemType.deleteMany({
+        where: {
+          id: { in: duplicates.slice(1).map((itemType) => itemType.id) },
+        },
+      });
+    }
+  }
 }
 
 export interface ItemType {
@@ -185,9 +229,15 @@ const ITEM_TYPE_ORDER = [
 export async function getItemTypesWithCounts(
   userId: string,
 ): Promise<ItemTypeWithCount[]> {
+  await ensureSystemItemTypes();
+
   const itemTypes = await prisma.itemType.findMany({
     where: { isSystem: true },
   });
+
+  const uniqueItemTypes = Array.from(
+    new Map(itemTypes.map((type) => [type.name, type])).values(),
+  );
 
   const counts = await prisma.item.groupBy({
     by: ["itemTypeId"],
@@ -197,7 +247,7 @@ export async function getItemTypesWithCounts(
 
   const countMap = new Map(counts.map((c) => [c.itemTypeId, c._count.id]));
 
-  const typesWithCounts = itemTypes.map((type) => ({
+  const typesWithCounts = uniqueItemTypes.map((type) => ({
     name: type.name,
     icon: type.icon,
     color: type.color,
@@ -659,6 +709,8 @@ export async function createItem(
   userId: string,
   data: CreateItemData,
 ): Promise<ItemDetail | null> {
+  await ensureSystemItemTypes();
+
   // Look up the item type
   const itemType = await prisma.itemType.findFirst({
     where: {

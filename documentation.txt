@@ -785,3 +785,10 @@ Section 14: Implement AI features
 -create openai.ts file
 -update existing tsx components and ts files
 -in folder actions create files ai.test.ts and ai.ts
+
+
+106. Language dropdown select
+
+-update current-feature.md file
+-in folder actions update ts files
+-in folder items update tsx components

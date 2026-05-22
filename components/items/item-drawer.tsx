@@ -57,6 +57,7 @@ import DeleteItemDialog from "./delete-item-dialog";
 import CodeEditor from "./code-editor";
 import MarkdownEditor from "./markdown-editor";
 import SuggestTagsButton from "./suggest-tags-button";
+import GenerateDescriptionButton from "./generate-description-button";
 
 function DrawerSkeleton() {
   return (
@@ -440,7 +441,19 @@ export default function ItemDrawer() {
                   <div className="space-y-4">
                     {/* Description */}
                     <div className="space-y-2">
-                      <Label htmlFor="description">Description</Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="description">Description</Label>
+                        {isPro && (
+                          <GenerateDescriptionButton
+                            title={title}
+                            content={content || null}
+                            url={url || null}
+                            language={language || null}
+                            typeName={typeName}
+                            onGenerated={setDescription}
+                          />
+                        )}
+                      </div>
                       <Textarea
                         id="description"
                         value={description}

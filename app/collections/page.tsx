@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { FolderOpen } from "lucide-react";
 import { auth } from "@/auth";
 import { getSidebarCollections, getAllCollections } from "@/lib/db/collections";
 import { getItemTypesWithCounts } from "@/lib/db/items";
@@ -8,6 +7,7 @@ import { COLLECTIONS_PER_PAGE } from "@/lib/constants/pagination";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import CollectionCard from "@/components/dashboard/collection-card";
 import Pagination from "@/components/shared/pagination";
+import CollectionsPageHeader from "@/components/collections/collections-page-header";
 
 interface CollectionsPageProps {
   searchParams: Promise<{ page?: string }>;
@@ -56,13 +56,10 @@ export default async function CollectionsPage({
     >
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <FolderOpen className="h-6 w-6 text-muted-foreground" />
-          <h1 className="text-2xl font-semibold text-foreground">
-            Collections
-          </h1>
-          <span className="text-muted-foreground">({totalCount})</span>
-        </div>
+        <CollectionsPageHeader
+          collectionCount={totalCount}
+          isPro={session.user.isPro}
+        />
 
         {/* Collections Grid */}
         {collections.length > 0 ? (

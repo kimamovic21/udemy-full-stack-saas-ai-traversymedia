@@ -125,3 +125,123 @@ export async function generateAutoTags(
     };
   }
 }
+
+// ============================================
+// Generate Description
+// ============================================
+
+const generateDescriptionSchema = z.object({
+  title: z.string().trim().min(1, "Title is required"),
+  content: z.string().nullable().optional(),
+  url: z.string().nullable().optional(),
+  language: z.string().nullable().optional(),
+  typeName: z.string().min(1, "Type is required"),
+});
+
+export type GenerateDescriptionInput = z.infer<
+  typeof generateDescriptionSchema
+>;
+
+interface GenerateDescriptionResult {
+  success: boolean;
+  data?: string;
+  error?: string;
+}
+
+export async function generateDescription(
+  input: GenerateDescriptionInput,
+): Promise<GenerateDescriptionResult> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  // Pro gating
+  const isPro = session.user.isPro ?? false;
+  if (!isPro) {
+    return { success: false, error: "AI features require a Pro subscription" };
+  }
+
+  const parsed = generateDescriptionSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: "Validation failed" };
+  }
+
+  // Rate limiting
+  const rateLimit = await checkRateLimit("ai", session.user.id);
+  if (!rateLimit.success) {
+    const retryTime = formatRetryTime(rateLimit.retryAfter);
+    return {
+      success: false,
+      error: `Too many AI requests. Please try again in ${retryTime}.`,
+    };
+  }
+
+  const { title, content, url, language, typeName } = parsed.data;
+
+  // Build context for the AI
+  const truncatedContent = content
+    ? content.slice(0, MAX_CONTENT_LENGTH)
+    : null;
+
+  const contextParts = [
+    `Type: ${typeName}`,
+    `Title: ${title}`,
+    language ? `Language: ${language}` : null,
+    url ? `URL: ${url}` : null,
+    truncatedContent ? `Content:\n${truncatedContent}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  try {
+    const client = getOpenAIClient();
+
+    const response = await client.responses.create({
+      model: AI_MODEL,
+      instructions:
+        'You are a developer tool assistant that writes concise descriptions for code snippets, prompts, commands, notes, and links. Return a JSON object with a "description" key containing a 1-2 sentence description. The description should be clear, informative, and summarize what the item is or does. Only return valid JSON.',
+      input: `Write a concise 1-2 sentence description for this developer item. Respond in json format with a "description" string.\n\n${contextParts}`,
+      text: {
+        format: { type: "json_object" },
+      },
+    });
+
+    const text = response.output_text;
+    if (!text) {
+      return { success: false, error: "AI returned an empty response" };
+    }
+
+    const parsed_response = JSON.parse(text);
+
+    // Handle both { description: "..." } and plain string
+    let description: string;
+    if (typeof parsed_response === "string") {
+      description = parsed_response;
+    } else if (
+      parsed_response.description &&
+      typeof parsed_response.description === "string"
+    ) {
+      description = parsed_response.description;
+    } else {
+      return { success: false, error: "AI returned an unexpected format" };
+    }
+
+    const trimmed = description.trim();
+    if (trimmed.length === 0) {
+      return {
+        success: false,
+        error: "AI could not generate a description for this item",
+      };
+    }
+
+    return { success: true, data: trimmed };
+  } catch (error) {
+    console.error("AI description generation failed:", error);
+    return {
+      success: false,
+      error: "Failed to generate description. Please try again.",
+    };
+  }
+}

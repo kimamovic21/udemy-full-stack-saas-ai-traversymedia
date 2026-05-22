@@ -30,6 +30,7 @@ import CodeEditor from "./code-editor";
 import MarkdownEditor from "./markdown-editor";
 import FileUpload from "./file-upload";
 import SuggestTagsButton from "./suggest-tags-button";
+import GenerateDescriptionButton from "./generate-description-button";
 
 interface NewItemDialogProps {
   open: boolean;
@@ -261,7 +262,20 @@ export default function NewItemDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="description">Description</Label>
+              {isPro && (
+                <GenerateDescriptionButton
+                  title={title}
+                  content={content || null}
+                  url={url || null}
+                  language={language || null}
+                  typeName={typeName}
+                  onGenerated={setDescription}
+                  disabled={isLoading}
+                />
+              )}
+            </div>
             <Input
               id="description"
               value={description}
