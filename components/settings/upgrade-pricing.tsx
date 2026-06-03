@@ -4,24 +4,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Check, X, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const FREE_FEATURES = [
-  { text: "50 items", included: true },
-  { text: "3 collections", included: true },
-  { text: "Snippets, Prompts, Commands, Notes, Links", included: true },
-  { text: "Basic search", included: true },
-  { text: "File & Image uploads", included: false },
-  { text: "AI features", included: false },
-];
-
-const PRO_FEATURES = [
-  "Unlimited items",
-  "Unlimited collections",
-  "All item types including Files & Images",
-  "AI auto-tagging & summaries",
-  "\u201CExplain This Code\u201D",
-  "Data export (JSON/ZIP)",
-];
+import { startCheckout } from "@/lib/stripe-client";
+import { FREE_FEATURES, PRO_FEATURES } from "@/lib/constants/pricing";
 
 interface UpgradePricingProps {
   itemCount: number;
@@ -38,19 +22,7 @@ export default function UpgradePricing({
   async function handleUpgrade(plan: "monthly" | "yearly") {
     setLoading(plan);
     try {
-      const res = await fetch("/api/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        toast.error(data.error || "Failed to start checkout");
-        return;
-      }
-
-      window.location.href = data.url;
+      await startCheckout(plan);
     } catch {
       toast.error("Something went wrong");
     } finally {

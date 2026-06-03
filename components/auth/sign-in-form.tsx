@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Github, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,8 +16,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { signInWithGitHub } from "@/actions/auth";
 import Link from "next/link";
+import FormError from "@/components/shared/form-error";
+import GitHubAuthSection from "@/components/shared/github-auth-section";
 
 export function SignInForm() {
   const router = useRouter();
@@ -125,26 +126,27 @@ export function SignInForm() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {(error || formError) && (
-          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-            <p>
-              {formError ||
-                (error === "OAuthAccountNotLinked"
-                  ? "This email is already registered with a password. Please sign in with your email and password instead."
-                  : "An error occurred. Please try again.")}
-            </p>
-            {needsVerification && (
-              <button
-                type="button"
-                onClick={handleResendVerification}
-                disabled={isResending}
-                className="mt-2 text-primary hover:underline disabled:opacity-50"
-              >
-                {isResending ? "Sending..." : "Resend verification email"}
-              </button>
-            )}
-          </div>
-        )}
+        <FormError
+          message={
+            formError ||
+            (error === "OAuthAccountNotLinked"
+              ? "This email is already registered with a password. Please sign in with your email and password instead."
+              : error
+                ? "An error occurred. Please try again."
+                : null)
+          }
+        >
+          {needsVerification && (
+            <button
+              type="button"
+              onClick={handleResendVerification}
+              disabled={isResending}
+              className="mt-2 text-primary hover:underline disabled:opacity-50"
+            >
+              {isResending ? "Sending..." : "Resend verification email"}
+            </button>
+          )}
+        </FormError>
 
         <form onSubmit={handleCredentialsSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -185,23 +187,7 @@ export function SignInForm() {
           </Button>
         </form>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        <form action={signInWithGitHub}>
-          <Button variant="outline" className="w-full" type="submit">
-            <Github className="mr-2 h-4 w-4" />
-            GitHub
-          </Button>
-        </form>
+        <GitHubAuthSection />
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-sm text-muted-foreground">

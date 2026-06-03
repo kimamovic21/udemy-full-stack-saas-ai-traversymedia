@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { startCheckout } from "@/lib/stripe-client";
 
 interface BillingSettingsProps {
   isPro: boolean;
@@ -40,19 +41,7 @@ export default function BillingSettings({
   async function handleUpgrade(plan: "monthly" | "yearly") {
     setLoading(plan);
     try {
-      const res = await fetch("/api/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        toast.error(data.error || "Failed to start checkout");
-        return;
-      }
-
-      window.location.href = data.url;
+      await startCheckout(plan);
     } catch {
       toast.error("Something went wrong");
     } finally {

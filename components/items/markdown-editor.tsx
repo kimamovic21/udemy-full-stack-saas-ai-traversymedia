@@ -2,17 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
-import { Sparkles, Crown, Loader2, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { optimizePrompt } from "@/actions/ai";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import remarkGfm from "remark-gfm";
 import ReactMarkdown from "react-markdown";
 import EditorHeader from "./editor-header";
+import ProAiButton from "@/components/shared/pro-ai-button";
 
 interface MarkdownEditorProps {
   value: string;
@@ -125,9 +121,11 @@ export default function MarkdownEditor({
 
   // Build extra buttons for the header
   const extraButtons = showOptimize ? (
-    isPro ? (
-      <div className="flex items-center gap-2">
-        {activeTab === "optimized" && optimizedContent && onAcceptOptimized && (
+    <div className="flex items-center gap-2">
+      {isPro &&
+        activeTab === "optimized" &&
+        optimizedContent &&
+        onAcceptOptimized && (
           <button
             type="button"
             onClick={handleAccept}
@@ -138,39 +136,14 @@ export default function MarkdownEditor({
             <span>Use This</span>
           </button>
         )}
-        <button
-          type="button"
-          onClick={handleOptimize}
-          disabled={isOptimizing}
-          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
-          title="Optimize prompt"
-        >
-          {isOptimizing ? (
-            <>
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              <span>Optimizing...</span>
-            </>
-          ) : (
-            <>
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Optimize</span>
-            </>
-          )}
-        </button>
-      </div>
-    ) : (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="flex items-center gap-1.5 text-sm text-muted-foreground/50 cursor-not-allowed">
-            <Crown className="h-3.5 w-3.5" />
-            <span>Optimize</span>
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>AI features require Pro subscription</p>
-        </TooltipContent>
-      </Tooltip>
-    )
+      <ProAiButton
+        isPro={isPro}
+        label="Optimize"
+        loadingLabel="Optimizing..."
+        isLoading={isOptimizing}
+        onClick={handleOptimize}
+      />
+    </div>
   ) : null;
 
   // Determine which content to show in the preview/readonly area

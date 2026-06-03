@@ -3,20 +3,15 @@
 import { useRef, useState } from "react";
 import Editor, { OnMount, loader, Monaco } from "@monaco-editor/react";
 import { toast } from "sonner";
-import { Sparkles, Crown, Loader2 } from "lucide-react";
 import type { editor } from "monaco-editor";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { useEditorPreferences } from "@/components/settings/editor-preferences-provider";
 import type { EditorTheme } from "@/lib/constants/editor";
 import { explainCode } from "@/actions/ai";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import EditorHeader from "./editor-header";
+import ProAiButton from "@/components/shared/pro-ai-button";
 
 // Configure Monaco to load from CDN
 loader.config({
@@ -193,39 +188,13 @@ export default function CodeEditor({
 
   // Build extra buttons for the header
   const extraButtons = showExplain ? (
-    isPro ? (
-      <button
-        type="button"
-        onClick={handleExplain}
-        disabled={isExplaining}
-        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
-        title="Explain code"
-      >
-        {isExplaining ? (
-          <>
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            <span>Explaining...</span>
-          </>
-        ) : (
-          <>
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>Explain</span>
-          </>
-        )}
-      </button>
-    ) : (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="flex items-center gap-1.5 text-sm text-muted-foreground/50 cursor-not-allowed">
-            <Crown className="h-3.5 w-3.5" />
-            <span>Explain</span>
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>AI features require Pro subscription</p>
-        </TooltipContent>
-      </Tooltip>
-    )
+    <ProAiButton
+      isPro={isPro}
+      label="Explain"
+      loadingLabel="Explaining..."
+      isLoading={isExplaining}
+      onClick={handleExplain}
+    />
   ) : null;
 
   return (

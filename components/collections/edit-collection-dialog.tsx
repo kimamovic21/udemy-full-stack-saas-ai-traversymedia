@@ -2,15 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Pencil } from "lucide-react";
 import { toast } from "sonner";
+import { Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -18,6 +17,7 @@ import {
   updateCollection,
   type UpdateCollectionInput,
 } from "@/actions/collections";
+import DialogFormFooter from "@/components/shared/dialog-form-footer";
 
 interface EditCollectionDialogProps {
   open: boolean;
@@ -125,20 +125,11 @@ export default function EditCollectionDialog({
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save
-            </Button>
-          </div>
+          <DialogFormFooter
+            isLoading={isLoading}
+            onCancel={handleClose}
+            submitLabel="Save"
+          />
         </form>
       </DialogContent>
     </Dialog>

@@ -1,17 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { FavoriteCollection } from "@/lib/db/collections";
+import SortableSection from "@/components/shared/sortable-section";
 import FavoriteCollectionRow from "@/components/favorites/favorite-collection-row";
 
-type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
+type SortKey = "name-asc" | "name-desc" | "date-desc" | "date-asc";
+
+const SORT_OPTIONS = [
+  { value: "date-desc", label: "Newest" },
+  { value: "date-asc", label: "Oldest" },
+  { value: "name-asc", label: "Name A-Z" },
+  { value: "name-desc", label: "Name Z-A" },
+];
 
 interface FavoritesCollectionListProps {
   collections: FavoriteCollection[];
@@ -19,7 +20,7 @@ interface FavoritesCollectionListProps {
 
 function sortCollections(
   collections: FavoriteCollection[],
-  sort: SortOption,
+  sort: SortKey,
 ): FavoriteCollection[] {
   return [...collections].sort((a, b) => {
     switch (sort) {
@@ -44,38 +45,23 @@ function sortCollections(
 export default function FavoritesCollectionList({
   collections,
 }: FavoritesCollectionListProps) {
-  const [sort, setSort] = useState<SortOption>("date-desc");
+  const [sort, setSort] = useState<SortKey>("date-desc");
   const sorted = useMemo(
     () => sortCollections(collections, sort),
     [collections, sort],
   );
 
   return (
-    <section>
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-          Collections ({collections.length})
-        </h2>
-        <Select value={sort} onValueChange={(v) => setSort(v as SortOption)}>
-          <SelectTrigger
-            size="sm"
-            className="h-7 text-xs font-mono gap-1.5 border-border"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="date-desc">Newest</SelectItem>
-            <SelectItem value="date-asc">Oldest</SelectItem>
-            <SelectItem value="name-asc">Name A-Z</SelectItem>
-            <SelectItem value="name-desc">Name Z-A</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="border border-border rounded-md divide-y divide-border bg-card">
-        {sorted.map((collection) => (
-          <FavoriteCollectionRow key={collection.id} collection={collection} />
-        ))}
-      </div>
-    </section>
+    <SortableSection
+      title="Collections"
+      count={collections.length}
+      sort={sort}
+      onSortChange={(v) => setSort(v as SortKey)}
+      options={SORT_OPTIONS}
+    >
+      {sorted.map((collection) => (
+        <FavoriteCollectionRow key={collection.id} collection={collection} />
+      ))}
+    </SortableSection>
   );
 }

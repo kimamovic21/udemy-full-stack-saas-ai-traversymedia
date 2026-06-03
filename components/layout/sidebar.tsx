@@ -2,25 +2,18 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
 import {
   Star,
   ChevronDown,
   ChevronRight,
   PanelLeftClose,
   PanelLeft,
-  LogOut,
-  User,
-  Settings,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -29,6 +22,7 @@ import { UserAvatar } from "@/components/shared/user-avatar";
 import type { ItemTypeWithCount } from "@/lib/db/items";
 import type { SidebarCollections } from "@/lib/db/collections";
 import Link from "next/link";
+import UserMenuContent from "./user-menu";
 
 interface User {
   id: string;
@@ -250,28 +244,7 @@ export default function Sidebar({
               </button>
             )}
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuItem asChild>
-              <Link href="/profile" className="flex items-center">
-                <User className="mr-2 h-4 w-4" />
-                Profile
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/settings" className="flex items-center">
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => signOut({ callbackUrl: "/sign-in" })}
-              className="text-destructive focus:text-destructive"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
+          <UserMenuContent />
         </DropdownMenu>
       </div>
     </aside>
