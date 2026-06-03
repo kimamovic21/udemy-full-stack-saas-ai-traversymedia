@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { auth } from "@/auth";
 import { updateEditorPreferences as updateEditorPreferencesQuery } from "@/lib/db/users";
 import {
   type EditorPreferences,
@@ -9,6 +8,7 @@ import {
   FONT_SIZES,
   TAB_SIZES,
 } from "@/lib/constants/editor";
+import { getAuthedSession, type ActionResult } from "@/lib/action-utils";
 
 const editorPreferencesSchema = z.object({
   fontSize: z.number().refine((val) => FONT_SIZES.includes(val), {
@@ -22,19 +22,11 @@ const editorPreferencesSchema = z.object({
   theme: z.enum(EDITOR_THEMES.map((t) => t.value) as [string, ...string[]]),
 });
 
-interface ActionResult {
-  success: boolean;
-  error?: string;
-}
-
 export async function updateEditorPreferences(
   input: EditorPreferences,
 ): Promise<ActionResult> {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
   const parsed = editorPreferencesSchema.safeParse(input);
 

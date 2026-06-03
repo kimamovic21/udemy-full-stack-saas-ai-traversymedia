@@ -37,3 +37,17 @@ export const safeUrlSchema = z
   .nullable()
   .optional()
   .transform((val) => val || null);
+
+/**
+ * Validates that a string ID is non-empty.
+ * Returns an error result if invalid, or null if valid.
+ */
+export function validateId(
+  id: string,
+  label: string,
+): { success: false; error: string } | null {
+  if (!id || id.trim().length === 0) {
+    return { success: false, error: `Invalid ${label}` };
+  }
+  return null;
+}

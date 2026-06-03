@@ -1,29 +1,20 @@
 "use server";
 
-import { auth } from "@/auth";
 import { getSearchableItems, type SearchableItem } from "@/lib/db/items";
 import {
   getSearchableCollections,
   type SearchableCollection,
 } from "@/lib/db/collections";
+import { getAuthedSession, type ActionResult } from "@/lib/action-utils";
 
 export interface SearchData {
   items: SearchableItem[];
   collections: SearchableCollection[];
 }
 
-interface SearchDataResult {
-  success: boolean;
-  data?: SearchData;
-  error?: string;
-}
-
-export async function getSearchData(): Promise<SearchDataResult> {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+export async function getSearchData(): Promise<ActionResult<SearchData>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
   try {
     const [items, collections] = await Promise.all([

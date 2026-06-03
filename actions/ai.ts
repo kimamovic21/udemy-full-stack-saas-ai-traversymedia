@@ -1,9 +1,13 @@
 "use server";
 
 import { z } from "zod";
-import { auth } from "@/auth";
 import { getOpenAIClient, AI_MODEL } from "@/lib/openai";
-import { checkRateLimit, formatRetryTime } from "@/lib/rate-limit";
+import {
+  getAuthedSession,
+  requirePro,
+  checkAiRateLimit,
+  type ActionResult,
+} from "@/lib/action-utils";
 
 const MAX_CONTENT_LENGTH = 2000;
 
@@ -16,41 +20,22 @@ const generateAutoTagsSchema = z.object({
 
 export type GenerateAutoTagsInput = z.infer<typeof generateAutoTagsSchema>;
 
-interface GenerateAutoTagsResult {
-  success: boolean;
-  data?: string[];
-  error?: string;
-}
-
 export async function generateAutoTags(
   input: GenerateAutoTagsInput,
-): Promise<GenerateAutoTagsResult> {
-  const session = await auth();
+): Promise<ActionResult<string[]>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  // Pro gating
-  const isPro = session.user.isPro ?? false;
-  if (!isPro) {
-    return { success: false, error: "AI features require a Pro subscription" };
-  }
+  const proError = requirePro(session.user.isPro);
+  if (proError) return proError;
 
   const parsed = generateAutoTagsSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: "Validation failed" };
   }
 
-  // Rate limiting
-  const rateLimit = await checkRateLimit("ai", session.user.id);
-  if (!rateLimit.success) {
-    const retryTime = formatRetryTime(rateLimit.retryAfter);
-    return {
-      success: false,
-      error: `Too many AI requests. Please try again in ${retryTime}.`,
-    };
-  }
+  const rateLimitError = await checkAiRateLimit(session.user.id);
+  if (rateLimitError) return rateLimitError;
 
   const { title, content, language, typeName } = parsed.data;
 
@@ -142,41 +127,22 @@ export type GenerateDescriptionInput = z.infer<
   typeof generateDescriptionSchema
 >;
 
-interface GenerateDescriptionResult {
-  success: boolean;
-  data?: string;
-  error?: string;
-}
-
 export async function generateDescription(
   input: GenerateDescriptionInput,
-): Promise<GenerateDescriptionResult> {
-  const session = await auth();
+): Promise<ActionResult<string>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  // Pro gating
-  const isPro = session.user.isPro ?? false;
-  if (!isPro) {
-    return { success: false, error: "AI features require a Pro subscription" };
-  }
+  const proError = requirePro(session.user.isPro);
+  if (proError) return proError;
 
   const parsed = generateDescriptionSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: "Validation failed" };
   }
 
-  // Rate limiting
-  const rateLimit = await checkRateLimit("ai", session.user.id);
-  if (!rateLimit.success) {
-    const retryTime = formatRetryTime(rateLimit.retryAfter);
-    return {
-      success: false,
-      error: `Too many AI requests. Please try again in ${retryTime}.`,
-    };
-  }
+  const rateLimitError = await checkAiRateLimit(session.user.id);
+  if (rateLimitError) return rateLimitError;
 
   const { title, content, url, language, typeName } = parsed.data;
 
@@ -259,12 +225,6 @@ const explainCodeSchema = z.object({
 
 export type ExplainCodeInput = z.infer<typeof explainCodeSchema>;
 
-interface ExplainCodeResult {
-  success: boolean;
-  data?: string;
-  error?: string;
-}
-
 // ============================================
 // Optimize Prompt
 // ============================================
@@ -276,41 +236,22 @@ const optimizePromptSchema = z.object({
 
 export type OptimizePromptInput = z.infer<typeof optimizePromptSchema>;
 
-interface OptimizePromptResult {
-  success: boolean;
-  data?: string;
-  error?: string;
-}
-
 export async function optimizePrompt(
   input: OptimizePromptInput,
-): Promise<OptimizePromptResult> {
-  const session = await auth();
+): Promise<ActionResult<string>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  // Pro gating
-  const isPro = session.user.isPro ?? false;
-  if (!isPro) {
-    return { success: false, error: "AI features require a Pro subscription" };
-  }
+  const proError = requirePro(session.user.isPro);
+  if (proError) return proError;
 
   const parsed = optimizePromptSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: "Validation failed" };
   }
 
-  // Rate limiting
-  const rateLimit = await checkRateLimit("ai", session.user.id);
-  if (!rateLimit.success) {
-    const retryTime = formatRetryTime(rateLimit.retryAfter);
-    return {
-      success: false,
-      error: `Too many AI requests. Please try again in ${retryTime}.`,
-    };
-  }
+  const rateLimitError = await checkAiRateLimit(session.user.id);
+  if (rateLimitError) return rateLimitError;
 
   const { title, content } = parsed.data;
 
@@ -371,33 +312,20 @@ export async function optimizePrompt(
 
 export async function explainCode(
   input: ExplainCodeInput,
-): Promise<ExplainCodeResult> {
-  const session = await auth();
+): Promise<ActionResult<string>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  // Pro gating
-  const isPro = session.user.isPro ?? false;
-  if (!isPro) {
-    return { success: false, error: "AI features require a Pro subscription" };
-  }
+  const proError = requirePro(session.user.isPro);
+  if (proError) return proError;
 
   const parsed = explainCodeSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: "Validation failed" };
   }
 
-  // Rate limiting
-  const rateLimit = await checkRateLimit("ai", session.user.id);
-  if (!rateLimit.success) {
-    const retryTime = formatRetryTime(rateLimit.retryAfter);
-    return {
-      success: false,
-      error: `Too many AI requests. Please try again in ${retryTime}.`,
-    };
-  }
+  const rateLimitError = await checkAiRateLimit(session.user.id);
+  if (rateLimitError) return rateLimitError;
 
   const { title, content, language, typeName } = parsed.data;
 

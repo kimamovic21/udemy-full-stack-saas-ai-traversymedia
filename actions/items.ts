@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { auth } from "@/auth";
 import {
   updateItem as updateItemQuery,
   deleteItem as deleteItemQuery,
@@ -11,8 +10,9 @@ import {
   VALID_ITEM_TYPES,
   type ItemDetail,
 } from "@/lib/db/items";
-import { parseZodErrors, safeUrlSchema } from "@/lib/validation";
+import { parseZodErrors, safeUrlSchema, validateId } from "@/lib/validation";
 import { canCreateItem } from "@/lib/usage";
+import { getAuthedSession, type ActionResult } from "@/lib/action-utils";
 
 const updateItemSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
@@ -42,22 +42,12 @@ const updateItemSchema = z.object({
 
 export type UpdateItemInput = z.infer<typeof updateItemSchema>;
 
-interface ActionResult<T = ItemDetail> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  fieldErrors?: Record<string, string[]>;
-}
-
 export async function updateItem(
   itemId: string,
   input: UpdateItemInput,
-): Promise<ActionResult> {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+): Promise<ActionResult<ItemDetail>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
   const parsed = updateItemSchema.safeParse(input);
 
@@ -78,24 +68,14 @@ export async function updateItem(
   return { success: true, data: updated };
 }
 
-const deleteItemSchema = z.object({
-  itemId: z.string().min(1, "Item ID is required"),
-});
-
 export async function deleteItem(itemId: string): Promise<ActionResult<null>> {
-  const session = await auth();
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+  const idError = validateId(itemId, "item ID");
+  if (idError) return idError;
 
-  const parsed = deleteItemSchema.safeParse({ itemId });
-
-  if (!parsed.success) {
-    return { success: false, error: "Invalid item ID" };
-  }
-
-  const deleted = await deleteItemQuery(session.user.id, parsed.data.itemId);
+  const deleted = await deleteItemQuery(session.user.id, itemId);
 
   if (!deleted) {
     return { success: false, error: "Item not found or access denied" };
@@ -104,29 +84,16 @@ export async function deleteItem(itemId: string): Promise<ActionResult<null>> {
   return { success: true };
 }
 
-const toggleFavoriteSchema = z.object({
-  itemId: z.string().min(1, "Item ID is required"),
-});
-
 export async function toggleItemFavorite(
   itemId: string,
 ): Promise<ActionResult<{ isFavorite: boolean }>> {
-  const session = await auth();
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+  const idError = validateId(itemId, "item ID");
+  if (idError) return idError;
 
-  const parsed = toggleFavoriteSchema.safeParse({ itemId });
-
-  if (!parsed.success) {
-    return { success: false, error: "Invalid item ID" };
-  }
-
-  const isFavorite = await toggleItemFavoriteQuery(
-    session.user.id,
-    parsed.data.itemId,
-  );
+  const isFavorite = await toggleItemFavoriteQuery(session.user.id, itemId);
 
   if (isFavorite === null) {
     return { success: false, error: "Item not found or access denied" };
@@ -135,29 +102,16 @@ export async function toggleItemFavorite(
   return { success: true, data: { isFavorite } };
 }
 
-const togglePinSchema = z.object({
-  itemId: z.string().min(1, "Item ID is required"),
-});
-
 export async function toggleItemPin(
   itemId: string,
 ): Promise<ActionResult<{ isPinned: boolean }>> {
-  const session = await auth();
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+  const idError = validateId(itemId, "item ID");
+  if (idError) return idError;
 
-  const parsed = togglePinSchema.safeParse({ itemId });
-
-  if (!parsed.success) {
-    return { success: false, error: "Invalid item ID" };
-  }
-
-  const isPinned = await toggleItemPinQuery(
-    session.user.id,
-    parsed.data.itemId,
-  );
+  const isPinned = await toggleItemPinQuery(session.user.id, itemId);
 
   if (isPinned === null) {
     return { success: false, error: "Item not found or access denied" };
@@ -210,12 +164,9 @@ export type CreateItemInput = z.infer<typeof createItemSchema>;
 
 export async function createItem(
   input: CreateItemInput,
-): Promise<ActionResult> {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+): Promise<ActionResult<ItemDetail>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
   const parsed = createItemSchema.safeParse(input);
 

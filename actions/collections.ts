@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { auth } from "@/auth";
 import {
   createCollection as createCollectionQuery,
   updateCollection as updateCollectionQuery,
@@ -11,8 +10,9 @@ import {
   type CreatedCollection,
   type CollectionForPicker,
 } from "@/lib/db/collections";
-import { parseZodErrors } from "@/lib/validation";
+import { parseZodErrors, validateId } from "@/lib/validation";
 import { canCreateCollection } from "@/lib/usage";
+import { getAuthedSession, type ActionResult } from "@/lib/action-utils";
 
 const createCollectionSchema = z.object({
   name: z
@@ -31,21 +31,11 @@ const createCollectionSchema = z.object({
 
 export type CreateCollectionInput = z.infer<typeof createCollectionSchema>;
 
-interface ActionResult<T = CreatedCollection> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  fieldErrors?: Record<string, string[]>;
-}
-
 export async function createCollection(
   input: CreateCollectionInput,
-): Promise<ActionResult> {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+): Promise<ActionResult<CreatedCollection>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
   const parsed = createCollectionSchema.safeParse(input);
 
@@ -76,18 +66,11 @@ export async function createCollection(
   }
 }
 
-interface GetCollectionsResult {
-  success: boolean;
-  data?: CollectionForPicker[];
-  error?: string;
-}
-
-export async function getUserCollections(): Promise<GetCollectionsResult> {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+export async function getUserCollections(): Promise<
+  ActionResult<CollectionForPicker[]>
+> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
   try {
     const collections = await getUserCollectionsQuery(session.user.id);
@@ -97,33 +80,17 @@ export async function getUserCollections(): Promise<GetCollectionsResult> {
   }
 }
 
-const toggleFavoriteSchema = z.object({
-  id: z.string().min(1, "Collection ID is required"),
-});
-
-interface ToggleFavoriteResult {
-  success: boolean;
-  data?: { isFavorite: boolean };
-  error?: string;
-}
-
 export async function toggleCollectionFavorite(
   collectionId: string,
-): Promise<ToggleFavoriteResult> {
-  const session = await auth();
+): Promise<ActionResult<{ isFavorite: boolean }>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  const parsed = toggleFavoriteSchema.safeParse({ id: collectionId });
-
-  if (!parsed.success) {
-    return { success: false, error: "Invalid collection ID" };
-  }
+  const idError = validateId(collectionId, "collection ID");
+  if (idError) return idError;
 
   const isFavorite = await toggleCollectionFavoriteQuery(
-    parsed.data.id,
+    collectionId,
     session.user.id,
   );
 
@@ -154,12 +121,9 @@ export type UpdateCollectionInput = z.infer<typeof updateCollectionSchema>;
 
 export async function updateCollection(
   input: UpdateCollectionInput,
-): Promise<ActionResult> {
-  const session = await auth();
-
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
+): Promise<ActionResult<CreatedCollection>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
   const parsed = updateCollectionSchema.safeParse(input);
 
@@ -191,37 +155,19 @@ export async function updateCollection(
   }
 }
 
-const deleteCollectionSchema = z.object({
-  id: z.string().min(1, "Collection ID is required"),
-});
-
-export type DeleteCollectionInput = z.infer<typeof deleteCollectionSchema>;
-
-interface DeleteResult {
-  success: boolean;
-  error?: string;
-}
+export type DeleteCollectionInput = { id: string };
 
 export async function deleteCollection(
   input: DeleteCollectionInput,
-): Promise<DeleteResult> {
-  const session = await auth();
+): Promise<ActionResult<null>> {
+  const { session, unauthorized } = await getAuthedSession();
+  if (unauthorized) return unauthorized;
 
-  if (!session?.user?.id) {
-    return { success: false, error: "Unauthorized" };
-  }
-
-  const parsed = deleteCollectionSchema.safeParse(input);
-
-  if (!parsed.success) {
-    return { success: false, error: "Invalid collection ID" };
-  }
+  const idError = validateId(input.id, "collection ID");
+  if (idError) return idError;
 
   try {
-    const deleted = await deleteCollectionQuery(
-      parsed.data.id,
-      session.user.id,
-    );
+    const deleted = await deleteCollectionQuery(input.id, session.user.id);
 
     if (!deleted) {
       return { success: false, error: "Collection not found" };
