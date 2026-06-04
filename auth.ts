@@ -64,14 +64,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async signIn({ user, account }) {
-      // For OAuth providers (like GitHub), check if email is already registered with password
-      if (account?.provider !== "credentials" && user.email) {
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email },
+      if (account?.provider !== "credentials" && user.id) {
+        // Check the actual user being signed in (not by email, which may not match)
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
         });
 
-        // Block OAuth sign-in if user already has a password-based account
-        if (existingUser?.password) {
+        // Block OAuth if this user has a password (credentials account)
+        if (dbUser?.password) {
+          // Clean up the bad account link the adapter created
+          await prisma.account.deleteMany({
+            where: { userId: user.id, provider: account?.provider },
+          });
           return "/sign-in?error=OAuthAccountNotLinked";
         }
       }
