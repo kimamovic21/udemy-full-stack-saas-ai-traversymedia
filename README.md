@@ -25,7 +25,7 @@ Developers keep their essentials scattered across VS Code snippets, browser book
   <img src="screen.png" alt="DevStash Dashboard" width="800" />
 </p>
 
-This project is part of the [Coding With AI](https://www.traversymedia.com) course by Brad Traversy. Course link coming soon.
+This project is part of the [Coding With AI](https://www.codingwithaicourse.com) course by Brad Traversy. 
 
 The docs, spec files, and other resources for this project are available in the [course resources repo](https://github.com/bradtraversy/coding-with-ai-course-resources).
 
