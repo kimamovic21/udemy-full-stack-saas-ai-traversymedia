@@ -836,3 +836,12 @@ Section 15: Code audits & finalize deployment
 -create refactor-scanner.md file
 -update current-feature.md file
 -create and update existing tsx components and ts files
+
+
+113. Connect a domain
+
+
+114. Connect domain to Resend
+
+
+115. Wrap up

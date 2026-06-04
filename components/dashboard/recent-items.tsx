@@ -1,6 +1,6 @@
 import { Clock } from "lucide-react";
-import ItemCard from "./item-card";
 import type { ItemWithType } from "@/lib/db/items";
+import ItemCard from "./item-card";
 
 interface RecentItemsProps {
   items: ItemWithType[];
@@ -17,7 +17,7 @@ export default function RecentItems({ items }: RecentItemsProps) {
         <Clock className="h-4 w-4 text-muted-foreground" />
         <h2 className="text-lg font-semibold text-foreground">Recent Items</h2>
       </div>
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {items.map((item) => (
           <ItemCard key={item.id} item={item} />
         ))}
