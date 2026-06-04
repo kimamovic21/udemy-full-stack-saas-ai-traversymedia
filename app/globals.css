@@ -140,20 +140,6 @@
   }
 }
 
-@media (max-width: 768px) {
-  @keyframes pulse-arrow {
-    0%,
-    100% {
-      opacity: 0.4;
-      transform: rotate(90deg) scale(1);
-    }
-    50% {
-      opacity: 1;
-      transform: rotate(90deg) scale(1.15);
-    }
-  }
-}
-
 /* Custom scrollbar for editor components */
 .editor-scrollbar {
   scrollbar-width: thin;

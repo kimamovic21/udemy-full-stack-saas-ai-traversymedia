@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import ChaosAnimation from "./ChaosAnimation";
 import DashboardPreview from "./DashboardPreview";
 import ScrollFadeIn from "./ScrollFadeIn";
@@ -53,10 +53,11 @@ export default function HeroSection() {
 
         {/* Arrow */}
         <div
-          className="shrink-0 text-[#55556a] max-md:rotate-90"
+          className="shrink-0 text-[#55556a]"
           style={{ animation: "pulse-arrow 2s ease-in-out infinite" }}
         >
-          <ArrowRight className="size-12" />
+          <ArrowRight className="size-12 max-md:hidden" />
+          <ArrowDown className="size-12 md:hidden" />
         </div>
 
         {/* Dashboard side */}

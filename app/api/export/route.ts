@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getUserExportData } from "@/lib/db/export";
 import { PassThrough } from "stream";
-import archiver from "archiver";
+import type archiver from "archiver";
+
+type ZipArchiveConstructor = new (
+  options?: Parameters<typeof archiver>[1],
+) => ReturnType<typeof archiver>;
 
 function getDateString(): string {
   return new Date().toISOString().split("T")[0];
@@ -42,7 +46,10 @@ export async function GET(request: NextRequest) {
   }
 
   // ZIP format: JSON manifest + actual files from R2
-  const archive = archiver("zip", { zlib: { level: 9 } });
+  const { ZipArchive } = (await import("archiver")) as unknown as {
+    ZipArchive: ZipArchiveConstructor;
+  };
+  const archive = new ZipArchive({ zlib: { level: 9 } });
   const chunks: Uint8Array[] = [];
 
   const streamPromise = new Promise<Uint8Array>((resolve, reject) => {
