@@ -1,21 +1,32 @@
-# Current Feature
+# Current Feature: Import/Export
 
 ## Status
 
-Not Started
+In Progress
 
 ## Goals
 
-<!-- Define goals here -->
+- Export JSON (free): server action + API route to download `devstash-export-{date}.json` with all user items, collections, tags, and collection assignments
+- Export ZIP (Pro): same JSON manifest + actual R2 files/images in `/files` directory, downloads `devstash-export-{date}.zip`
+- Import from JSON: dialog with file drop zone, preview summary (item/collection/tag counts), "Skip duplicates" checkbox, progress indicator, Prisma transaction
+- Free tier limits enforced on import (50 items / 3 collections), skip file/image types for free users
+- Duplicate detection on import: match on title + type + content/URL
+- New "Data" section on settings page between Billing and Account
+- Zod validation for import JSON format with version field
+- Unit tests for export/import actions
 
 ## Notes
 
-<!-- Additional context here -->
+- Export format version: 1
+- File/image items in JSON export include metadata (fileName, fileSize) but NOT actual files
+- Collections created first on import, then items with tag connectOrCreate, then collection assignments
+- Files: DataSettings.tsx, ImportDialog.tsx, export.ts (action), import.ts (action), /api/export route, db/export.ts query
 
 ## History
 
 - **Vercel Analytics** - Installed @vercel/analytics package, added Analytics component to root layout for page view tracking across all pages (Completed)
 - **Language Selector Dropdown** - Replaced free-text language input with Select dropdown (31 languages) in NewItemDialog and ItemDrawer edit mode, moved language selector above content editor for immediate syntax highlighting as user types, LANGUAGES constant in editor.ts (Completed)
+
 - **Initial Setup** - Next.js 16, Tailwind CSS v4, TypeScript configured (Completed)
 - **Dashboard UI Phase 1** - ShadCN UI initialization, dashboard route at /dashboard, main layout with dark mode, top bar with search and buttons, sidebar and main placeholders (Completed)
 - **Dashboard UI Phase 2** - Collapsible sidebar with item type navigation, favorite and recent collections, user avatar area, mobile drawer, and responsive behavior (Completed)
